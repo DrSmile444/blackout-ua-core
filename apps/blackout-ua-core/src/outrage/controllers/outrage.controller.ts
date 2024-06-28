@@ -1,5 +1,11 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
-import { ApiBody, ApiQuery, ApiTags, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiQuery,
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 
 import { OutrageParserService } from '../services/outrage-parser.service';
 import { OutrageStorageService } from '../services/outrage-storage.service';
@@ -21,6 +27,7 @@ export class OutrageController {
 
   @Post('/')
   @ApiBody({ type: OutrageMessageDto })
+  @ApiOperation({ summary: 'Parse a message and create a new outrage' })
   @ApiResponse({
     status: 200,
     type: OutrageDto,
@@ -54,6 +61,7 @@ export class OutrageController {
     type: [OutrageDto],
     description: 'Returns a list of outrages',
   })
+  @ApiOperation({ summary: 'Returns a list of outrages' })
   getOutrages(
     @Query('date', ParseDatePipe) date?: Date,
     @Query('queues', ParseNumberArrayPipe) queues?: number[],
@@ -74,11 +82,13 @@ export class OutrageController {
   @Post('/test')
   @ApiBody({ type: OutrageMessageDto })
   @ApiResponse({ status: 200, type: OutrageDto })
+  @ApiOperation({ summary: 'Test how parsing logic works' })
   process(@Body() body: OutrageMessageDto): Outrage {
     return this.outrageParserService.parseMessage(body.message);
   }
 
   @Get('/storage')
+  @ApiOperation({ summary: 'Returns the complete storage for debug' })
   getRawStorage() {
     return this.outrageStorageService.getRawStorage();
   }

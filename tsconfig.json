@@ -20,6 +20,19 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "paths": {
+      "@ukraine/ukraine-cherkasy": [
+        "libs/ukraine-cherkasy/src"
+      ],
+      "@ukraine/ukraine-cherkasy/*": [
+        "libs/ukraine-cherkasy/src/*"
+      ],
+      "@ukraine/ukraine-base": [
+        "libs/ukraine-base/src"
+      ],
+      "@ukraine/ukraine-base/*": [
+        "libs/ukraine-base/src/*"
+      ]
+    }
   }
 }

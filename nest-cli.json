@@ -27,6 +27,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/telegram/tsconfig.app.json"
       }
+    },
+    "ukraine-cherkasy": {
+      "type": "library",
+      "root": "libs/ukraine-cherkasy",
+      "entryFile": "index",
+      "sourceRoot": "libs/ukraine-cherkasy/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/ukraine-cherkasy/tsconfig.lib.json"
+      }
+    },
+    "ukraine-base": {
+      "type": "library",
+      "root": "libs/ukraine-base",
+      "entryFile": "index",
+      "sourceRoot": "libs/ukraine-base/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/ukraine-base/tsconfig.lib.json"
+      }
     }
   }
 }

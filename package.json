@@ -69,7 +69,12 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/apps/"
-    ]
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@ukraine/ukraine-cherkasy(|/.*)$": "<rootDir>/libs/ukraine-cherkasy/src/$1",
+      "^@ukraine/ukraine-base(|/.*)$": "<rootDir>/libs/ukraine-base/src/$1"
+    }
   }
 }
