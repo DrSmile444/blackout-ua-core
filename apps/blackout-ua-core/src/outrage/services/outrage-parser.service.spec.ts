@@ -5,7 +5,6 @@ import {
   outrageMock6Origin,
   outrageMock7ChangeOld,
 } from '../mocks/outrage.mock';
-import { OutrageType } from '../entities/outrage.entity';
 
 describe('OutrageParserService', () => {
   let outrageParserService: OutrageParserService;
