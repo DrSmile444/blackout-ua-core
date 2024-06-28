@@ -43,7 +43,7 @@ export class OutrageParserService {
       : OutrageType.SCHEDULE;
   }
 
-  private parseDate(message: string): Date | null {
+  parseDate(message: string): Date | null {
     const currentYear = new Date().getFullYear();
 
     const rows = message
@@ -75,7 +75,7 @@ export class OutrageParserService {
     return date;
   }
 
-  private parseShifts(message: string): OutrageShift[] {
+  parseShifts(message: string): OutrageShift[] {
     const rows = message
       .split('\n')
       .map((line) => line.trim())
@@ -86,7 +86,7 @@ export class OutrageParserService {
       .filter((shift) => shift !== null) as OutrageShift[];
   }
 
-  private parseRow(row: string): OutrageShift | null {
+  parseRow(row: string): OutrageShift | null {
     const time = this.parseTime(row);
     const queues = this.parseQueue(row);
 
@@ -101,7 +101,7 @@ export class OutrageParserService {
     };
   }
 
-  private parseTime(row: string): [string, string] | null {
+  parseTime(row: string): [string, string] | null {
     const timePeriod = this.REGEX.timePeriod.exec(row)?.[0];
 
     if (!timePeriod) {
@@ -117,7 +117,7 @@ export class OutrageParserService {
     return [start, end];
   }
 
-  private parseQueue(row: string): number[] {
+  parseQueue(row: string): number[] {
     const timePeriod = this.REGEX.timePeriod.exec(row)?.[0];
 
     if (!timePeriod) {

@@ -21,8 +21,12 @@ export class OutrageController {
 
   @Post('/')
   @ApiBody({ type: OutrageMessageDto })
-  @ApiResponse({ status: 200, type: OutrageDto })
-  saveOutrage(@Body() body: { message: string }): Outrage {
+  @ApiResponse({
+    status: 200,
+    type: OutrageDto,
+    description: 'Create a new outrage from a message',
+  })
+  saveOutrage(@Body() body: OutrageMessageDto): Outrage {
     const parsedMessage = this.outrageParserService.parseMessage(body.message);
     return this.outrageStorageService.saveOutrage(parsedMessage);
   }
@@ -45,7 +49,11 @@ export class OutrageController {
     example: true,
     required: false,
   })
-  @ApiResponse({ status: 200, type: [OutrageDto] })
+  @ApiResponse({
+    status: 200,
+    type: [OutrageDto],
+    description: 'Returns a list of outrages',
+  })
   getOutrages(
     @Query('date', ParseDatePipe) date?: Date,
     @Query('queues', ParseNumberArrayPipe) queues?: number[],
@@ -66,7 +74,7 @@ export class OutrageController {
   @Post('/test')
   @ApiBody({ type: OutrageMessageDto })
   @ApiResponse({ status: 200, type: OutrageDto })
-  process(@Body() body: { message: string }): Outrage {
+  process(@Body() body: OutrageMessageDto): Outrage {
     return this.outrageParserService.parseMessage(body.message);
   }
 

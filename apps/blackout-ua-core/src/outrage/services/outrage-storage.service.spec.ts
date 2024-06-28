@@ -9,7 +9,7 @@ describe('OutrageStorageService', () => {
       providers: [OutrageStorageService],
     }).compile();
 
-    service = module.get<OutrageStorageService>(OutrageStorageService);
+    service = module.get(OutrageStorageService);
   });
 
   it('should be defined', () => {
