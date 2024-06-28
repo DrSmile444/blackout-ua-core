@@ -3,12 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { createInterface } from 'readline';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
+import { UkraineTelegramService } from '@ukraine/ukraine-base';
 
 @Injectable()
 export class TelegramClientService {
   client: TelegramClient;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private ukraineTelegramService: UkraineTelegramService,
+  ) {
     this.initClient().then(this.getHistory.bind(this));
   }
 
@@ -52,29 +56,33 @@ export class TelegramClientService {
    * Get the history of the channel
    */
   async getHistory() {
-    const channelName = 'ПАТ "Черкасиобленерго"';
+    for (const {
+      chatName,
+      convert,
+    } of this.ukraineTelegramService.getAllConfigs()) {
+      // We need to perform a search to find the channel before asking history
+      await this.client.invoke(
+        new Api.contacts.Search({
+          q: chatName,
+          limit: 1,
+        }),
+      );
 
-    // We need to perform a search to find the channel before asking history
-    await this.client.invoke(
-      new Api.contacts.Search({
-        q: channelName,
-        limit: 1,
-      }),
-    );
+      const channelMessages = (await this.client.invoke(
+        new Api.messages.GetHistory({
+          peer: chatName,
+          limit: 15,
+        }),
+      )) as Api.messages.ChannelMessages;
 
-    const channelMessages = (await this.client.invoke(
-      new Api.messages.GetHistory({
-        peer: channelName,
-        limit: 15,
-      }),
-    )) as Api.messages.ChannelMessages;
+      const messages = channelMessages.messages as Api.Message[];
 
-    const messages = channelMessages.messages as Api.Message[];
-
-    messages
-      .filter((message) => message.message)
-      .forEach((message) => {
-        console.log('message:', message.message);
-      });
+      messages
+        .filter((message) => message.message)
+        .forEach((message) => {
+          const outrage = convert(message.message);
+          console.log('message:', outrage);
+        });
+    }
   }
 }

@@ -1,11 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
-export class CityMetadataDto {
+import { CityMetadata } from '../interfaces';
+
+export class CityMetadataDto implements CityMetadata {
   @ApiProperty({ example: 'Cherkasy' })
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({ example: 'cherkasy' })
+  @IsString()
+  @IsNotEmpty()
+  key: string;
 
   @ApiProperty({ example: 1 })
   @IsNotEmpty()
