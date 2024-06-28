@@ -10,6 +10,7 @@ import {
 import { Type } from 'class-transformer';
 import { OutrageType, OutrageShift } from '../entities/outrage.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { outrageMock1Origin } from '../mocks/outrage.mock';
 
 export class CreateOutrageShiftDto {
   @ApiProperty({ example: '10:00' })
@@ -29,7 +30,7 @@ export class CreateOutrageShiftDto {
 }
 
 export class OutrageMessageDto {
-  @ApiProperty({ example: 'Відключення на 25 червня' })
+  @ApiProperty({ example: outrageMock1Origin })
   message: string;
 }
 

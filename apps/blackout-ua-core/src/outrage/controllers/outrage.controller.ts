@@ -6,6 +6,9 @@ import { OutrageStorageService } from '../services/outrage-storage.service';
 import { OutrageMergerService } from '../services/outrage-merger.service';
 import { OutrageDto, OutrageMessageDto } from '../dto/outrage.dto';
 import { Outrage } from '../entities/outrage.entity';
+import { ParseNumberArrayPipe } from '../pipes/parse-number-array.pipe';
+import { ParseDatePipe } from '../pipes/parse-date.pipe';
+import { ParseBoolPipe } from '../pipes/parse-bool.pipe';
 
 @ApiTags('outrage')
 @Controller('outrage')
@@ -16,7 +19,7 @@ export class OutrageController {
     private readonly outrageMergerService: OutrageMergerService,
   ) {}
 
-  @Post('/process')
+  @Post('/test')
   @ApiBody({ type: OutrageMessageDto })
   @ApiResponse({ status: 200, type: OutrageDto })
   process(@Body() body: { message: string }): Outrage {
@@ -32,21 +35,32 @@ export class OutrageController {
   }
 
   @Get('/')
-  @ApiQuery({ name: 'date', required: false })
-  @ApiQuery({ name: 'queues', required: false })
-  @ApiQuery({ name: 'final', required: false })
+  @ApiQuery({
+    name: 'date',
+    example: '2024-06-25',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'queues',
+    example: '1,2,4',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'final',
+    description: 'Return a merged final schedule for a selected day if true',
+    type: Boolean,
+    example: true,
+    required: false,
+  })
   @ApiResponse({ status: 200, type: [OutrageDto] })
   getOutrages(
-    @Query('date') date?: string,
-    @Query('queues') queues?: string,
-    @Query('final') final?: boolean,
+    @Query('date', ParseDatePipe) date?: Date,
+    @Query('queues', ParseNumberArrayPipe) queues?: number[],
+    @Query('final', ParseBoolPipe) final?: boolean,
   ): Outrage | Outrage[] {
-    const parsedDate = date ? new Date(date) : new Date();
+    const parsedDate = date || new Date();
     const outrages = queues
-      ? this.outrageStorageService.getOutragesByQueue(
-          parsedDate,
-          queues.split(',').map(Number),
-        )
+      ? this.outrageStorageService.getOutragesByQueue(parsedDate, queues)
       : this.outrageStorageService.getOutrages(parsedDate);
 
     if (final) {
