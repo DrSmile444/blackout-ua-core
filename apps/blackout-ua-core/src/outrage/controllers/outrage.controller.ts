@@ -19,13 +19,6 @@ export class OutrageController {
     private readonly outrageMergerService: OutrageMergerService,
   ) {}
 
-  @Post('/test')
-  @ApiBody({ type: OutrageMessageDto })
-  @ApiResponse({ status: 200, type: OutrageDto })
-  process(@Body() body: { message: string }): Outrage {
-    return this.outrageParserService.parseMessage(body.message);
-  }
-
   @Post('/')
   @ApiBody({ type: OutrageMessageDto })
   @ApiResponse({ status: 200, type: OutrageDto })
@@ -68,6 +61,13 @@ export class OutrageController {
     }
 
     return outrages;
+  }
+
+  @Post('/test')
+  @ApiBody({ type: OutrageMessageDto })
+  @ApiResponse({ status: 200, type: OutrageDto })
+  process(@Body() body: { message: string }): Outrage {
+    return this.outrageParserService.parseMessage(body.message);
   }
 
   @Get('/storage')

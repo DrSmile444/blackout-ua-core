@@ -8,9 +8,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { OutrageType, OutrageShift } from '../entities/outrage.entity';
+import { OutrageShift, OutrageType } from '../entities/outrage.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { outrageMock1Origin } from '../mocks/outrage.mock';
+import { outrageMock5Change2 } from '../mocks/outrage.mock';
 
 export class CreateOutrageShiftDto {
   @ApiProperty({ example: '10:00' })
@@ -30,7 +30,7 @@ export class CreateOutrageShiftDto {
 }
 
 export class OutrageMessageDto {
-  @ApiProperty({ example: outrageMock1Origin })
+  @ApiProperty({ example: outrageMock5Change2 })
   message: string;
 }
 
