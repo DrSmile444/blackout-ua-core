@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/blackout-ua-core/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/blackout-ua-core/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/blackout-ua-core",
+  "projects": {
+    "blackout-ua-core": {
+      "type": "application",
+      "root": "apps/blackout-ua-core",
+      "entryFile": "main",
+      "sourceRoot": "apps/blackout-ua-core/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/blackout-ua-core/tsconfig.app.json"
+      }
+    },
+    "telegram": {
+      "type": "application",
+      "root": "apps/telegram",
+      "entryFile": "main",
+      "sourceRoot": "apps/telegram/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/telegram/tsconfig.app.json"
+      }
+    }
+  }
+}
