@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 
 import { CityController } from './city.controller';
 
@@ -10,7 +11,7 @@ describe('CityController', () => {
       controllers: [CityController],
     }).compile();
 
-    controller = module.get<CityController>(CityController);
+    controller = module.get(CityController);
   });
 
   it('should be defined', () => {

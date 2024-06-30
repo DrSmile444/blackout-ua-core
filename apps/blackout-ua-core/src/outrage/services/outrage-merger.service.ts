@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { Outrage } from '@app/shared';
+import type { Outrage } from '@app/shared';
 
 @Injectable()
 export class OutrageMergerService {
@@ -23,11 +23,7 @@ export class OutrageMergerService {
 
       const lastCurrentShift = currentOutrage.shifts.at(-1);
 
-      if (
-        lastCurrentShift &&
-        this.parseTime(lastCurrentShift.end) >
-          this.parseTime(newFirstShift.start)
-      ) {
+      if (lastCurrentShift && this.parseTime(lastCurrentShift.end) > this.parseTime(newFirstShift.start)) {
         lastCurrentShift.end = newFirstShift.start;
       }
 

@@ -1,4 +1,4 @@
-import { Outrage } from '@app/shared';
+import type { Outrage } from '@app/shared';
 
 export interface CityMetadata {
   id: number;
@@ -14,5 +14,6 @@ export interface TelegramConfig {
 
 export abstract class UkraineCityService {
   abstract getMetadata(): CityMetadata;
+
   abstract getTelegramConfig?(): TelegramConfig;
 }

@@ -1,9 +1,10 @@
 // eslint-disable-next-line unicorn/prevent-abbreviations
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import type { INestApplication } from '@nestjs/common';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
 
-import { TelegramModule } from './../src/telegram.module';
+import { TelegramModule } from '../src/telegram.module';
 
 describe('TelegramController (e2e)', () => {
   let app: INestApplication;
@@ -17,10 +18,6 @@ describe('TelegramController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
-  });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  it('/ (GET)', () => request(app.getHttpServer()).get('/').expect(200).expect('Hello World!'));
 });

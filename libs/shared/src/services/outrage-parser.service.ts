@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-  Outrage,
-  OutrageShift,
-  OutrageType,
-} from '@app/shared/entities/outrage.entity';
+import type { Outrage, OutrageShift } from '../entities';
+import { OutrageType } from '../entities';
 
 @Injectable()
 export class OutrageParserService {
@@ -43,9 +40,7 @@ export class OutrageParserService {
   }
 
   private parseType(message: string): OutrageType {
-    return message.toLowerCase().includes('зміни')
-      ? OutrageType.CHANGE
-      : OutrageType.SCHEDULE;
+    return message.toLowerCase().includes('зміни') ? OutrageType.CHANGE : OutrageType.SCHEDULE;
   }
 
   parseDate(message: string): Date | null {
@@ -64,9 +59,7 @@ export class OutrageParserService {
       if (textDate) {
         const [, day, month] = textDate;
         const monthStarts = Object.keys(this.UKRAINIAN_MONTH_MAP);
-        const monthIndex = monthStarts.findIndex((monthStart) =>
-          month.toLowerCase().startsWith(monthStart),
-        );
+        const monthIndex = monthStarts.findIndex((monthStart) => month.toLowerCase().startsWith(monthStart));
 
         if (monthIndex) {
           date = new Date(currentYear, monthIndex, +day);
@@ -86,9 +79,7 @@ export class OutrageParserService {
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
 
-    return rows
-      .map((row) => this.parseRow(row))
-      .filter((shift) => shift !== null) as OutrageShift[];
+    return rows.map((row) => this.parseRow(row)).filter((shift) => shift !== null);
   }
 
   parseRow(row: string): OutrageShift | null {

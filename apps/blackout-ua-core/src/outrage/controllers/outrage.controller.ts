@@ -1,14 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { OutrageParserService } from '@app/shared';
-import { Outrage } from '@app/shared';
+import { Outrage, OutrageParserService } from '@app/shared';
 
 import { OutrageDto, OutrageMessageDto } from '../dto/outrage.dto';
 import { ParseBoolPipe } from '../pipes/parse-bool.pipe';

@@ -1,16 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsDateString,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import { OutrageShift, OutrageType } from '@app/shared';
+import type { OutrageShift } from '@app/shared';
+import { OutrageType } from '@app/shared';
 
 import { outrageMock5Change2 } from '../mocks/outrage.mock';
 
@@ -53,9 +46,7 @@ export class OutrageDto {
 
   @ApiProperty({
     type: [CreateOutrageShiftDto],
-    example: [
-      { start: '10:00', end: '11:00', queues: [1, 2, 4] } as OutrageShift,
-    ],
+    example: [{ start: '10:00', end: '11:00', queues: [1, 2, 4] } as OutrageShift],
   })
   @IsOptional()
   @ValidateNested({ each: true })

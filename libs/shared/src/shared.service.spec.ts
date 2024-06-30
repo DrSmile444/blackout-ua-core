@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 
 import { SharedService } from './shared.service';
 
@@ -10,7 +11,7 @@ describe('SharedService', () => {
       providers: [SharedService],
     }).compile();
 
-    service = module.get<SharedService>(SharedService);
+    service = module.get(SharedService);
   });
 
   it('should be defined', () => {

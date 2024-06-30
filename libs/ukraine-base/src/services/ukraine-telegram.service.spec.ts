@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 
 import { UkraineTelegramService } from './ukraine-telegram.service';
 
@@ -10,7 +11,7 @@ describe('UkraineTelegramService', () => {
       providers: [UkraineTelegramService],
     }).compile();
 
-    service = module.get<UkraineTelegramService>(UkraineTelegramService);
+    service = module.get(UkraineTelegramService);
   });
 
   it('should be defined', () => {

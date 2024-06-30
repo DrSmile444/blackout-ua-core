@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 
 import {
   outrageMock5Change2,
@@ -26,44 +27,32 @@ describe('OutrageParserService', () => {
     });
 
     it('should return null if start time is not found', () => {
-      const result = outrageParserService.parseTime(
-        'Some random string 10:00–',
-      );
+      const result = outrageParserService.parseTime('Some random string 10:00–');
       expect(result).toBeNull();
     });
 
     it('should return null if end time is not found', () => {
-      const result = outrageParserService.parseTime(
-        'Some random string –10:00',
-      );
+      const result = outrageParserService.parseTime('Some random string –10:00');
       expect(result).toBeNull();
     });
 
     it('should return time period', () => {
-      const result = outrageParserService.parseTime(
-        'Some random string 10:00–12:00',
-      );
+      const result = outrageParserService.parseTime('Some random string 10:00–12:00');
       expect(result).toEqual(['10:00', '12:00']);
     });
 
     it('should return time period with spaces', () => {
-      const result = outrageParserService.parseTime(
-        'Some random string 10:00 – 12:00',
-      );
+      const result = outrageParserService.parseTime('Some random string 10:00 – 12:00');
       expect(result).toEqual(['10:00', '12:00']);
     });
 
     it('should return time period with dash', () => {
-      const result = outrageParserService.parseTime(
-        'Some random string 10:00 - 12:00',
-      );
+      const result = outrageParserService.parseTime('Some random string 10:00 - 12:00');
       expect(result).toEqual(['10:00', '12:00']);
     });
 
     it('should return time period with dash and spaces', () => {
-      const result = outrageParserService.parseTime(
-        'Some random string 10:00 - 12:00',
-      );
+      const result = outrageParserService.parseTime('Some random string 10:00 - 12:00');
       expect(result).toEqual(['10:00', '12:00']);
     });
 
@@ -91,30 +80,22 @@ describe('OutrageParserService', () => {
     });
 
     it('should return empty array if time period is found but no queues', () => {
-      const result = outrageParserService.parseQueue(
-        'Some random string 10:00–12:00',
-      );
+      const result = outrageParserService.parseQueue('Some random string 10:00–12:00');
       expect(result).toEqual([]);
     });
 
     it('should return queues', () => {
-      const result = outrageParserService.parseQueue(
-        'Some random string 10:00–12:00 1, 2, 3',
-      );
+      const result = outrageParserService.parseQueue('Some random string 10:00–12:00 1, 2, 3');
       expect(result).toEqual([1, 2, 3]);
     });
 
     it('should return 2 digit queues', () => {
-      const result = outrageParserService.parseQueue(
-        'Some random string 10:00–12:00 1, 2, 13',
-      );
+      const result = outrageParserService.parseQueue('Some random string 10:00–12:00 1, 2, 13');
       expect(result).toEqual([1, 2, 13]);
     });
 
     it('should return queues from real new mock', () => {
-      const result = outrageParserService.parseQueue(
-        '01:00-02:00 1 та 2 черги',
-      );
+      const result = outrageParserService.parseQueue('01:00-02:00 1 та 2 черги');
       expect(result).toEqual([1, 2]);
     });
 
@@ -131,16 +112,12 @@ describe('OutrageParserService', () => {
     });
 
     it('should return null if time period is found but no queues', () => {
-      const result = outrageParserService.parseRow(
-        'Some random string 10:00–12:00',
-      );
+      const result = outrageParserService.parseRow('Some random string 10:00–12:00');
       expect(result).toBeNull();
     });
 
     it('should return shift if time period and queues are found', () => {
-      const result = outrageParserService.parseRow(
-        'Some random string 10:00–12:00 1, 2, 3',
-      );
+      const result = outrageParserService.parseRow('Some random string 10:00–12:00 1, 2, 3');
       expect(result).toEqual({
         start: '10:00',
         end: '12:00',
@@ -149,9 +126,7 @@ describe('OutrageParserService', () => {
     });
 
     it('should return shift if time period and two digit queues are found', () => {
-      const result = outrageParserService.parseRow(
-        'Some random string 10:00–12:00 1, 2, 13',
-      );
+      const result = outrageParserService.parseRow('Some random string 10:00–12:00 1, 2, 13');
       expect(result).toEqual({
         start: '10:00',
         end: '12:00',
@@ -169,9 +144,7 @@ describe('OutrageParserService', () => {
     });
 
     it('should return shift from real new mock with multiple queues', () => {
-      const result = outrageParserService.parseRow(
-        '22:00-23:00  2, 3 та 4 черги',
-      );
+      const result = outrageParserService.parseRow('22:00-23:00  2, 3 та 4 черги');
       expect(result).toEqual({
         start: '22:00',
         end: '23:00',
@@ -201,9 +174,7 @@ describe('OutrageParserService', () => {
     });
 
     it('should return shifts', () => {
-      const result = outrageParserService.parseShifts(
-        'Some random string\n10:00–12:00 1, 2, 3\nSome random string',
-      );
+      const result = outrageParserService.parseShifts('Some random string\n10:00–12:00 1, 2, 3\nSome random string');
       expect(result).toEqual([
         {
           start: '10:00',

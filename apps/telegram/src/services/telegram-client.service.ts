@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { createInterface } from 'node:readline';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -14,25 +15,20 @@ export class TelegramClientService {
     private configService: ConfigService,
     private ukraineTelegramService: UkraineTelegramService,
   ) {
-    this.initClient().then(this.getHistory.bind(this));
+    this.initClient()
+      .then(() => this.getHistory())
+      .catch(console.error);
   }
 
   /**
    * Initialize the Telegram client
    */
   async initClient() {
-    const stringSession = new StringSession(
-      this.configService.get('PHONE_SESSION') || '',
-    );
+    const stringSession = new StringSession(this.configService.get('PHONE_SESSION') || '');
 
-    this.client = new TelegramClient(
-      stringSession,
-      +this.configService.get('API_ID'),
-      this.configService.get('API_HASH'),
-      {
-        connectionRetries: 5,
-      },
-    );
+    this.client = new TelegramClient(stringSession, +this.configService.get('API_ID'), this.configService.get('API_HASH'), {
+      connectionRetries: 5,
+    });
 
     const rl = createInterface({
       input: process.stdin,
@@ -42,25 +38,23 @@ export class TelegramClientService {
     await this.client.start({
       phoneNumber: this.configService.get('PHONE_NUMBER'),
       password: async () =>
-        new Promise((resolve) =>
-          rl.question('Please enter your password: ', resolve),
-        ),
+        new Promise((resolve) => {
+          rl.question('Please enter your password: ', resolve);
+        }),
       phoneCode: async () =>
-        new Promise((resolve) =>
-          rl.question('Please enter the code you received: ', resolve),
-        ),
-      onError: (error) => console.log(error),
+        new Promise((resolve) => {
+          rl.question('Please enter the code you received: ', resolve);
+        }),
+      onError: (error) => console.error(error),
     });
   }
 
   /**
    * Get the history of the channel
    */
-  async getHistory() {
-    for (const {
-      chatName,
-      convert,
-    } of this.ukraineTelegramService.getAllConfigs()) {
+  async getHistory(): Promise<void> {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const { chatName, convert } of this.ukraineTelegramService.getAllConfigs()) {
       // We need to perform a search to find the channel before asking history
       await this.client.invoke(
         new Api.contacts.Search({
@@ -82,7 +76,7 @@ export class TelegramClientService {
         .filter((message) => message.message)
         .forEach((message) => {
           const outrage = convert(message.message);
-          console.log('message:', outrage);
+          console.info('message:', outrage);
         });
     }
   }

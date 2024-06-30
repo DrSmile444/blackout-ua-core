@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 
-import { UkraineTelegramService } from '@ukraine/ukraine-base';
 import { UkraineCherkasyModule } from '@ukraine/ukraine-cherkasy';
+
+import { UkraineTelegramService } from './services';
 
 @Module({
   imports: [UkraineCherkasyModule],

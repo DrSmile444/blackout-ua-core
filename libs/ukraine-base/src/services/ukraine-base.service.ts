@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { CityMetadata } from '@ukraine/ukraine-base';
+import type { CityMetadata } from '@ukraine/ukraine-base';
 import { UkraineCherkasyService } from '@ukraine/ukraine-cherkasy';
 
 @Injectable()

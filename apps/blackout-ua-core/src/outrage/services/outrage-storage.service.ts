@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { Outrage } from '@app/shared';
+import type { Outrage } from '@app/shared';
 
 const storageKey = 'outrage';
 const regionKey = 'cherkasy';
@@ -41,9 +41,7 @@ export class OutrageStorageService {
     const outrages = this.getOutrages(date);
     return outrages.map((outrage) => ({
       ...outrage,
-      shifts: outrage.shifts.filter((shift) =>
-        coerceQueues.some((queue) => shift.queues.includes(queue)),
-      ),
+      shifts: outrage.shifts.filter((shift) => coerceQueues.some((queue) => shift.queues.includes(queue))),
     }));
   }
 

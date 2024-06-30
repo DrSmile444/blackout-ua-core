@@ -1,8 +1,9 @@
-import { Injectable, PipeTransform } from '@nestjs/common';
+import type { PipeTransform } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ParseDatePipe implements PipeTransform {
-  transform(value: any): Date | undefined {
+  transform(value: string): Date | undefined {
     if (value === undefined || value === null) {
       return undefined; // Allow the value to be optional
     }

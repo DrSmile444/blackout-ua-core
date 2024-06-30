@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import type { PipeTransform } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ParseBoolPipe implements PipeTransform<string, boolean> {
@@ -15,8 +16,6 @@ export class ParseBoolPipe implements PipeTransform<string, boolean> {
       return false;
     }
 
-    throw new BadRequestException(
-      `Validation failed. "${value}" is not a boolean.`,
-    );
+    throw new BadRequestException(`Validation failed. "${value}" is not a boolean.`);
   }
 }

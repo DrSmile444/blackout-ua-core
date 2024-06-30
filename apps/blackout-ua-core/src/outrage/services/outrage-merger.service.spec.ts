@@ -1,13 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 
-import { OutrageParserService } from '@app/shared';
-import { Outrage, OutrageType } from '@app/shared';
+import type { Outrage } from '@app/shared';
+import { OutrageParserService, OutrageType } from '@app/shared';
 
-import {
-  outrageMock3Origin,
-  outrageMock4Change,
-  outrageMock5Change2,
-} from '../mocks/outrage.mock';
+import { outrageMock3Origin, outrageMock4Change, outrageMock5Change2 } from '../mocks/outrage.mock';
 
 import { OutrageMergerService } from './outrage-merger.service';
 
@@ -105,16 +102,10 @@ describe('OutrageMergerService', () => {
 
     it('should should merge real outrages', () => {
       const outrage = outrageParserService.parseMessage(outrageMock3Origin);
-      const outrageChange =
-        outrageParserService.parseMessage(outrageMock4Change);
-      const outrageChange2 =
-        outrageParserService.parseMessage(outrageMock5Change2);
+      const outrageChange = outrageParserService.parseMessage(outrageMock4Change);
+      const outrageChange2 = outrageParserService.parseMessage(outrageMock5Change2);
 
-      const mergedOutrage = outrageMergerService.mergeOutrages([
-        outrage,
-        outrageChange,
-        outrageChange2,
-      ]);
+      const mergedOutrage = outrageMergerService.mergeOutrages([outrage, outrageChange, outrageChange2]);
 
       expect(mergedOutrage).toMatchSnapshot();
     });

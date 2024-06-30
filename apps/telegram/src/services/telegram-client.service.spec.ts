@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 
 import { TelegramClientService } from './telegram-client.service';
 
@@ -10,7 +11,7 @@ describe('TelegramClientService', () => {
       providers: [TelegramClientService],
     }).compile();
 
-    service = module.get<TelegramClientService>(TelegramClientService);
+    service = module.get(TelegramClientService);
   });
 
   it('should be defined', () => {

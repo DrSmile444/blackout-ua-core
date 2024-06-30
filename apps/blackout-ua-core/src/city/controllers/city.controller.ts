@@ -15,7 +15,7 @@ export class CityController {
     type: [CityMetadataDto],
     description: 'Returns a list of all cities and their metadata',
   })
-  async getAllMetadata() {
+  getAllMetadata() {
     return this.ukraineBaseService.getAllMetadata();
   }
 }
