@@ -10,6 +10,8 @@ import type { Outrage } from '@app/shared';
 export class UpdateService {
   private readonly telegramUpdateUrl: string;
 
+  private readonly scrapperUpdateUrl: string;
+
   private lastUpdateTime: Date | null = null;
 
   private readonly logger = new Logger(UpdateService.name);
@@ -19,12 +21,16 @@ export class UpdateService {
     private readonly configService: ConfigService,
   ) {
     this.telegramUpdateUrl = `${this.configService.get<string>('TELEGRAM_API_URL')}/update`;
+    this.scrapperUpdateUrl = `${this.configService.get<string>('SCRAPPER_API_URL')}/update`;
   }
 
   async triggerUpdate(): Promise<Outrage[]> {
-    const response = await firstValueFrom(this.httpService.post<Outrage[]>(this.telegramUpdateUrl));
+    const telegramResponse = await firstValueFrom(this.httpService.post<Outrage[]>(this.telegramUpdateUrl));
+    const scrapperResponse = await firstValueFrom(this.httpService.post<Outrage[]>(this.scrapperUpdateUrl));
+
+    const response = [...telegramResponse.data, ...scrapperResponse.data];
     this.lastUpdateTime = new Date();
-    return response.data;
+    return response;
   }
 
   getLastUpdateTime(): Date | null {
