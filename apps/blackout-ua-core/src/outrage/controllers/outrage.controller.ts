@@ -68,7 +68,7 @@ export class OutrageController {
     @Query('final', ParseBoolPipe) final?: boolean,
   ): Outrage | Outrage[] {
     const parsedDate = date || new Date();
-    const outrages = queues
+    const outrages = queues.length
       ? this.outrageStorageService.getOutragesByQueue(parsedDate, queues)
       : this.outrageStorageService.getOutrages(parsedDate);
 
