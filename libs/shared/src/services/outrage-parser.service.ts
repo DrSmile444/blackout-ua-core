@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Outrage, OutrageShift, OutrageType } from '../entities/outrage.entity';
+import {
+  Outrage,
+  OutrageShift,
+  OutrageType,
+} from '@app/shared/entities/outrage.entity';
 
 @Injectable()
 export class OutrageParserService {

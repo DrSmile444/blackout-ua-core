@@ -4,6 +4,7 @@ import {
   TelegramConfig,
   UkraineCityService,
 } from '@ukraine/ukraine-base';
+import { OutrageParserService } from '@app/shared';
 
 @Injectable()
 export class UkraineCherkasyService implements UkraineCityService {
@@ -14,6 +15,8 @@ export class UkraineCherkasyService implements UkraineCityService {
     queues: ['1', '2', '3', '4', '5', '6'],
   };
 
+  constructor(private outrageParserService: OutrageParserService) {}
+
   getMetadata(): CityMetadata {
     return this.metadata;
   }
@@ -22,7 +25,7 @@ export class UkraineCherkasyService implements UkraineCityService {
     return {
       chatName: 'ПАТ "Черкасиобленерго"',
       // TODO add converter here
-      convert: (message) => message.split('\n')[0] as any,
+      convert: (message) => this.outrageParserService.parseMessage(message),
     };
   }
 }

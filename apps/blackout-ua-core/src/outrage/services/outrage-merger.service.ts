@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Outrage } from '../entities/outrage.entity';
+import { Outrage } from '@app/shared';
 
 @Injectable()
 export class OutrageMergerService {

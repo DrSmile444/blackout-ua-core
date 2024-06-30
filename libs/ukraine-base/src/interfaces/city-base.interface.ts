@@ -1,4 +1,4 @@
-import { Outrage } from '../../../../apps/blackout-ua-core/src/outrage/entities/outrage.entity';
+import { Outrage } from '@app/shared';
 
 export interface CityMetadata {
   id: number;

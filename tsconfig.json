@@ -32,6 +32,12 @@
       ],
       "@ukraine/ukraine-base/*": [
         "libs/ukraine-base/src/*"
+      ],
+      "@app/shared": [
+        "libs/shared/src"
+      ],
+      "@app/shared/*": [
+        "libs/shared/src/*"
       ]
     }
   }

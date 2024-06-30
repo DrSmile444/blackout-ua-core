@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
+import { OutrageParserService } from '@app/shared';
+
 import { OutrageMergerService } from './outrage-merger.service';
-import { Outrage, OutrageType } from '../entities/outrage.entity';
-import { OutrageParserService } from './outrage-parser.service';
+import { Outrage, OutrageType } from '@app/shared';
 import {
   outrageMock3Origin,
   outrageMock4Change,

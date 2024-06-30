@@ -7,11 +7,11 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 
-import { OutrageParserService } from '../services/outrage-parser.service';
+import { OutrageParserService } from '@app/shared';
 import { OutrageStorageService } from '../services/outrage-storage.service';
 import { OutrageMergerService } from '../services/outrage-merger.service';
 import { OutrageDto, OutrageMessageDto } from '../dto/outrage.dto';
-import { Outrage } from '../entities/outrage.entity';
+import { Outrage } from '@app/shared';
 import { ParseNumberArrayPipe } from '../pipes/parse-number-array.pipe';
 import { ParseDatePipe } from '../pipes/parse-date.pipe';
 import { ParseBoolPipe } from '../pipes/parse-bool.pipe';

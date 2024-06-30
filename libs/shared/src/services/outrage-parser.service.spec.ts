@@ -4,7 +4,7 @@ import {
   outrageMock5Change2,
   outrageMock6Origin,
   outrageMock7ChangeOld,
-} from '../mocks/outrage.mock';
+} from '../../../../apps/blackout-ua-core/src/outrage/mocks/outrage.mock';
 
 describe('OutrageParserService', () => {
   let outrageParserService: OutrageParserService;
