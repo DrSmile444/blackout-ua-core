@@ -32,7 +32,12 @@ export class OutrageStorageService {
   async getOutrages(date: Date): Promise<Outrage[]> {
     const keys = await this.getOutragesKeys(date);
     const rawOutrages = await this.redis.mget(keys);
-    return rawOutrages.filter(Boolean).map((outrage) => JSON.parse(outrage) as Outrage);
+    return rawOutrages.filter(Boolean).map((outrageString) => this.parseOutrage(outrageString));
+  }
+
+  parseOutrage(outrageString: string): Outrage {
+    const outrageParsed = JSON.parse(outrageString) as Outrage;
+    return { ...outrageParsed, date: new Date(outrageParsed.date) };
   }
 
   async getOutragesByQueue(date: Date, queues: number | number[]): Promise<Outrage[]> {
