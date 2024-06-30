@@ -1,14 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { Outrage, OutrageParserService, OutrageRegion } from '@app/shared';
-import { OutrageStorageService } from '@app/shared/services/outrage-storage.service';
+import { Outrage, OutrageParserService, OutrageRegion, OutrageStorageService } from '@app/shared';
 
-import { OutrageDto, OutrageMessageDto } from '../dto/outrage.dto';
-import { ParseBoolPipe } from '../pipes/parse-bool.pipe';
-import { ParseDatePipe } from '../pipes/parse-date.pipe';
-import { ParseNumberArrayPipe } from '../pipes/parse-number-array.pipe';
-import { OutrageMergerService } from '../services/outrage-merger.service';
+import { OutrageDto, OutrageMessageDto } from '../dto';
+import { ParseBoolPipe, ParseDatePipe, ParseNumberArrayPipe, RequiredQueryParamPipe } from '../pipes';
+import { OutrageMergerService } from '../services';
 
 @ApiTags('outrage')
 @Controller('outrage')
@@ -63,7 +60,7 @@ export class OutrageController {
   })
   @ApiOperation({ summary: 'Returns a list of outrages' })
   async getOutrages(
-    @Query('region') region: OutrageRegion,
+    @Query('region', RequiredQueryParamPipe) region: OutrageRegion,
     @Query('date', ParseDatePipe) date?: Date,
     @Query('queues', ParseNumberArrayPipe) queues?: number[],
     @Query('final', ParseBoolPipe) final?: boolean,
