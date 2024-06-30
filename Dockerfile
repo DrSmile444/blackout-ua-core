@@ -13,6 +13,7 @@ RUN npm install
 # Copy the monorepo structure
 COPY . .
 
+# TODO add start from dist or remove it
 # Build the application (if needed)
 RUN npm run build
 
