@@ -10,6 +10,8 @@ import type { Outrage } from '@app/shared';
 export class UpdateService {
   private readonly telegramUpdateUrl: string;
 
+  private lastUpdateTime: Date | null = null;
+
   private readonly logger = new Logger(UpdateService.name);
 
   constructor(
@@ -21,7 +23,12 @@ export class UpdateService {
 
   async triggerUpdate(): Promise<Outrage[]> {
     const response = await firstValueFrom(this.httpService.post<Outrage[]>(this.telegramUpdateUrl));
+    this.lastUpdateTime = new Date();
     return response.data;
+  }
+
+  getLastUpdateTime(): Date | null {
+    return this.lastUpdateTime;
   }
 
   @Cron('0 */10 * * * *') // Every 10 minutes

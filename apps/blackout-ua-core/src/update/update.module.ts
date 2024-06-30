@@ -13,8 +13,8 @@ import { UpdateService } from './update.service';
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([
       {
-        ttl: 10 * 60 * 1000,
-        limit: 1,
+        ttl: 60_000,
+        limit: 1000,
       },
     ]),
     ConfigModule.forRoot({
@@ -30,5 +30,6 @@ import { UpdateService } from './update.service';
     },
     UpdateService,
   ],
+  exports: [UpdateService],
 })
 export class UpdateModule {}

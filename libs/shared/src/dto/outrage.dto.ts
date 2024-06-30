@@ -56,3 +56,19 @@ export class OutrageDto {
   @Type(() => CreateOutrageShiftDto)
   shifts: OutrageShift[];
 }
+
+export class OutrageResponseDto {
+  @ApiProperty({ example: new Date() })
+  @IsDateString()
+  @IsNotEmpty()
+  lastUpdate: Date;
+
+  @ApiProperty({ example: new Date() })
+  @IsDateString()
+  @IsNotEmpty()
+  accessDate: Date;
+
+  @ApiProperty({ type: [OutrageDto] })
+  @IsNotEmpty()
+  outrages: OutrageDto[];
+}

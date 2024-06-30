@@ -1,8 +1,17 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { Outrage, OutrageDto, OutrageMessageDto, OutrageParserService, OutrageRegion, OutrageStorageService } from '@app/shared';
+import {
+  Outrage,
+  OutrageDto,
+  OutrageMessageDto,
+  OutrageParserService,
+  OutrageRegion,
+  OutrageResponseDto,
+  OutrageStorageService,
+} from '@app/shared';
 
+import { UpdateService } from '../../update/update.service';
 import { ParseBoolPipe, ParseDatePipe, ParseNumberArrayPipe, RequiredQueryParamPipe, ValidRegionPipe } from '../pipes';
 import { OutrageMergerService } from '../services';
 
@@ -13,6 +22,7 @@ export class OutrageController {
     private readonly outrageParserService: OutrageParserService,
     private readonly outrageStorageService: OutrageStorageService,
     private readonly outrageMergerService: OutrageMergerService,
+    private readonly updateService: UpdateService,
   ) {}
 
   @Post('/')
@@ -54,7 +64,7 @@ export class OutrageController {
   })
   @ApiResponse({
     status: 200,
-    type: [OutrageDto],
+    type: OutrageResponseDto,
     description: 'Returns a list of outrages',
   })
   @ApiOperation({ summary: 'Returns a list of outrages' })
@@ -63,18 +73,22 @@ export class OutrageController {
     @Query('date', ParseDatePipe) date?: Date,
     @Query('queues', ParseNumberArrayPipe) queues?: number[],
     @Query('final', ParseBoolPipe) final?: boolean,
-  ): Promise<Outrage | Outrage[]> {
-    const parsedDate = date || new Date();
+  ): Promise<OutrageResponseDto> {
+    const accessDate = date || new Date();
     const outrages =
       queues.length > 0
-        ? await this.outrageStorageService.getOutragesByQueue(parsedDate, region, queues)
-        : await this.outrageStorageService.getOutrages(parsedDate, region);
+        ? await this.outrageStorageService.getOutragesByQueue(accessDate, region, queues)
+        : await this.outrageStorageService.getOutrages(accessDate, region);
 
     if (final) {
-      return this.outrageMergerService.mergeOutrages(outrages);
+      return {
+        lastUpdate: this.updateService.getLastUpdateTime(),
+        accessDate,
+        outrages: outrages.length > 0 ? [this.outrageMergerService.mergeOutrages(outrages)] : [],
+      };
     }
 
-    return outrages;
+    return { lastUpdate: this.updateService.getLastUpdateTime(), accessDate, outrages };
   }
 
   // TODO remove this endpoint
