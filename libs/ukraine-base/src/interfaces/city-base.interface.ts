@@ -1,3 +1,5 @@
+import type { CheerioAPI } from 'cheerio/lib/load';
+
 import type { Outrage, OutrageRegion } from '@app/shared';
 
 export interface CityMetadata {
@@ -12,8 +14,15 @@ export interface TelegramConfig {
   convert: (message: string) => Outrage;
 }
 
+export interface ScrapperConfig {
+  url: string;
+  parser: (pageApi: CheerioAPI) => Outrage;
+}
+
 export abstract class UkraineCityService {
   abstract getMetadata(): CityMetadata;
 
   abstract getTelegramConfig?(): TelegramConfig;
+
+  abstract getScrapperConfig?(): ScrapperConfig;
 }

@@ -42,6 +42,11 @@ export class OutrageDto {
   @IsNotEmpty()
   date: Date;
 
+  @ApiProperty({ enum: OutrageRegion, example: OutrageRegion.CHERKASY })
+  @IsEnum(OutrageRegion)
+  @IsNotEmpty()
+  region: OutrageRegion;
+
   // we need to add optional changeCount
   @ApiProperty({ example: 0 })
   @IsOptional()
@@ -49,7 +54,7 @@ export class OutrageDto {
 
   @ApiProperty({
     type: [CreateOutrageShiftDto],
-    example: [{ start: '10:00', end: '11:00', queues: [1, 2, 4] } as OutrageShift],
+    example: [{ start: '10:00', end: '11:00', queues: ['1', '2', '4'] } as OutrageShift],
   })
   @IsOptional()
   @ValidateNested({ each: true })

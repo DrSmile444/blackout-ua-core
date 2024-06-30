@@ -12,6 +12,7 @@
     "start:dev": "nest start --watch",
     "start:telegram": "nest start telegram",
     "start:telegram:dev": "nest start telegram --watch",
+    "start:scrapper:dev": "nest start scrapper --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/blackout-ua-core/main",
     "lint": "TIMING=1 eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -32,6 +33,7 @@
     "@nestjs/swagger": "^7.3.1",
     "@nestjs/throttler": "^5.2.0",
     "axios": "^1.7.2",
+    "cheerio": "^1.0.0-rc.12",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.5",
@@ -92,7 +94,8 @@
     "moduleNameMapper": {
       "^@ukraine/ukraine-cherkasy(|/.*)$": "<rootDir>/libs/ukraine-cherkasy/src/$1",
       "^@ukraine/ukraine-base(|/.*)$": "<rootDir>/libs/ukraine-base/src/$1",
-      "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
+      "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1",
+      "^@ukraine/ukraine-chernivtsi(|/.*)$": "<rootDir>/libs/ukraine-chernivtsi/src/$1"
     }
   }
 }

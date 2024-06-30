@@ -38,6 +38,12 @@
       ],
       "@app/shared/*": [
         "libs/shared/src/*"
+      ],
+      "@ukraine/ukraine-chernivtsi": [
+        "libs/ukraine-chernivtsi/src"
+      ],
+      "@ukraine/ukraine-chernivtsi/*": [
+        "libs/ukraine-chernivtsi/src/*"
       ]
     }
   }

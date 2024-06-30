@@ -12,7 +12,7 @@ import {
 } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
-import { ParseBoolPipe, ParseDatePipe, ParseNumberArrayPipe, RequiredQueryParamPipe, ValidRegionPipe } from '../pipes';
+import { ParseBoolPipe, ParseDatePipe, ParseStringArrayPipe, RequiredQueryParamPipe, ValidRegionPipe } from '../pipes';
 import { OutrageMergerService } from '../services';
 
 @ApiTags('outrage')
@@ -71,7 +71,7 @@ export class OutrageController {
   async getOutrages(
     @Query('region', RequiredQueryParamPipe, ValidRegionPipe) region: OutrageRegion,
     @Query('date', ParseDatePipe) date?: Date,
-    @Query('queues', ParseNumberArrayPipe) queues?: number[],
+    @Query('queues', ParseStringArrayPipe) queues?: string[],
     @Query('final', ParseBoolPipe) final?: boolean,
   ): Promise<OutrageResponseDto> {
     const accessDate = date || new Date();

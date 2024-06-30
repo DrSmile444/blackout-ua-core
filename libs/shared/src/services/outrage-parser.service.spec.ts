@@ -83,22 +83,22 @@ describe('OutrageParserService', () => {
 
     it('should return queues', () => {
       const result = outrageParserService.parseQueue('Some random string 10:00–12:00 1, 2, 3');
-      expect(result).toEqual([1, 2, 3]);
+      expect(result).toEqual(['1', '2', '3']);
     });
 
     it('should return 2 digit queues', () => {
       const result = outrageParserService.parseQueue('Some random string 10:00–12:00 1, 2, 13');
-      expect(result).toEqual([1, 2, 13]);
+      expect(result).toEqual(['1', '2', '13']);
     });
 
     it('should return queues from real new mock', () => {
       const result = outrageParserService.parseQueue('01:00-02:00 1 та 2 черги');
-      expect(result).toEqual([1, 2]);
+      expect(result).toEqual(['1', '2']);
     });
 
     it('should return queues from real old mock', () => {
       const result = outrageParserService.parseQueue('➡️ 17:00 – 18:00 – 3');
-      expect(result).toEqual([3]);
+      expect(result).toEqual(['3']);
     });
   });
 
@@ -118,7 +118,7 @@ describe('OutrageParserService', () => {
       expect(result).toEqual({
         start: '10:00',
         end: '12:00',
-        queues: [1, 2, 3],
+        queues: ['1', '2', '3'],
       });
     });
 
@@ -127,7 +127,7 @@ describe('OutrageParserService', () => {
       expect(result).toEqual({
         start: '10:00',
         end: '12:00',
-        queues: [1, 2, 13],
+        queues: ['1', '2', '13'],
       });
     });
 
@@ -136,7 +136,7 @@ describe('OutrageParserService', () => {
       expect(result).toEqual({
         start: '01:00',
         end: '02:00',
-        queues: [1, 2],
+        queues: ['1', '2'],
       });
     });
 
@@ -145,7 +145,7 @@ describe('OutrageParserService', () => {
       expect(result).toEqual({
         start: '22:00',
         end: '23:00',
-        queues: [2, 3, 4],
+        queues: ['2', '3', '4'],
       });
     });
 
@@ -154,7 +154,7 @@ describe('OutrageParserService', () => {
       expect(result).toEqual({
         start: '17:00',
         end: '18:00',
-        queues: [3],
+        queues: ['3'],
       });
     });
   });
@@ -176,7 +176,7 @@ describe('OutrageParserService', () => {
         {
           start: '10:00',
           end: '12:00',
-          queues: [1, 2, 3],
+          queues: ['1', '2', '3'],
         },
       ]);
     });

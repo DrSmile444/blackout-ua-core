@@ -5,6 +5,7 @@ export enum OutrageType {
 
 export enum OutrageRegion {
   CHERKASY = 'cherkasy',
+  CHERNIVTSI = 'chernivtsi',
 }
 
 export class OutrageShift {
@@ -12,7 +13,7 @@ export class OutrageShift {
 
   end: string;
 
-  queues: number[];
+  queues: string[];
 }
 
 export class Outrage {

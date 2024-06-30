@@ -33,8 +33,8 @@ describe('OutrageMergerService', () => {
         type: OutrageType.SCHEDULE,
         region: OutrageRegion.CHERKASY,
         shifts: [
-          { start: '10:00', end: '12:00', queues: [1, 2] },
-          { start: '12:00', end: '14:00', queues: [3, 4] },
+          { start: '10:00', end: '12:00', queues: ['1', '2'] },
+          { start: '12:00', end: '14:00', queues: ['3', '4'] },
         ],
       };
 
@@ -44,8 +44,8 @@ describe('OutrageMergerService', () => {
         region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
-          { start: '12:00', end: '14:00', queues: [1, 2] },
-          { start: '18:00', end: '20:00', queues: [3, 4] },
+          { start: '12:00', end: '14:00', queues: ['1', '2'] },
+          { start: '18:00', end: '20:00', queues: ['3', '4'] },
         ],
       };
 
@@ -55,9 +55,9 @@ describe('OutrageMergerService', () => {
         region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
-          { start: '10:00', end: '12:00', queues: [1, 2] },
-          { start: '12:00', end: '14:00', queues: [1, 2] },
-          { start: '18:00', end: '20:00', queues: [3, 4] },
+          { start: '10:00', end: '12:00', queues: ['1', '2'] },
+          { start: '12:00', end: '14:00', queues: ['1', '2'] },
+          { start: '18:00', end: '20:00', queues: ['3', '4'] },
         ],
       };
 
@@ -71,8 +71,8 @@ describe('OutrageMergerService', () => {
         type: OutrageType.SCHEDULE,
         region: OutrageRegion.CHERKASY,
         shifts: [
-          { start: '10:00', end: '12:00', queues: [1, 2] },
-          { start: '12:00', end: '14:00', queues: [3, 4] },
+          { start: '10:00', end: '12:00', queues: ['1', '2'] },
+          { start: '12:00', end: '14:00', queues: ['3', '4'] },
         ],
       };
 
@@ -82,8 +82,8 @@ describe('OutrageMergerService', () => {
         region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
-          { start: '13:00', end: '14:00', queues: [1, 2] },
-          { start: '18:00', end: '20:00', queues: [3, 4] },
+          { start: '13:00', end: '14:00', queues: ['1', '2'] },
+          { start: '18:00', end: '20:00', queues: ['3', '4'] },
         ],
       };
 
@@ -93,10 +93,10 @@ describe('OutrageMergerService', () => {
         region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
-          { start: '10:00', end: '12:00', queues: [1, 2] },
-          { start: '12:00', end: '13:00', queues: [3, 4] },
-          { start: '13:00', end: '14:00', queues: [1, 2] },
-          { start: '18:00', end: '20:00', queues: [3, 4] },
+          { start: '10:00', end: '12:00', queues: ['1', '2'] },
+          { start: '12:00', end: '13:00', queues: ['3', '4'] },
+          { start: '13:00', end: '14:00', queues: ['1', '2'] },
+          { start: '18:00', end: '20:00', queues: ['3', '4'] },
         ],
       };
 

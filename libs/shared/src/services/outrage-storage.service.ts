@@ -72,7 +72,7 @@ export class OutrageStorageService {
     return { ...outrageParsed, date: new Date(outrageParsed.date) };
   }
 
-  async getOutragesByQueue(date: Date, region: OutrageRegion, queues: number | number[]): Promise<Outrage[]> {
+  async getOutragesByQueue(date: Date, region: OutrageRegion, queues: string | string[]): Promise<Outrage[]> {
     const coerceQueues = Array.isArray(queues) ? queues : [queues];
     const outrages = await this.getOutrages(date, region);
     return outrages.map((outrage) => ({

@@ -54,6 +54,24 @@
       "compilerOptions": {
         "tsConfigPath": "libs/shared/tsconfig.lib.json"
       }
+    },
+    "ukraine-chernivtsi": {
+      "type": "library",
+      "root": "libs/ukraine-chernivtsi",
+      "entryFile": "index",
+      "sourceRoot": "libs/ukraine-chernivtsi/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/ukraine-chernivtsi/tsconfig.lib.json"
+      }
+    },
+    "scrapper": {
+      "type": "application",
+      "root": "apps/scrapper",
+      "entryFile": "main",
+      "sourceRoot": "apps/scrapper/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/scrapper/tsconfig.app.json"
+      }
     }
   }
 }

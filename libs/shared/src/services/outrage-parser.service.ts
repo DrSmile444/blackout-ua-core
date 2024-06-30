@@ -40,7 +40,7 @@ export class OutrageParserService {
     };
   }
 
-  private parseType(message: string): OutrageType {
+  parseType(message: string): OutrageType {
     return message.toLowerCase().includes('зміни') ? OutrageType.CHANGE : OutrageType.SCHEDULE;
   }
 
@@ -114,7 +114,7 @@ export class OutrageParserService {
     return [start, end];
   }
 
-  parseQueue(row: string): number[] {
+  parseQueue(row: string): string[] {
     const timePeriod = this.REGEX.timePeriod.exec(row)?.[0];
 
     if (!timePeriod) {
@@ -122,8 +122,6 @@ export class OutrageParserService {
     }
 
     const clearRow = row.replace(timePeriod, '').trim();
-    const queues = clearRow.match(this.REGEX.queue) || [];
-
-    return queues.map((queue: string) => Number.parseInt(queue, 10));
+    return clearRow.match(this.REGEX.queue) || [];
   }
 }

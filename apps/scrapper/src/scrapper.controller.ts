@@ -3,12 +3,12 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { OutrageDto } from '@app/shared';
 
-import { TelegramClientService } from './services';
+import { ScrapperService } from './scrapper.service';
 
 @ApiTags('update')
 @Controller()
-export class TelegramController {
-  constructor(private readonly telegramClientService: TelegramClientService) {}
+export class ScrapperController {
+  constructor(private readonly scrapperService: ScrapperService) {}
 
   @Post('/update')
   @ApiOperation({ summary: 'Parses all messages from all regions and save in storage' })
@@ -18,6 +18,6 @@ export class TelegramController {
     description: 'Parses all messages from all regions and save in storage',
   })
   update() {
-    return this.telegramClientService.getHistory();
+    return this.scrapperService.scrapeOutrages();
   }
 }

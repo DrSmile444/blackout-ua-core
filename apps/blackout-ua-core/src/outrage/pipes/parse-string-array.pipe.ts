@@ -4,12 +4,12 @@ import { Injectable } from '@nestjs/common';
 import { coerceArray } from '@app/shared';
 
 @Injectable()
-export class ParseNumberArrayPipe implements PipeTransform {
-  transform(value: string | string[]): number[] {
+export class ParseStringArrayPipe implements PipeTransform {
+  transform(value: string | string[]): string[] {
     if (!value) {
       return [];
     }
 
-    return coerceArray(value).flatMap((value_) => value_.split(',').map(Number));
+    return coerceArray(value).flatMap((value_) => value_.split(','));
   }
 }
