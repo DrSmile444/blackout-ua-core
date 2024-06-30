@@ -2,9 +2,7 @@ import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 
 import type { Outrage } from '@app/shared';
-import { OutrageParserService, OutrageType } from '@app/shared';
-
-import { outrageMock3Origin, outrageMock4Change, outrageMock5Change2 } from '../mocks/outrage.mock';
+import { outrageMock3Origin, outrageMock4Change, outrageMock5Change2, OutrageParserService, OutrageRegion, OutrageType } from '@app/shared';
 
 import { OutrageMergerService } from './outrage-merger.service';
 
@@ -33,6 +31,7 @@ describe('OutrageMergerService', () => {
       const outrage1: Outrage = {
         date: new Date('2024-06-25'),
         type: OutrageType.SCHEDULE,
+        region: OutrageRegion.CHERKASY,
         shifts: [
           { start: '10:00', end: '12:00', queues: [1, 2] },
           { start: '12:00', end: '14:00', queues: [3, 4] },
@@ -42,6 +41,7 @@ describe('OutrageMergerService', () => {
       const outrage2: Outrage = {
         date: new Date('2024-06-25'),
         type: OutrageType.CHANGE,
+        region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
           { start: '12:00', end: '14:00', queues: [1, 2] },
@@ -52,6 +52,7 @@ describe('OutrageMergerService', () => {
       const expected: Outrage = {
         date: new Date('2024-06-25'),
         type: OutrageType.CHANGE,
+        region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
           { start: '10:00', end: '12:00', queues: [1, 2] },
@@ -68,6 +69,7 @@ describe('OutrageMergerService', () => {
       const outrage1: Outrage = {
         date: new Date('2024-06-25'),
         type: OutrageType.SCHEDULE,
+        region: OutrageRegion.CHERKASY,
         shifts: [
           { start: '10:00', end: '12:00', queues: [1, 2] },
           { start: '12:00', end: '14:00', queues: [3, 4] },
@@ -77,6 +79,7 @@ describe('OutrageMergerService', () => {
       const outrage2: Outrage = {
         date: new Date('2024-06-25'),
         type: OutrageType.CHANGE,
+        region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
           { start: '13:00', end: '14:00', queues: [1, 2] },
@@ -87,6 +90,7 @@ describe('OutrageMergerService', () => {
       const expected: Outrage = {
         date: new Date('2024-06-25'),
         type: OutrageType.CHANGE,
+        region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
           { start: '10:00', end: '12:00', queues: [1, 2] },
@@ -101,9 +105,9 @@ describe('OutrageMergerService', () => {
     });
 
     it('should should merge real outrages', () => {
-      const outrage = outrageParserService.parseMessage(outrageMock3Origin);
-      const outrageChange = outrageParserService.parseMessage(outrageMock4Change);
-      const outrageChange2 = outrageParserService.parseMessage(outrageMock5Change2);
+      const outrage = outrageParserService.parseMessage(outrageMock3Origin, OutrageRegion.CHERKASY);
+      const outrageChange = outrageParserService.parseMessage(outrageMock4Change, OutrageRegion.CHERKASY);
+      const outrageChange2 = outrageParserService.parseMessage(outrageMock5Change2, OutrageRegion.CHERKASY);
 
       const mergedOutrage = outrageMergerService.mergeOutrages([outrage, outrageChange, outrageChange2]);
 

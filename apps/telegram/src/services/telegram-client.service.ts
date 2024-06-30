@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 
+import type { Outrage } from '@app/shared';
 import { OutrageStorageService } from '@app/shared';
 
 import { UkraineTelegramService } from '@ukraine/ukraine-base';
@@ -55,7 +56,9 @@ export class TelegramClientService {
   /**
    * Get the history of the channel
    */
-  async getHistory(): Promise<void> {
+  async getHistory(): Promise<Outrage[]> {
+    let updatedOutrages: Outrage[] = [];
+
     // eslint-disable-next-line no-restricted-syntax
     for (const config of this.ukraineTelegramService.getAllConfigs()) {
       const { convert, chatName } = config.telegramConfig;
@@ -85,9 +88,13 @@ export class TelegramClientService {
         .filter(Boolean)
         .reverse();
 
-      const updatedOutrages = await this.outrageStorageService.bulkSaveOutrages(newOutrages);
+      const newUpdatedOutrages = await this.outrageStorageService.bulkSaveOutrages(newOutrages);
 
-      console.info('updatedOutrages', updatedOutrages);
+      updatedOutrages = [...updatedOutrages, ...newUpdatedOutrages];
     }
+
+    console.info('updatedOutrages', updatedOutrages);
+
+    return updatedOutrages;
   }
 }

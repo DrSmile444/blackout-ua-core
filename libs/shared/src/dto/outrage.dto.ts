@@ -3,9 +3,9 @@ import { Type } from 'class-transformer';
 import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import type { OutrageShift } from '@app/shared';
-import { OutrageRegion, OutrageType } from '@app/shared';
 
-import { outrageMock5Change2 } from '../mocks/outrage.mock';
+import { OutrageRegion, OutrageType } from '../entities';
+import { outrageMock5Change2 } from '../mocks';
 
 export class CreateOutrageShiftDto {
   @ApiProperty({ example: '10:00' })

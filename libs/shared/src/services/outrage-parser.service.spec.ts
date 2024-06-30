@@ -1,11 +1,8 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 
-import {
-  outrageMock5Change2,
-  outrageMock6Origin,
-  outrageMock7ChangeOld,
-} from '../../../../apps/blackout-ua-core/src/outrage/mocks/outrage.mock';
+import { OutrageRegion } from '../entities';
+import { outrageMock5Change2, outrageMock6Origin, outrageMock7ChangeOld } from '../mocks';
 
 import { OutrageParserService } from './outrage-parser.service';
 
@@ -224,12 +221,12 @@ describe('OutrageParserService', () => {
 
   describe('parseMessage', () => {
     it('should return parsed message', () => {
-      const result = outrageParserService.parseMessage(outrageMock6Origin);
+      const result = outrageParserService.parseMessage(outrageMock6Origin, OutrageRegion.CHERKASY);
       expect(result).toMatchSnapshot();
     });
 
     it('should return parsed message from real old mock', () => {
-      const result = outrageParserService.parseMessage(outrageMock7ChangeOld);
+      const result = outrageParserService.parseMessage(outrageMock7ChangeOld, OutrageRegion.CHERKASY);
       expect(result).toMatchSnapshot();
     });
   });
