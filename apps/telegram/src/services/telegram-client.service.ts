@@ -5,6 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 
+import { OutrageStorageService } from '@app/shared';
+
 import { UkraineTelegramService } from '@ukraine/ukraine-base';
 
 @Injectable()
@@ -12,6 +14,7 @@ export class TelegramClientService {
   client: TelegramClient;
 
   constructor(
+    private outrageStorageService: OutrageStorageService,
     private configService: ConfigService,
     private ukraineTelegramService: UkraineTelegramService,
   ) {
@@ -72,12 +75,18 @@ export class TelegramClientService {
 
       const messages = channelMessages.messages as Api.Message[];
 
-      messages
+      const newOutrages = messages
         .filter((message) => message.message)
-        .forEach((message) => {
+        .map((message) => {
           const outrage = convert(message.message);
-          console.info('message:', outrage);
-        });
+          return outrage.shifts.length > 0 ? outrage : null;
+        })
+        .filter(Boolean)
+        .reverse();
+
+      const updatedOutrages = await this.outrageStorageService.bulkSaveOutrages(newOutrages);
+
+      console.info('updatedOutrages', updatedOutrages);
     }
   }
 }

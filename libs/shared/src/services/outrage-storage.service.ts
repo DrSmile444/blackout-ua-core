@@ -22,6 +22,7 @@ export class OutrageStorageService {
     );
 
     if (createdOutrage) {
+      console.info('Skipping outrage creation, already exists');
       return createdOutrage;
     }
 
@@ -34,6 +35,27 @@ export class OutrageStorageService {
     return newOutrage;
   }
 
+  async bulkSaveOutrages(outrages: Outrage[]): Promise<Outrage[]> {
+    const newOutrages: Outrage[] = [];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const outrage of outrages) {
+      // eslint-disable-next-line no-await-in-loop
+      const previousOutrages = await this.getOutrages(outrage.date);
+      const createdOutrage = previousOutrages.find((previousOutrage) =>
+        deepEqual({ ...previousOutrage, changeCount: 0 }, { ...outrage, changeCount: 0 }),
+      );
+
+      if (!createdOutrage) {
+        // eslint-disable-next-line no-await-in-loop
+        const savedOutrage = await this.saveOutrage(outrage);
+        newOutrages.push(savedOutrage);
+      }
+    }
+
+    return newOutrages;
+  }
+
   async getOutragesKeys(date: Date): Promise<string[]> {
     const baseKey = this.getBaseKey(date);
     const currentOutrages = await this.redis.get(baseKey);
@@ -42,7 +64,7 @@ export class OutrageStorageService {
 
   async getOutrages(date: Date): Promise<Outrage[]> {
     const keys = await this.getOutragesKeys(date);
-    const rawOutrages = await this.redis.mget(keys);
+    const rawOutrages = keys.length > 0 ? await this.redis.mget(keys) : [];
     return rawOutrages.filter(Boolean).map((outrageString) => this.parseOutrage(outrageString));
   }
 
