@@ -2,13 +2,13 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Outrage, OutrageParserService } from '@app/shared';
+import { OutrageStorageService } from '@app/shared/services/outrage-storage.service';
 
 import { OutrageDto, OutrageMessageDto } from '../dto/outrage.dto';
 import { ParseBoolPipe } from '../pipes/parse-bool.pipe';
 import { ParseDatePipe } from '../pipes/parse-date.pipe';
 import { ParseNumberArrayPipe } from '../pipes/parse-number-array.pipe';
 import { OutrageMergerService } from '../services/outrage-merger.service';
-import { OutrageStorageService } from '../services/outrage-storage.service';
 
 @ApiTags('outrage')
 @Controller('outrage')
