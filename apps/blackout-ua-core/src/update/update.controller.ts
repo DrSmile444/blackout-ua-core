@@ -10,7 +10,7 @@ import { UpdateService } from './update.service';
 export class UpdateController {
   constructor(private readonly updateService: UpdateService) {}
 
-  @Post('/update')
+  @Post('/')
   @ApiOperation({ summary: 'Triggers telegram to parse all messages from all regions and save in storage' })
   @ApiResponse({
     status: 200,
