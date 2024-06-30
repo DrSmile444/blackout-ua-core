@@ -12,6 +12,7 @@
     "start:dev": "nest start --watch",
     "start:telegram": "nest start telegram",
     "start:telegram:dev": "nest start telegram --watch",
+    "start:scrapper": "nest start scrapper",
     "start:scrapper:dev": "nest start scrapper --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/blackout-ua-core/main",

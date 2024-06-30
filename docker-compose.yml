@@ -27,6 +27,19 @@ services:
     networks:
       - app-network
 
+  scrapper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /usr/src/app/app/scrapper
+    command: [ "npm", "run", "start:scrapper" ]
+    ports:
+      - "3002:3002"
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
   redis:
     image: redis:alpine
     ports:
