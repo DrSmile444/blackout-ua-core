@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import type { Outrage, OutrageShift } from '../entities';
+import type { Outrage, OutrageRegion, OutrageShift } from '../entities';
 import { OutrageType } from '../entities';
 
 @Injectable()
@@ -27,13 +27,14 @@ export class OutrageParserService {
     timePeriod: /\d{2}:\d{2} ?[–-]? ?\d{2}:\d{2}/,
   };
 
-  parseMessage(message: string): Outrage {
+  parseMessage(message: string, region: OutrageRegion): Outrage {
     const type = this.parseType(message);
     const date = this.parseDate(message);
     const shifts = this.parseShifts(message);
 
     return {
       type,
+      region,
       date: date || new Date(),
       shifts,
     };

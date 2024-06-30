@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { Outrage, OutrageParserService } from '@app/shared';
+import { Outrage, OutrageParserService, OutrageRegion } from '@app/shared';
 import { OutrageStorageService } from '@app/shared/services/outrage-storage.service';
 
 import { OutrageDto, OutrageMessageDto } from '../dto/outrage.dto';
@@ -28,11 +28,17 @@ export class OutrageController {
     description: 'Create a new outrage from a message',
   })
   saveOutrage(@Body() body: OutrageMessageDto): Promise<Outrage> {
-    const parsedMessage = this.outrageParserService.parseMessage(body.message);
+    const parsedMessage = this.outrageParserService.parseMessage(body.message, body.region);
     return this.outrageStorageService.saveOutrage(parsedMessage);
   }
 
   @Get('/')
+  @ApiQuery({
+    name: 'region',
+    enum: OutrageRegion,
+    description: 'Region key to filter outrages by',
+    required: true,
+  })
   @ApiQuery({
     name: 'date',
     example: '2024-06-25',
@@ -57,6 +63,7 @@ export class OutrageController {
   })
   @ApiOperation({ summary: 'Returns a list of outrages' })
   async getOutrages(
+    @Query('region') region: OutrageRegion,
     @Query('date', ParseDatePipe) date?: Date,
     @Query('queues', ParseNumberArrayPipe) queues?: number[],
     @Query('final', ParseBoolPipe) final?: boolean,
@@ -64,8 +71,8 @@ export class OutrageController {
     const parsedDate = date || new Date();
     const outrages =
       queues.length > 0
-        ? await this.outrageStorageService.getOutragesByQueue(parsedDate, queues)
-        : await this.outrageStorageService.getOutrages(parsedDate);
+        ? await this.outrageStorageService.getOutragesByQueue(parsedDate, region, queues)
+        : await this.outrageStorageService.getOutrages(parsedDate, region);
 
     if (final) {
       return this.outrageMergerService.mergeOutrages(outrages);
@@ -74,12 +81,13 @@ export class OutrageController {
     return outrages;
   }
 
+  // TODO remove this endpoint
   @Post('/test')
   @ApiBody({ type: OutrageMessageDto })
   @ApiResponse({ status: 200, type: OutrageDto })
   @ApiOperation({ summary: 'Test how parsing logic works' })
   process(@Body() body: OutrageMessageDto): Outrage {
-    return this.outrageParserService.parseMessage(body.message);
+    return this.outrageParserService.parseMessage(body.message, OutrageRegion.CHERKASY);
   }
 
   @Get('/storage')

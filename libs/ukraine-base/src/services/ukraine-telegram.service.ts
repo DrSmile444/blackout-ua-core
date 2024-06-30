@@ -7,6 +7,7 @@ export class UkraineTelegramService {
   constructor(private ukraineCherkasyService: UkraineCherkasyService) {}
 
   getAllConfigs() {
-    return [this.ukraineCherkasyService.getTelegramConfig()];
+    const regions = [this.ukraineCherkasyService];
+    return regions.map((region) => ({ metadata: region.getMetadata(), telegramConfig: region.getTelegramConfig() }));
   }
 }

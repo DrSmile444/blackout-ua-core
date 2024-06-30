@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { OutrageParserService } from '@app/shared';
+import { OutrageParserService, OutrageRegion } from '@app/shared';
 
 import type { CityMetadata, TelegramConfig, UkraineCityService } from '@ukraine/ukraine-base';
 
@@ -9,7 +9,7 @@ export class UkraineCherkasyService implements UkraineCityService {
   private metadata: CityMetadata = {
     id: 1,
     name: 'Черкаси',
-    key: 'cherkasy',
+    key: OutrageRegion.CHERKASY,
     queues: ['1', '2', '3', '4', '5', '6'],
   };
 
@@ -22,8 +22,7 @@ export class UkraineCherkasyService implements UkraineCityService {
   getTelegramConfig(): TelegramConfig {
     return {
       chatName: 'ПАТ "Черкасиобленерго"',
-      // TODO add converter here
-      convert: (message) => this.outrageParserService.parseMessage(message),
+      convert: (message) => this.outrageParserService.parseMessage(message, this.metadata.key),
     };
   }
 }

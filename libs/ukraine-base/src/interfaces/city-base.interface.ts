@@ -1,9 +1,9 @@
-import type { Outrage } from '@app/shared';
+import type { Outrage, OutrageRegion } from '@app/shared';
 
 export interface CityMetadata {
   id: number;
   name: string;
-  key: string;
+  key: OutrageRegion;
   queues: string[];
 }
 

@@ -3,6 +3,10 @@ export enum OutrageType {
   CHANGE = 'change',
 }
 
+export enum OutrageRegion {
+  CHERKASY = 'cherkasy',
+}
+
 export class OutrageShift {
   start: string;
 
@@ -13,6 +17,8 @@ export class OutrageShift {
 
 export class Outrage {
   type: OutrageType;
+
+  region: OutrageRegion;
 
   date: Date;
 

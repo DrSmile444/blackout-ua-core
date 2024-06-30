@@ -57,7 +57,8 @@ export class TelegramClientService {
    */
   async getHistory(): Promise<void> {
     // eslint-disable-next-line no-restricted-syntax
-    for (const { chatName, convert } of this.ukraineTelegramService.getAllConfigs()) {
+    for (const config of this.ukraineTelegramService.getAllConfigs()) {
+      const { convert, chatName } = config.telegramConfig;
       // We need to perform a search to find the channel before asking history
       await this.client.invoke(
         new Api.contacts.Search({

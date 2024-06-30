@@ -3,20 +3,19 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import * as deepEqual from 'fast-deep-equal';
 import Redis from 'ioredis';
 
-import type { Outrage } from '@app/shared';
+import type { Outrage, OutrageRegion } from '@app/shared';
 
 const storageKey = 'outrage';
-const regionKey = 'cherkasy';
 
 @Injectable()
 export class OutrageStorageService {
   constructor(@InjectRedis() private readonly redis: Redis) {}
 
   async saveOutrage(outrage: Outrage): Promise<Outrage> {
-    const baseKey = this.getBaseKey(outrage.date);
-    const currentOutrages = await this.getOutragesKeys(outrage.date);
+    const baseKey = this.getBaseKey(outrage.date, outrage.region);
+    const currentOutrages = await this.getOutragesKeys(outrage.date, outrage.region);
 
-    const previousOutrages = await this.getOutrages(outrage.date);
+    const previousOutrages = await this.getOutrages(outrage.date, outrage.region);
     const createdOutrage = previousOutrages.find((previousOutrage) =>
       deepEqual({ ...previousOutrage, changeCount: 0 }, { ...outrage, changeCount: 0 }),
     );
@@ -41,7 +40,7 @@ export class OutrageStorageService {
     // eslint-disable-next-line no-restricted-syntax
     for (const outrage of outrages) {
       // eslint-disable-next-line no-await-in-loop
-      const previousOutrages = await this.getOutrages(outrage.date);
+      const previousOutrages = await this.getOutrages(outrage.date, outrage.region);
       const createdOutrage = previousOutrages.find((previousOutrage) =>
         deepEqual({ ...previousOutrage, changeCount: 0 }, { ...outrage, changeCount: 0 }),
       );
@@ -56,14 +55,14 @@ export class OutrageStorageService {
     return newOutrages;
   }
 
-  async getOutragesKeys(date: Date): Promise<string[]> {
-    const baseKey = this.getBaseKey(date);
+  async getOutragesKeys(date: Date, region: OutrageRegion): Promise<string[]> {
+    const baseKey = this.getBaseKey(date, region);
     const currentOutrages = await this.redis.get(baseKey);
     return currentOutrages ? (JSON.parse(currentOutrages) as string[]) : [];
   }
 
-  async getOutrages(date: Date): Promise<Outrage[]> {
-    const keys = await this.getOutragesKeys(date);
+  async getOutrages(date: Date, region: OutrageRegion): Promise<Outrage[]> {
+    const keys = await this.getOutragesKeys(date, region);
     const rawOutrages = keys.length > 0 ? await this.redis.mget(keys) : [];
     return rawOutrages.filter(Boolean).map((outrageString) => this.parseOutrage(outrageString));
   }
@@ -73,9 +72,9 @@ export class OutrageStorageService {
     return { ...outrageParsed, date: new Date(outrageParsed.date) };
   }
 
-  async getOutragesByQueue(date: Date, queues: number | number[]): Promise<Outrage[]> {
+  async getOutragesByQueue(date: Date, region: OutrageRegion, queues: number | number[]): Promise<Outrage[]> {
     const coerceQueues = Array.isArray(queues) ? queues : [queues];
-    const outrages = await this.getOutrages(date);
+    const outrages = await this.getOutrages(date, region);
     return outrages.map((outrage) => ({
       ...outrage,
       shifts: outrage.shifts.filter((shift) => coerceQueues.some((queue) => shift.queues.includes(queue))),
@@ -83,7 +82,7 @@ export class OutrageStorageService {
   }
 
   async getRawStorage(): Promise<Record<string, Outrage | string[]>> {
-    const keys = await this.redis.keys(`${storageKey}:${regionKey}:*`);
+    const keys = await this.redis.keys(`${storageKey}:*:*`);
     const storageRaw = await this.redis.mget(keys);
     const storage: Record<string, Outrage | string[]> = {};
 
@@ -95,8 +94,8 @@ export class OutrageStorageService {
     return storage;
   }
 
-  private getBaseKey(date: Date): string {
-    return `${storageKey}:${regionKey}:${this.getKeyDate(date)}`;
+  private getBaseKey(date: Date, region: OutrageRegion): string {
+    return `${storageKey}:${region}:${this.getKeyDate(date)}`;
   }
 
   private getKeyDate(date: Date): string {

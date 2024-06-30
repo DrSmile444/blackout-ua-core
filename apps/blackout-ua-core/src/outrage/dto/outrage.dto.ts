@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import type { OutrageShift } from '@app/shared';
-import { OutrageType } from '@app/shared';
+import { OutrageRegion, OutrageType } from '@app/shared';
 
 import { outrageMock5Change2 } from '../mocks/outrage.mock';
 
@@ -25,6 +25,9 @@ export class CreateOutrageShiftDto {
 }
 
 export class OutrageMessageDto {
+  @ApiProperty({ enum: OutrageRegion, example: OutrageRegion.CHERKASY })
+  region: OutrageRegion;
+
   @ApiProperty({ example: outrageMock5Change2 })
   message: string;
 }
