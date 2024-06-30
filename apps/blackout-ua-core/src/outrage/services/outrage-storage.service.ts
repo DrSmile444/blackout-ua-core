@@ -1,51 +1,59 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 import type { Outrage } from '@app/shared';
 
 const storageKey = 'outrage';
 const regionKey = 'cherkasy';
-const storage: Record<string, Outrage | string[]> = {};
 
 @Injectable()
 export class OutrageStorageService {
-  saveOutrage(outrage: Outrage): Outrage {
+  constructor(@InjectRedis() private readonly redis: Redis) {}
+
+  async saveOutrage(outrage: Outrage): Promise<Outrage> {
     const baseKey = this.getBaseKey(outrage.date);
-    const currentOutrages = this.getOutragesKeys(outrage.date);
+    const currentOutrages = await this.getOutragesKeys(outrage.date);
     const newKey = `${baseKey}:${currentOutrages.length}`;
     const newOutrage = { ...outrage, changeCount: currentOutrages.length };
 
-    storage[baseKey] = [...currentOutrages, newKey];
-    storage[newKey] = newOutrage;
+    await this.redis.set(baseKey, JSON.stringify([...currentOutrages, newKey]));
+    await this.redis.set(newKey, JSON.stringify(newOutrage));
 
     return newOutrage;
   }
 
-  getOutragesKeys(date: Date): string[] {
+  async getOutragesKeys(date: Date): Promise<string[]> {
     const baseKey = this.getBaseKey(date);
-    const currentOutrages = storage[baseKey] || [];
-
-    if (!Array.isArray(currentOutrages) || currentOutrages.length === 0) {
-      return [];
-    }
-
-    return currentOutrages;
+    const currentOutrages = await this.redis.get(baseKey);
+    return currentOutrages ? (JSON.parse(currentOutrages) as string[]) : [];
   }
 
-  getOutrages(date: Date): Outrage[] {
-    const keys = this.getOutragesKeys(date);
-    return keys.map((key) => storage[key] as Outrage);
+  async getOutrages(date: Date): Promise<Outrage[]> {
+    const keys = await this.getOutragesKeys(date);
+    const rawOutrages = await this.redis.mget(keys);
+    return rawOutrages.filter(Boolean).map((outrage) => JSON.parse(outrage) as Outrage);
   }
 
-  getOutragesByQueue(date: Date, queues: number | number[]): Outrage[] {
+  async getOutragesByQueue(date: Date, queues: number | number[]): Promise<Outrage[]> {
     const coerceQueues = Array.isArray(queues) ? queues : [queues];
-    const outrages = this.getOutrages(date);
+    const outrages = await this.getOutrages(date);
     return outrages.map((outrage) => ({
       ...outrage,
       shifts: outrage.shifts.filter((shift) => coerceQueues.some((queue) => shift.queues.includes(queue))),
     }));
   }
 
-  getRawStorage() {
+  async getRawStorage(): Promise<Record<string, Outrage | string[]>> {
+    const keys = await this.redis.keys(`${storageKey}:${regionKey}:*`);
+    const storageRaw = await this.redis.mget(keys);
+    const storage: Record<string, Outrage | string[]> = {};
+
+    keys.forEach((key, index) => {
+      const value = JSON.parse(storageRaw[index]) as Outrage | string[];
+      storage[key] = value;
+    });
+
     return storage;
   }
 

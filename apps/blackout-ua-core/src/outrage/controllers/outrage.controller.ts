@@ -27,7 +27,7 @@ export class OutrageController {
     type: OutrageDto,
     description: 'Create a new outrage from a message',
   })
-  saveOutrage(@Body() body: OutrageMessageDto): Outrage {
+  saveOutrage(@Body() body: OutrageMessageDto): Promise<Outrage> {
     const parsedMessage = this.outrageParserService.parseMessage(body.message);
     return this.outrageStorageService.saveOutrage(parsedMessage);
   }
@@ -56,16 +56,16 @@ export class OutrageController {
     description: 'Returns a list of outrages',
   })
   @ApiOperation({ summary: 'Returns a list of outrages' })
-  getOutrages(
+  async getOutrages(
     @Query('date', ParseDatePipe) date?: Date,
     @Query('queues', ParseNumberArrayPipe) queues?: number[],
     @Query('final', ParseBoolPipe) final?: boolean,
-  ): Outrage | Outrage[] {
+  ): Promise<Outrage | Outrage[]> {
     const parsedDate = date || new Date();
     const outrages =
       queues.length > 0
-        ? this.outrageStorageService.getOutragesByQueue(parsedDate, queues)
-        : this.outrageStorageService.getOutrages(parsedDate);
+        ? await this.outrageStorageService.getOutragesByQueue(parsedDate, queues)
+        : await this.outrageStorageService.getOutrages(parsedDate);
 
     if (final) {
       return this.outrageMergerService.mergeOutrages(outrages);
