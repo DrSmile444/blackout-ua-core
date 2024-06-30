@@ -10,6 +10,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:telegram": "nest start telegram",
     "start:telegram:dev": "nest start telegram --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/blackout-ua-core/main",
