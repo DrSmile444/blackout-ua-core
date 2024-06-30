@@ -8,10 +8,33 @@ module.exports = {
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-    './.eslint/ordered-imports.eslintrc.json5',
-    './.eslint/unicorn.eslintrc.json',
+    "./.eslint/node.eslintrc.json",
+    "./.eslint/smile-style.eslintrc.json",
+    "./.eslint/unicorn.eslintrc.json",
+    "./.eslint/ordered-imports.eslintrc.json5",
+    "./.eslint/typescript.eslintrc.json",
+    "./.eslint/prettier.eslintrc.json",
+    "./.eslint/nest.eslintrc.json",
   ],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      },
+      "typescript": {
+        "alwaysTryTypes": true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+        "project": [
+          'tsconfig.json',
+          "apps/*/tsconfig.json",
+          "libs/*/tsconfig.json"
+        ],
+      }
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+  },
   root: true,
   env: {
     node: true,
@@ -23,5 +46,13 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "ts": "never"
+      }
+    ]
   },
 };
