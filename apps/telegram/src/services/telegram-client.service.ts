@@ -1,8 +1,9 @@
+import { createInterface } from 'node:readline';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createInterface } from 'readline';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
+
 import { UkraineTelegramService } from '@ukraine/ukraine-base';
 
 @Injectable()
@@ -48,7 +49,7 @@ export class TelegramClientService {
         new Promise((resolve) =>
           rl.question('Please enter the code you received: ', resolve),
         ),
-      onError: (err) => console.log(err),
+      onError: (error) => console.log(error),
     });
   }
 

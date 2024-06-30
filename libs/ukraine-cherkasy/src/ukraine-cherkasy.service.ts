@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
+
+import { OutrageParserService } from '@app/shared';
+
 import {
   CityMetadata,
   TelegramConfig,
   UkraineCityService,
 } from '@ukraine/ukraine-base';
-import { OutrageParserService } from '@app/shared';
 
 @Injectable()
 export class UkraineCherkasyService implements UkraineCityService {

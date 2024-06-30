@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
@@ -7,9 +9,9 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+
 import { OutrageShift, OutrageType } from '@app/shared';
-import { ApiProperty } from '@nestjs/swagger';
+
 import { outrageMock5Change2 } from '../mocks/outrage.mock';
 
 export class CreateOutrageShiftDto {

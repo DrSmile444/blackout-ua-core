@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OutrageParserService } from './outrage-parser.service';
+
 import {
   outrageMock5Change2,
   outrageMock6Origin,
   outrageMock7ChangeOld,
 } from '../../../../apps/blackout-ua-core/src/outrage/mocks/outrage.mock';
+
+import { OutrageParserService } from './outrage-parser.service';
 
 describe('OutrageParserService', () => {
   let outrageParserService: OutrageParserService;

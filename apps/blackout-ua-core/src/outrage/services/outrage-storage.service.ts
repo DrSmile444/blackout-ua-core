@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { Outrage } from '@app/shared';
 
 const storageKey = 'outrage';

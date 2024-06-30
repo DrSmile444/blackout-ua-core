@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UkraineCherkasyService } from './ukraine-cherkasy.service';
+
 import { SharedModule } from '@app/shared';
+
+import { UkraineCherkasyService } from './ukraine-cherkasy.service';
 
 @Module({
   imports: [SharedModule],

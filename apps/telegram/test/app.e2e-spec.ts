@@ -1,6 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
+// eslint-disable-next-line unicorn/prevent-abbreviations
 import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+
 import { TelegramModule } from './../src/telegram.module';
 
 describe('TelegramController (e2e)', () => {

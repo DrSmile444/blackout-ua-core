@@ -1,20 +1,21 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import {
   ApiBody,
-  ApiQuery,
-  ApiTags,
-  ApiResponse,
   ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 
 import { OutrageParserService } from '@app/shared';
-import { OutrageStorageService } from '../services/outrage-storage.service';
-import { OutrageMergerService } from '../services/outrage-merger.service';
-import { OutrageDto, OutrageMessageDto } from '../dto/outrage.dto';
 import { Outrage } from '@app/shared';
-import { ParseNumberArrayPipe } from '../pipes/parse-number-array.pipe';
-import { ParseDatePipe } from '../pipes/parse-date.pipe';
+
+import { OutrageDto, OutrageMessageDto } from '../dto/outrage.dto';
 import { ParseBoolPipe } from '../pipes/parse-bool.pipe';
+import { ParseDatePipe } from '../pipes/parse-date.pipe';
+import { ParseNumberArrayPipe } from '../pipes/parse-number-array.pipe';
+import { OutrageMergerService } from '../services/outrage-merger.service';
+import { OutrageStorageService } from '../services/outrage-storage.service';
 
 @ApiTags('outrage')
 @Controller('outrage')
@@ -68,9 +69,10 @@ export class OutrageController {
     @Query('final', ParseBoolPipe) final?: boolean,
   ): Outrage | Outrage[] {
     const parsedDate = date || new Date();
-    const outrages = queues.length
-      ? this.outrageStorageService.getOutragesByQueue(parsedDate, queues)
-      : this.outrageStorageService.getOutrages(parsedDate);
+    const outrages =
+      queues.length > 0
+        ? this.outrageStorageService.getOutragesByQueue(parsedDate, queues)
+        : this.outrageStorageService.getOutrages(parsedDate);
 
     if (final) {
       return this.outrageMergerService.mergeOutrages(outrages);

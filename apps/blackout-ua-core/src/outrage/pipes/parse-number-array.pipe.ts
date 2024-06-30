@@ -1,4 +1,5 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
+
 import { coerceArray } from '../utils/coerce-array.util';
 
 @Injectable()
@@ -8,8 +9,8 @@ export class ParseNumberArrayPipe implements PipeTransform {
       return [];
     }
 
-    return coerceArray(value)
-      .map((val) => val.split(',').map(Number))
-      .flat();
+    return coerceArray(value).flatMap((value_) =>
+      value_.split(',').map(Number),
+    );
   }
 }

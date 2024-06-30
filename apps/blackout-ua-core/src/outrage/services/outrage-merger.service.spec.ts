@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { OutrageParserService } from '@app/shared';
-
-import { OutrageMergerService } from './outrage-merger.service';
 import { Outrage, OutrageType } from '@app/shared';
+
 import {
   outrageMock3Origin,
   outrageMock4Change,
   outrageMock5Change2,
 } from '../mocks/outrage.mock';
+
+import { OutrageMergerService } from './outrage-merger.service';
 
 describe('OutrageMergerService', () => {
   let outrageMergerService: OutrageMergerService;

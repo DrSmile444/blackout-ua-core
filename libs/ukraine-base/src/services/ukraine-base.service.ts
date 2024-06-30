@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { CityMetadata } from '@ukraine/ukraine-base';
 import { UkraineCherkasyService } from '@ukraine/ukraine-cherkasy';
 

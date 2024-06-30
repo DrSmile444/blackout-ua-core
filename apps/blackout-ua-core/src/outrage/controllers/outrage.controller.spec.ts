@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OutrageController } from './outrage.controller';
+
 import { OutrageModule } from '../outrage.module';
+
+import { OutrageController } from './outrage.controller';
 
 describe('OutrageController', () => {
   let controller: OutrageController;
