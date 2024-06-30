@@ -4,7 +4,7 @@ import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/s
 import { Outrage, OutrageParserService, OutrageRegion, OutrageStorageService } from '@app/shared';
 
 import { OutrageDto, OutrageMessageDto } from '../dto';
-import { ParseBoolPipe, ParseDatePipe, ParseNumberArrayPipe, RequiredQueryParamPipe } from '../pipes';
+import { ParseBoolPipe, ParseDatePipe, ParseNumberArrayPipe, RequiredQueryParamPipe, ValidRegionPipe } from '../pipes';
 import { OutrageMergerService } from '../services';
 
 @ApiTags('outrage')
@@ -60,7 +60,7 @@ export class OutrageController {
   })
   @ApiOperation({ summary: 'Returns a list of outrages' })
   async getOutrages(
-    @Query('region', RequiredQueryParamPipe) region: OutrageRegion,
+    @Query('region', RequiredQueryParamPipe, ValidRegionPipe) region: OutrageRegion,
     @Query('date', ParseDatePipe) date?: Date,
     @Query('queues', ParseNumberArrayPipe) queues?: number[],
     @Query('final', ParseBoolPipe) final?: boolean,
@@ -84,7 +84,7 @@ export class OutrageController {
   @ApiResponse({ status: 200, type: OutrageDto })
   @ApiOperation({ summary: 'Test how parsing logic works' })
   process(@Body() body: OutrageMessageDto): Outrage {
-    return this.outrageParserService.parseMessage(body.message, OutrageRegion.CHERKASY);
+    return this.outrageParserService.parseMessage(body.message, body.region);
   }
 
   @Get('/storage')
