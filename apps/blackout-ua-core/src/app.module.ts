@@ -5,6 +5,7 @@ import { CityModule } from './city/city.module';
 import { OutrageModule } from './outrage/outrage.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UpdateModule } from './update/update.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AppService } from './app.service';
     }),
     OutrageModule,
     CityModule,
+    UpdateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
