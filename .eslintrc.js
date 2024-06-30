@@ -9,6 +9,8 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    './.eslint/ordered-imports.eslintrc.json5',
+    './.eslint/unicorn.eslintrc.json',
   ],
   root: true,
   env: {
