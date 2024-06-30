@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
+import * as deepEqual from 'fast-deep-equal';
 import Redis from 'ioredis';
 
 import type { Outrage } from '@app/shared';
@@ -14,6 +15,16 @@ export class OutrageStorageService {
   async saveOutrage(outrage: Outrage): Promise<Outrage> {
     const baseKey = this.getBaseKey(outrage.date);
     const currentOutrages = await this.getOutragesKeys(outrage.date);
+
+    const previousOutrages = await this.getOutrages(outrage.date);
+    const createdOutrage = previousOutrages.find((previousOutrage) =>
+      deepEqual({ ...previousOutrage, changeCount: 0 }, { ...outrage, changeCount: 0 }),
+    );
+
+    if (createdOutrage) {
+      return createdOutrage;
+    }
+
     const newKey = `${baseKey}:${currentOutrages.length}`;
     const newOutrage = { ...outrage, changeCount: currentOutrages.length };
 
