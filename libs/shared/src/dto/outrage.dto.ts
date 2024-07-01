@@ -6,12 +6,26 @@ import type { OutrageQueue, OutrageShift } from '../entities';
 import { LightStatus, OutrageRegion, OutrageType } from '../entities';
 import { outrageMock5Change2 } from '../mocks';
 
+const lightStatusAllValues = Object.values(LightStatus);
+const lightStatusKeys = lightStatusAllValues.slice(0, lightStatusAllValues.length / 2);
+const lightStatusValues = lightStatusAllValues.slice(lightStatusAllValues.length / 2);
+
+const lightStatusDescription = `
+export enum LightStatus {
+${lightStatusKeys.map((key, index) => `  ${key} = ${lightStatusValues[index]},`).join('\n')}
+}
+`;
+
 export class OutrageQueueDto {
   @ApiProperty({ example: '1' })
   @IsNotEmpty()
   queue: string;
 
-  @ApiProperty({ enum: LightStatus, example: LightStatus.AVAILABLE })
+  @ApiProperty({
+    enum: LightStatus,
+    example: LightStatus.AVAILABLE,
+    description: lightStatusDescription,
+  })
   @IsEnum(LightStatus)
   @IsNotEmpty()
   lightStatus: LightStatus;
