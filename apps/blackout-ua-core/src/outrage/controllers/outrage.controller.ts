@@ -27,7 +27,7 @@ export class OutrageController {
 
   @Post('/')
   @ApiBody({ type: OutrageMessageDto })
-  @ApiOperation({ summary: 'Parse a message and create a new outrage' })
+  @ApiOperation({ summary: 'Parse a message and create a new outrage', deprecated: true })
   @ApiResponse({
     status: 200,
     type: OutrageDto,
@@ -95,13 +95,13 @@ export class OutrageController {
   @Post('/test')
   @ApiBody({ type: OutrageMessageDto })
   @ApiResponse({ status: 200, type: OutrageDto })
-  @ApiOperation({ summary: 'Test how parsing logic works' })
+  @ApiOperation({ summary: 'Test how parsing logic works', deprecated: true })
   process(@Body() body: OutrageMessageDto): Outrage {
     return this.outrageParserService.parseMessage(body.message, body.region);
   }
 
   @Get('/storage')
-  @ApiOperation({ summary: 'Returns the complete storage for debug' })
+  @ApiOperation({ summary: 'Returns the complete storage for debug', deprecated: true })
   getRawStorage() {
     return this.outrageStorageService.getRawStorage();
   }
