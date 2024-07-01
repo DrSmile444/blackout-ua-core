@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import type { Outrage, OutrageRegion, OutrageShift } from '../entities';
-import { OutrageType } from '../entities';
+import { LightStatus, OutrageType } from '../entities';
 
 @Injectable()
 export class OutrageParserService {
@@ -85,7 +85,7 @@ export class OutrageParserService {
 
   parseRow(row: string): OutrageShift | null {
     const time = this.parseTime(row);
-    const queues = this.parseQueue(row);
+    const queues = this.parseQueue(row).map((queue) => ({ queue, lightStatus: LightStatus.UNAVAILABLE }));
 
     if (!time || queues.length === 0) {
       return null;

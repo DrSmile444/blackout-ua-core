@@ -77,7 +77,7 @@ export class OutrageStorageService {
     const outrages = await this.getOutrages(date, region);
     return outrages.map((outrage) => ({
       ...outrage,
-      shifts: outrage.shifts.filter((shift) => coerceQueues.some((queue) => shift.queues.includes(queue))),
+      shifts: outrage.shifts.filter((shift) => coerceQueues.some((queue) => shift.queues.some((shiftQueue) => shiftQueue.queue === queue))),
     }));
   }
 
@@ -100,5 +100,10 @@ export class OutrageStorageService {
 
   private getKeyDate(date: Date): string {
     return date.toLocaleDateString().replaceAll('/', '-');
+  }
+
+  // We need to remove all keys which starts with 'outrage' to clear all storage
+  private async clearAllStorage() {
+    return this.redis.del(await this.redis.keys('outrage:*'));
   }
 }

@@ -2,12 +2,37 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import type { OutrageShift } from '@app/shared';
-
-import { OutrageRegion, OutrageType } from '../entities';
+import type { OutrageQueue, OutrageShift } from '../entities';
+import { LightStatus, OutrageRegion, OutrageType } from '../entities';
 import { outrageMock5Change2 } from '../mocks';
 
-export class CreateOutrageShiftDto {
+export class OutrageQueueDto {
+  @ApiProperty({ example: '1' })
+  @IsNotEmpty()
+  queue: string;
+
+  @ApiProperty({ enum: LightStatus, example: LightStatus.AVAILABLE })
+  @IsEnum(LightStatus)
+  @IsNotEmpty()
+  lightStatus: LightStatus;
+}
+
+const queueExample: OutrageQueueDto[] = [
+  {
+    queue: '1',
+    lightStatus: LightStatus.UNAVAILABLE,
+  },
+  {
+    queue: '2',
+    lightStatus: LightStatus.UNAVAILABLE,
+  },
+  {
+    queue: '4',
+    lightStatus: LightStatus.POSSIBLY_UNAVAILABLE,
+  },
+];
+
+export class OutrageShiftDto {
   @ApiProperty({ example: '10:00' })
   @IsString()
   @IsNotEmpty()
@@ -18,10 +43,11 @@ export class CreateOutrageShiftDto {
   @IsNotEmpty()
   end: string;
 
-  @ApiProperty({ example: [1, 2, 4] })
+  @ApiProperty({ type: [OutrageQueueDto], example: queueExample })
+  @Type(() => OutrageQueueDto)
   @IsArray()
   @IsNotEmpty()
-  queues: number[];
+  queues: OutrageQueue[];
 }
 
 export class OutrageMessageDto {
@@ -53,12 +79,12 @@ export class OutrageDto {
   changeCount?: number;
 
   @ApiProperty({
-    type: [CreateOutrageShiftDto],
-    example: [{ start: '10:00', end: '11:00', queues: ['1', '2', '4'] } as OutrageShift],
+    type: [OutrageShiftDto],
+    example: [{ start: '10:00', end: '11:00', queues: queueExample } as OutrageShift],
   })
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => CreateOutrageShiftDto)
+  @Type(() => OutrageShiftDto)
   shifts: OutrageShift[];
 }
 

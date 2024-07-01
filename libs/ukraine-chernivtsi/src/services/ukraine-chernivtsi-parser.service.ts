@@ -2,12 +2,19 @@ import { Injectable } from '@nestjs/common';
 import type { CheerioAPI } from 'cheerio/lib/load';
 
 import type { Outrage, OutrageShift } from '@app/shared';
-import { OutrageRegion, OutrageType } from '@app/shared';
+import { isUnavailableOrPossiblyUnavailable, LightStatus, OutrageRegion, OutrageType } from '@app/shared';
 
-export enum OutrageMapType {
-  MAYBE = 'мз',
-  NO = 'в',
+export enum ChernivtsiLightStatus {
+  AVAILABLE = 'з',
+  UNAVAILABLE = 'в',
+  POSSIBLY_UNAVAILABLE = 'мз',
 }
+
+export const LightStatusMap: Record<ChernivtsiLightStatus, LightStatus> = {
+  [ChernivtsiLightStatus.AVAILABLE]: LightStatus.AVAILABLE,
+  [ChernivtsiLightStatus.UNAVAILABLE]: LightStatus.UNAVAILABLE,
+  [ChernivtsiLightStatus.POSSIBLY_UNAVAILABLE]: LightStatus.POSSIBLY_UNAVAILABLE,
+};
 
 @Injectable()
 export class UkraineChernivtsiParserService {
@@ -31,33 +38,29 @@ export class UkraineChernivtsiParserService {
     const shifts = queues.map((queue) => {
       const outrageTypes = this.parseTimeColumn($, queue);
       const outrageShifts: OutrageShift[] = periods
-        .map((period) => ({
+        .map((period, periodIndex) => ({
           start: period.start,
           end: period.end,
-          queues: [queue],
+          queues: [{ queue, lightStatus: LightStatusMap[outrageTypes[periodIndex]] }],
         }))
-        .filter((shift, shiftIndex) => [OutrageMapType.MAYBE, OutrageMapType.NO].includes(outrageTypes[shiftIndex]));
+        .filter((shift) => isUnavailableOrPossiblyUnavailable(shift.queues[0].lightStatus));
       return outrageShifts;
     });
 
     const clearShifts = this.mergeQueueTimes(...shifts);
 
-    const outrage: Outrage = {
+    return {
       type: OutrageType.SCHEDULE,
       region: OutrageRegion.CHERNIVTSI,
       date,
       shifts: clearShifts,
     };
-
-    console.log(outrage);
-
-    return outrage;
   }
 
-  parseTimeColumn($: CheerioAPI, queue: string): OutrageMapType[] {
+  parseTimeColumn($: CheerioAPI, queue: string): ChernivtsiLightStatus[] {
     const result = $(`#gsv div div[data-id="${queue}"] > *`);
     const rowValues = result.map((_, element) => $(element).text()).get();
-    return rowValues as OutrageMapType[];
+    return rowValues as ChernivtsiLightStatus[];
   }
 
   mergeQueueTimes(...arrays: OutrageShift[][]): OutrageShift[] {

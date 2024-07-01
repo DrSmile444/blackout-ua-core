@@ -8,12 +8,24 @@ export enum OutrageRegion {
   CHERNIVTSI = 'chernivtsi',
 }
 
+export enum LightStatus {
+  AVAILABLE = 0,
+  UNAVAILABLE = 1,
+  POSSIBLY_UNAVAILABLE = 2,
+}
+
+export class OutrageQueue {
+  queue: string;
+
+  lightStatus: LightStatus;
+}
+
 export class OutrageShift {
   start: string;
 
   end: string;
 
-  queues: string[];
+  queues: OutrageQueue[];
 }
 
 export class Outrage {
