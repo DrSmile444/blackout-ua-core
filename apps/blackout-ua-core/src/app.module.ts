@@ -6,6 +6,7 @@ import { OutrageModule } from './outrage/outrage.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UpdateModule } from './update/update.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UpdateModule } from './update/update.module';
     OutrageModule,
     CityModule,
     UpdateModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
