@@ -4,7 +4,7 @@ import * as cheerio from 'cheerio';
 import { firstValueFrom } from 'rxjs';
 
 import type { Outrage } from '@app/shared';
-import { OutrageStorageService } from '@app/shared';
+import { OutrageService } from '@app/shared';
 import { coerceArray } from '@app/shared/utils/coerce-array.util';
 
 import { UkraineScrapperService } from '@ukraine/ukraine-base';
@@ -13,7 +13,7 @@ import { UkraineScrapperService } from '@ukraine/ukraine-base';
 export class ScrapperService {
   constructor(
     private readonly httpService: HttpService,
-    private outrageStorageService: OutrageStorageService,
+    private outrageService: OutrageService,
     private ukraineScrapperService: UkraineScrapperService,
   ) {
     this.scrapeOutrages().catch(console.error);
@@ -32,7 +32,7 @@ export class ScrapperService {
 
       const result = scrapperConfig.parser(cheerioAPI);
 
-      const newUpdatedOutrages = await this.outrageStorageService.bulkSaveOutrages(coerceArray(result));
+      const newUpdatedOutrages = await this.outrageService.bulkSaveOutrages(coerceArray(result));
 
       updatedOutrages = [...updatedOutrages, ...newUpdatedOutrages];
     }

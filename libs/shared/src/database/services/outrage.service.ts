@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as deepEqual from 'fast-deep-equal';
 import { Repository } from 'typeorm';
 
 import type { OutrageDto } from '../dto';
@@ -13,16 +14,52 @@ export class OutrageService {
     private readonly outrageRepository: Repository<Outrage>,
   ) {}
 
-  async createOutrage(outrageDto: OutrageDto): Promise<Outrage> {
-    const outrage = this.outrageRepository.create(outrageDto);
-    return await this.outrageRepository.save(outrage);
+  async saveOutrage(outrageDto: OutrageDto): Promise<Outrage> {
+    const existingOutrages = await this.findOutragesByDateAndRegion(outrageDto.date, outrageDto.region);
+    const createdOutrage = existingOutrages.find((existingOutrage) =>
+      deepEqual({ ...existingOutrage, changeCount: 0 }, { ...outrageDto, changeCount: 0 }),
+    );
+
+    if (createdOutrage) {
+      console.info('Skipping outrage creation, already exists');
+      return createdOutrage;
+    }
+
+    const newOutrage = this.outrageRepository.create(outrageDto);
+    return await this.outrageRepository.save(newOutrage);
+  }
+
+  async bulkSaveOutrages(outrages: OutrageDto[]): Promise<Outrage[]> {
+    const newOutrages: Outrage[] = [];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const outrageDto of outrages) {
+      // eslint-disable-next-line no-await-in-loop
+      const existingOutrages = await this.findOutragesByDateAndRegion(outrageDto.date, outrageDto.region);
+      const createdOutrage = existingOutrages.find((existingOutrage) =>
+        deepEqual({ ...existingOutrage, changeCount: 0, id: '0' } as Outrage, { ...outrageDto, changeCount: 0, id: '0' } as Outrage),
+      );
+
+      console.log('existingOutrages', existingOutrages);
+      console.log('createdOutrage', createdOutrage);
+      console.log('outrageDto', outrageDto);
+      outrageDto.changeCount = existingOutrages.length;
+
+      if (!createdOutrage) {
+        // eslint-disable-next-line no-await-in-loop
+        const savedOutrage = await this.saveOutrage(outrageDto);
+        newOutrages.push(savedOutrage);
+      }
+    }
+
+    return newOutrages;
   }
 
   async getAll(): Promise<Outrage[]> {
     return await this.outrageRepository.find();
   }
 
-  async findAll(date: Date, region: OutrageRegion): Promise<Outrage[]> {
+  async findOutragesByDateAndRegion(date: Date, region: OutrageRegion): Promise<Outrage[]> {
     return await this.outrageRepository
       .createQueryBuilder('outrage')
       .leftJoinAndSelect('outrage.shifts', 'shift')

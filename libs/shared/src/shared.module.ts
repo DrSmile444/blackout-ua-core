@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 
-import { OutrageParserService, OutrageStorageService } from './services';
+import { OutrageParserService } from './services';
 
 @Module({
-  providers: [OutrageParserService, OutrageStorageService],
-  exports: [OutrageParserService, OutrageStorageService],
+  providers: [OutrageParserService],
+  exports: [OutrageParserService],
 })
 export class SharedModule {}

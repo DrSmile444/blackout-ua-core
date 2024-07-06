@@ -1,16 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import {
-  Outrage,
-  OutrageDto,
-  OutrageMessageDto,
-  OutrageParserService,
-  OutrageRegion,
-  OutrageResponseDto,
-  OutrageService,
-  OutrageStorageService,
-} from '@app/shared';
+import { OutrageDto, OutrageMessageDto, OutrageParserService, OutrageRegion, OutrageResponseDto, OutrageService } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
 import { ParseBoolPipe, ParseDatePipe, ParseStringArrayPipe, RequiredQueryParamPipe, ValidRegionPipe } from '../pipes';
@@ -21,7 +12,6 @@ import { OutrageMergerService } from '../services';
 export class OutrageController {
   constructor(
     private readonly outrageParserService: OutrageParserService,
-    private readonly outrageStorageService: OutrageStorageService,
     private readonly outrageMergerService: OutrageMergerService,
     private readonly outrageService: OutrageService,
     private readonly updateService: UpdateService,
@@ -37,7 +27,7 @@ export class OutrageController {
   })
   async create(@Body() body: OutrageMessageDto) {
     const outrageDto = this.outrageParserService.parseMessage(body.message, body.region);
-    return await this.outrageService.createOutrage(outrageDto);
+    return await this.outrageService.saveOutrage(outrageDto);
   }
 
   @Get('/')
@@ -80,7 +70,7 @@ export class OutrageController {
     const outrages =
       queues.length > 0
         ? await this.outrageService.findOutrages(accessDate, region, queues)
-        : await this.outrageService.findAll(accessDate, region);
+        : await this.outrageService.findOutragesByDateAndRegion(accessDate, region);
 
     if (final) {
       return {

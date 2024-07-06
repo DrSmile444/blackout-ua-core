@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
-import { SharedModule } from '@app/shared';
+import { DatabaseModule, SharedModule } from '@app/shared';
 
 import { UkraineTelegramModule } from '@ukraine/ukraine-base';
 
@@ -19,6 +19,7 @@ import { TelegramService } from './telegram.service';
     ConfigModule.forRoot({
       isGlobal: true, // Makes the ConfigModule globally available
     }),
+    DatabaseModule,
     SharedModule,
     UkraineTelegramModule,
   ],

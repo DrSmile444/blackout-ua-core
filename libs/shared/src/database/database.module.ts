@@ -21,7 +21,7 @@ import { databaseServices } from './services';
         database: configService.get<string>('DATABASE_NAME'),
         entities: databaseEntities,
         synchronize: true,
-        logging: true,
+        // logging: true,
       }),
       inject: [ConfigService],
     }),

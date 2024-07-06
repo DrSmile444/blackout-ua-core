@@ -2,7 +2,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
-import { SharedModule } from '@app/shared';
+import { DatabaseModule, SharedModule } from '@app/shared';
 
 import { UkraineScrapperModule } from '@ukraine/ukraine-base';
 
@@ -15,6 +15,7 @@ import { ScrapperService } from './scrapper.service';
       type: 'single',
       url: 'redis://localhost:6379',
     }),
+    DatabaseModule,
     HttpModule,
     SharedModule,
     UkraineScrapperModule,

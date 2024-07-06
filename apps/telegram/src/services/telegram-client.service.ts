@@ -6,7 +6,7 @@ import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 
 import type { Outrage } from '@app/shared';
-import { OutrageStorageService } from '@app/shared';
+import { OutrageService } from '@app/shared';
 
 import { UkraineTelegramService } from '@ukraine/ukraine-base';
 
@@ -15,7 +15,7 @@ export class TelegramClientService {
   client: TelegramClient;
 
   constructor(
-    private outrageStorageService: OutrageStorageService,
+    private outrageService: OutrageService,
     private configService: ConfigService,
     private ukraineTelegramService: UkraineTelegramService,
   ) {
@@ -88,7 +88,7 @@ export class TelegramClientService {
         .filter(Boolean)
         .reverse();
 
-      const newUpdatedOutrages = await this.outrageStorageService.bulkSaveOutrages(newOutrages);
+      const newUpdatedOutrages = await this.outrageService.bulkSaveOutrages(newOutrages);
 
       updatedOutrages = [...updatedOutrages, ...newUpdatedOutrages];
     }
