@@ -11,8 +11,11 @@ services:
       - "3000:3000"
     depends_on:
       - redis
+      - postgres
     networks:
       - app-network
+    env_file:
+      - .env
 
   telegram:
     build:
@@ -24,8 +27,11 @@ services:
       - "3001:3001"
     depends_on:
       - redis
+      - postgres
     networks:
       - app-network
+    env_file:
+      - .env
 
   scrapper:
     build:
@@ -37,8 +43,11 @@ services:
       - "3002:3002"
     depends_on:
       - redis
+      - postgres
     networks:
       - app-network
+    env_file:
+      - .env
 
   redis:
     image: redis:alpine
@@ -47,6 +56,22 @@ services:
     networks:
       - app-network
 
+  postgres:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres-data:

@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsArray, IsString } from 'class-validator';
 
 import { OutrageRegion } from '../entities';
 
@@ -34,15 +34,19 @@ export class CreateUserDto {
 
 export class UserDto {
   // give me example deviceId
-  @ApiProperty({ example: '00000000-54b3-e7c7-0000-000046bffd97' })
-  @IsOptional()
+  @ApiProperty({
+    example: '00000000-54b3-e7c7-0000-000046bffd97',
+    description: 'Unique device identifier',
+  })
+  @IsString()
   deviceId: string;
 
   @ApiProperty({
     example:
       'e8UZaAAQFma7-m3Rm2HfGp:APA91bFfR1ZHsJs_cPB9Rf5G0V10Xj4N13XtsnIqTL2OoFyHbRcvH8J93xD9X3ZpBdcnU4Z3sRt6kcmxGqqNgnwvcj_pJ8D0s8h3yI1UUEP0gJdz9xXQgG4SRcoErKglHqB9e56He8lM',
+    description: 'Firebase Cloud Messaging token',
   })
-  @IsOptional()
+  @IsString()
   fcmToken: string;
 
   @ApiProperty({
@@ -65,6 +69,8 @@ export class UserDto {
       },
     ],
   })
-  @IsOptional()
+  @IsArray()
   locations: BlackoutLocationDto[];
 }
+
+export class UpdateUserDto extends PartialType(UserDto) {}
