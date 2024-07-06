@@ -55,19 +55,19 @@ export class UserDto {
       {
         name: 'Мій Дім',
         region: OutrageRegion.CHERKASY,
-        queues: '1',
+        queue: '1',
       },
       {
         name: 'Спортзал',
         region: OutrageRegion.CHERKASY,
-        queues: '6',
+        queue: '6',
       },
       {
         name: 'Офіс Чернівці',
         region: OutrageRegion.CHERNIVTSI,
-        queues: '6',
+        queue: '6',
       },
-    ],
+    ] as BlackoutLocationDto[],
   })
   @IsArray()
   locations: BlackoutLocationDto[];
