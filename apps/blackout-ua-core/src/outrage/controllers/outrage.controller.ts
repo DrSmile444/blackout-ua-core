@@ -39,7 +39,7 @@ export class OutrageController {
   })
   @ApiQuery({
     name: 'date',
-    example: new Date().toISOString(),
+    example: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
     required: false,
   })
   @ApiQuery({

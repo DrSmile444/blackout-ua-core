@@ -30,6 +30,8 @@ export class OutrageParserService {
     timePeriod: /\d{2}:\d{2} ?[–-]? ?\d{2}:\d{2}/,
   };
 
+  OUTRAGE_CHANGE_TRIGGERS = ['оновлені', 'зміни'];
+
   parseMessage(message: string, region: OutrageRegion): OutrageDto {
     const type = this.parseType(message);
     const date = this.parseDate(message);
@@ -44,7 +46,9 @@ export class OutrageParserService {
   }
 
   parseType(message: string): OutrageType {
-    return message.toLowerCase().includes('зміни') ? OutrageType.CHANGE : OutrageType.SCHEDULE;
+    return this.OUTRAGE_CHANGE_TRIGGERS.some((trigger) => message.toLowerCase().includes(trigger))
+      ? OutrageType.CHANGE
+      : OutrageType.SCHEDULE;
   }
 
   parseDate(message: string): Date | null {
