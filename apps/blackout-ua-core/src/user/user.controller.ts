@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import type { User } from '@app/shared';
-import { UpdateUserDto, UserDto, UserService } from '@app/shared';
+import { OutrageRegion, UpdateUserDto, UserDto, UserService } from '@app/shared';
 
 @ApiTags('user')
 @Controller('user')
@@ -23,24 +23,28 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
+  @ApiQuery({
+    name: 'region',
+    enum: OutrageRegion,
+    description: 'Region key to filter outrages by',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'queue',
+    example: '4',
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     type: [UserDto],
     description: 'Get all users',
   })
-  async findAll(): Promise<User[]> {
-    return await this.userService.findAll();
-  }
+  async findAll(@Query('region') region: string, @Query('queue') queue: string): Promise<User[]> {
+    if (region && queue) {
+      return await this.userService.findByLocation(region, queue);
+    }
 
-  @Get('by-location')
-  @ApiOperation({ summary: 'Get all users by location' })
-  @ApiResponse({
-    status: 200,
-    type: [UserDto],
-    description: 'Get all users by location',
-  })
-  async findByLocation(@Query('locationName') locationName: string): Promise<User[]> {
-    return await this.userService.findByLocation(locationName);
+    return await this.userService.findAll();
   }
 
   @Patch(':id')

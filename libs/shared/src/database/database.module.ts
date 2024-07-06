@@ -22,6 +22,7 @@ import { UserService } from './services';
         database: configService.get<string>('DATABASE_NAME'),
         entities: [User, BlackoutLocation],
         synchronize: true,
+        logging: true,
       }),
       inject: [ConfigService],
     }),

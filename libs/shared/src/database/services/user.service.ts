@@ -27,11 +27,12 @@ export class UserService {
     return await this.userRepository.find({ relations: ['locations'] });
   }
 
-  async findByLocation(locationName: string): Promise<User[]> {
+  async findByLocation(region: string, queue: string): Promise<User[]> {
     return await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.locations', 'location')
-      .where('location.name = :locationName', { locationName })
+      .where('location.region = :region', { region })
+      .where('location.queue = :queue', { queue })
       .getMany();
   }
 

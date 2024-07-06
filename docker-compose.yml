@@ -38,7 +38,7 @@ services:
       context: .
       dockerfile: Dockerfile
     working_dir: /usr/src/app/app/scrapper
-    command: [ "npm", "run", "start:scrapper" ]
+    command: ["npm", "run", "start:scrapper"]
     ports:
       - "3002:3002"
     depends_on:
@@ -66,6 +66,18 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres
     networks:
       - app-network
 

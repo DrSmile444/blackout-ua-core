@@ -1,9 +1,10 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { OutrageRegion } from './outrage.entity';
+// eslint-disable-next-line import/no-cycle
 import { User } from './user.entity';
 
-@Entity()
+@Entity('user_locations')
 export class BlackoutLocation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -18,7 +19,7 @@ export class BlackoutLocation {
   region: OutrageRegion;
 
   @Column()
-  queues: string;
+  queue: string;
 
   @ManyToOne(() => User, (user) => user.locations)
   user: User;
