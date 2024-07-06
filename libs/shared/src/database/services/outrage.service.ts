@@ -53,9 +53,6 @@ export class OutrageService {
       // eslint-disable-next-line no-await-in-loop
       const { createdOutrage, existingOutrages } = await this.getSaveExtras(outrageDto);
 
-      console.log('createdOutrage', createdOutrage);
-      console.log('outrageDto', outrageDto);
-      console.log('existingOutrages', existingOutrages);
       outrageDto.changeCount = existingOutrages.length;
 
       if (!createdOutrage) {
@@ -86,8 +83,6 @@ export class OutrageService {
     };
     const clearExistingOutrage: OutrageDto = { ...(removeIds(existingOutrage) as OutrageDto), ...extras };
     const clearNewOutrage: OutrageDto = { ...newOutrage, ...extras };
-
-    console.log({ isSame: deepEqual(clearExistingOutrage, clearNewOutrage), existingOutrage, clearExistingOutrage, clearNewOutrage }, 3);
 
     return deepEqual(clearExistingOutrage, clearNewOutrage);
   }
