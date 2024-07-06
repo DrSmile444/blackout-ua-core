@@ -39,12 +39,12 @@ export class OutrageController {
   })
   @ApiQuery({
     name: 'date',
-    example: '2024-06-25',
+    example: new Date().toISOString(),
     required: false,
   })
   @ApiQuery({
     name: 'queues',
-    example: '1,2,4',
+    example: ['4'],
     required: false,
   })
   @ApiQuery({
@@ -66,7 +66,8 @@ export class OutrageController {
     @Query('queues', ParseStringArrayPipe) queues?: string[],
     @Query('final', ParseBoolPipe) final?: boolean,
   ): Promise<OutrageResponseDto> {
-    const accessDate = date || new Date();
+    const clearDate = date || new Date();
+    const accessDate = new Date(clearDate.setHours(0, 0, 0, 0));
     const outrages =
       queues.length > 0
         ? await this.outrageService.findOutrages(accessDate, region, queues)
