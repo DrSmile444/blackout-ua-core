@@ -1,8 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CronJob } from 'cron';
+import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
 import type { OutrageRegionAndQueuesDto, UserWithFoundRegionDto } from '@app/shared';
 import { OutrageService, removeDuplicates, UserService } from '@app/shared';
+
+import firebaseAdmin from '../firebase-admin';
 
 @Injectable()
 export class PushNotificationService {
@@ -56,14 +59,32 @@ export class PushNotificationService {
     users.forEach((user) => this.sendNotificationToUser(user));
   }
 
-  sendNotificationToUser(user: UserWithFoundRegionDto) {
-    const { foundRegion, locations } = user;
+  async sendNotificationToUser(user: UserWithFoundRegionDto): Promise<void> {
+    const { foundRegion, fcmToken, locations } = user;
     const foundLocation = locations.find((location) => location.region === foundRegion);
+
+    if (!foundLocation) {
+      console.warn(`No location found for region: ${foundRegion}`);
+      return;
+    }
 
     const title = '⚠️ Відключення Світла';
     const message = `Увага! В локації '${foundLocation.name}' світла не буде через 15 хвилин. Підготуйтеся!`;
 
-    console.log(user, { title, message });
+    const payload: Message = {
+      token: fcmToken,
+      notification: {
+        title,
+        body: message,
+      },
+    };
+
+    try {
+      await firebaseAdmin.messaging().send(payload);
+      console.log(`Notification sent to ${fcmToken}`);
+    } catch (error) {
+      console.error(`Error sending notification to ${fcmToken}`, error);
+    }
   }
 
   clearAllJobs() {
