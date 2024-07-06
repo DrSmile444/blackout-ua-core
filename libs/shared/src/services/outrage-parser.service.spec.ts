@@ -2,7 +2,7 @@ import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 
 import { OutrageRegion } from '../database/entities';
-import { outrageMock5Change2, outrageMock6Origin, outrageMock7ChangeOld } from '../mocks';
+import { outrageMock5Change2, outrageMock6Origin, outrageMock7ChangeOld, outrageMock8ChangeEdge, outrageMock9ChangeEdge } from '../mocks';
 
 import { OutrageParserService } from './outrage-parser.service';
 
@@ -209,6 +209,18 @@ describe('OutrageParserService', () => {
     it('should correctly parse the date from real message 2', () => {
       const result = outrageParserService.parseDate(outrageMock7ChangeOld);
       const expectedDate = new Date(new Date().getFullYear(), 5, 11);
+      expect(result).toEqual(expectedDate);
+    });
+
+    it('should correctly parse the date from the message 3', () => {
+      const result = outrageParserService.parseDate(outrageMock8ChangeEdge);
+      const expectedDate = new Date(2024, 6, 5);
+      expect(result).toEqual(expectedDate);
+    });
+
+    it('should correctly parse the date from the message 3', () => {
+      const result = outrageParserService.parseDate(outrageMock9ChangeEdge);
+      const expectedDate = new Date(2024, 6, 7);
       expect(result).toEqual(expectedDate);
     });
 

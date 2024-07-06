@@ -23,7 +23,8 @@ export class OutrageParserService {
   };
 
   REGEX = {
-    date: /відключень на (\d+) (\W+)/i,
+    date: / на (\d+) (\W+)/i,
+    secondDate: /(\d+) (\W+)/i,
     queue: /\d+/g,
     time: /\d{2}:\d{2}/g,
     timePeriod: /\d{2}:\d{2} ?[–-]? ?\d{2}:\d{2}/,
@@ -58,9 +59,10 @@ export class OutrageParserService {
 
     rows.some((row) => {
       const textDate = this.REGEX.date.exec(row);
+      const secondTextDate = this.REGEX.secondDate.exec(row);
 
-      if (textDate) {
-        const [, day, month] = textDate;
+      if (textDate || secondTextDate) {
+        const [, day, month] = textDate || secondTextDate;
         const monthStarts = Object.keys(this.UKRAINIAN_MONTH_MAP);
         const monthIndex = monthStarts.findIndex((monthStart) => month.toLowerCase().startsWith(monthStart));
 
