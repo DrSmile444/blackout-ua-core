@@ -2,16 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import type { UpdateUserDto, UserDto } from '../../dto';
-import { BlackoutLocation, User } from '../../entities';
+import type { UpdateUserDto, UserDto } from '../dto';
+import { User, UserLocation } from '../entities';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(BlackoutLocation)
-    private readonly locationRepository: Repository<BlackoutLocation>,
+    @InjectRepository(UserLocation)
+    private readonly locationRepository: Repository<UserLocation>,
   ) {}
 
   async createUser(userDto: UserDto): Promise<User> {

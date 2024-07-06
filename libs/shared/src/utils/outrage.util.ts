@@ -1,4 +1,4 @@
-import { LightStatus } from '../entities';
+import { LightStatus } from '../database/entities';
 
 export function isUnavailableOrPossiblyUnavailable(
   status: LightStatus,

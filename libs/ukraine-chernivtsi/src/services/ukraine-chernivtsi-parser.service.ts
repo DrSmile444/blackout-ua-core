@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { CheerioAPI } from 'cheerio/lib/load';
 
-import type { Outrage, OutrageShift } from '@app/shared';
+import type { OutrageDto, OutrageShiftDto } from '@app/shared';
 import { isUnavailableOrPossiblyUnavailable, LightStatus, OutrageRegion, OutrageType } from '@app/shared';
 
 export enum ChernivtsiLightStatus {
@@ -18,7 +18,7 @@ export const LightStatusMap: Record<ChernivtsiLightStatus, LightStatus> = {
 
 @Injectable()
 export class UkraineChernivtsiParserService {
-  parseMessageCheerio($: CheerioAPI): Outrage {
+  parseMessageCheerio($: CheerioAPI): OutrageDto {
     const dateText = $('#gsv ul p').first().text().trim();
     const [day, month, year] = dateText.split('.');
     const date = new Date(+year, +month - 1, +day);
@@ -37,7 +37,7 @@ export class UkraineChernivtsiParserService {
 
     const shifts = queues.map((queue) => {
       const outrageTypes = this.parseTimeColumn($, queue);
-      const outrageShifts: OutrageShift[] = periods
+      const outrageShifts: OutrageShiftDto[] = periods
         .map((period, periodIndex) => ({
           start: period.start,
           end: period.end,
@@ -63,9 +63,9 @@ export class UkraineChernivtsiParserService {
     return rowValues as ChernivtsiLightStatus[];
   }
 
-  mergeQueueTimes(...arrays: OutrageShift[][]): OutrageShift[] {
+  mergeQueueTimes(...arrays: OutrageShiftDto[][]): OutrageShiftDto[] {
     const combinedArray = arrays.flat();
-    const timeMap: Map<string, OutrageShift> = new Map();
+    const timeMap: Map<string, OutrageShiftDto> = new Map();
 
     combinedArray.forEach((item) => {
       const key = `${item.start}-${item.end}`;

@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-import type { Outrage, OutrageRegion, OutrageShift } from '../entities';
-import { LightStatus, OutrageType } from '../entities';
+import type { OutrageDto, OutrageShiftDto } from '@app/shared/database';
+
+import type { OutrageRegion } from '../database/entities';
+import { LightStatus, OutrageType } from '../database/entities';
 
 @Injectable()
 export class OutrageParserService {
@@ -27,7 +29,7 @@ export class OutrageParserService {
     timePeriod: /\d{2}:\d{2} ?[–-]? ?\d{2}:\d{2}/,
   };
 
-  parseMessage(message: string, region: OutrageRegion): Outrage {
+  parseMessage(message: string, region: OutrageRegion): OutrageDto {
     const type = this.parseType(message);
     const date = this.parseDate(message);
     const shifts = this.parseShifts(message);
@@ -74,7 +76,7 @@ export class OutrageParserService {
     return date;
   }
 
-  parseShifts(message: string): OutrageShift[] {
+  parseShifts(message: string): OutrageShiftDto[] {
     const rows = message
       .split('\n')
       .map((line) => line.trim())
@@ -83,7 +85,7 @@ export class OutrageParserService {
     return rows.map((row) => this.parseRow(row)).filter((shift) => shift !== null);
   }
 
-  parseRow(row: string): OutrageShift | null {
+  parseRow(row: string): OutrageShiftDto | null {
     const time = this.parseTime(row);
     const queues = this.parseQueue(row).map((queue) => ({ queue, lightStatus: LightStatus.UNAVAILABLE }));
 

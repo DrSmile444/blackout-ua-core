@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import type { OutrageQueue, OutrageShift } from '../entities';
+import { outrageMock5Change2 } from '../../mocks';
+import type { OutrageShift } from '../entities';
 import { LightStatus, OutrageRegion, OutrageType } from '../entities';
-import { outrageMock5Change2 } from '../mocks';
 
 const lightStatusAllValues = Object.values(LightStatus);
 const lightStatusKeys = lightStatusAllValues.slice(0, lightStatusAllValues.length / 2);
@@ -18,7 +18,7 @@ ${lightStatusKeys.map((key, index) => `  ${key} = ${lightStatusValues[index]},`)
 
 export class OutrageQueueDto {
   @ApiProperty({ example: '1' })
-  @IsNotEmpty()
+  @IsString()
   queue: string;
 
   @ApiProperty({
@@ -27,7 +27,6 @@ export class OutrageQueueDto {
     description: lightStatusDescription,
   })
   @IsEnum(LightStatus)
-  @IsNotEmpty()
   lightStatus: LightStatus;
 }
 
@@ -49,19 +48,17 @@ const queueExample: OutrageQueueDto[] = [
 export class OutrageShiftDto {
   @ApiProperty({ example: '10:00' })
   @IsString()
-  @IsNotEmpty()
   start: string;
 
   @ApiProperty({ example: '11:00' })
   @IsString()
-  @IsNotEmpty()
   end: string;
 
   @ApiProperty({ type: [OutrageQueueDto], example: queueExample })
-  @Type(() => OutrageQueueDto)
   @IsArray()
-  @IsNotEmpty()
-  queues: OutrageQueue[];
+  @ValidateNested({ each: true })
+  @Type(() => OutrageQueueDto)
+  queues: OutrageQueueDto[];
 }
 
 export class OutrageMessageDto {
@@ -78,28 +75,26 @@ export class OutrageDto {
   type: OutrageType;
 
   @ApiProperty({ type: Date, example: new Date(2024, 5, 25) })
-  @IsDateString()
-  @IsNotEmpty()
+  @IsDate()
   date: Date;
 
   @ApiProperty({ enum: OutrageRegion, example: OutrageRegion.CHERKASY })
   @IsEnum(OutrageRegion)
-  @IsNotEmpty()
   region: OutrageRegion;
 
-  // we need to add optional changeCount
   @ApiProperty({ example: 0 })
   @IsOptional()
+  @IsNumber()
   changeCount?: number;
 
   @ApiProperty({
     type: [OutrageShiftDto],
     example: [{ start: '10:00', end: '11:00', queues: queueExample } as OutrageShift],
   })
-  @IsOptional()
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OutrageShiftDto)
-  shifts: OutrageShift[];
+  shifts: OutrageShiftDto[];
 }
 
 export class OutrageResponseDto {

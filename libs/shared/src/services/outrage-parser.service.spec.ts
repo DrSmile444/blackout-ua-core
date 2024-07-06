@@ -1,7 +1,7 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 
-import { OutrageRegion } from '../entities';
+import { OutrageRegion } from '../database/entities';
 import { outrageMock5Change2, outrageMock6Origin, outrageMock7ChangeOld } from '../mocks';
 
 import { OutrageParserService } from './outrage-parser.service';

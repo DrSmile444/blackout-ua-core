@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { OutrageRegion } from './outrage.entity';
+import { OutrageRegion } from './outrage.enums';
 // eslint-disable-next-line import/no-cycle
 import { User } from './user.entity';
 
 @Entity('user_locations')
-export class BlackoutLocation {
+export class UserLocation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

@@ -8,6 +8,7 @@ import {
   OutrageParserService,
   OutrageRegion,
   OutrageResponseDto,
+  OutrageService,
   OutrageStorageService,
 } from '@app/shared';
 
@@ -22,6 +23,7 @@ export class OutrageController {
     private readonly outrageParserService: OutrageParserService,
     private readonly outrageStorageService: OutrageStorageService,
     private readonly outrageMergerService: OutrageMergerService,
+    private readonly outrageService: OutrageService,
     private readonly updateService: UpdateService,
   ) {}
 
@@ -33,9 +35,9 @@ export class OutrageController {
     type: OutrageDto,
     description: 'Create a new outrage from a message',
   })
-  saveOutrage(@Body() body: OutrageMessageDto): Promise<Outrage> {
-    const parsedMessage = this.outrageParserService.parseMessage(body.message, body.region);
-    return this.outrageStorageService.saveOutrage(parsedMessage);
+  async create(@Body() body: OutrageMessageDto) {
+    const outrageDto = this.outrageParserService.parseMessage(body.message, body.region);
+    return await this.outrageService.createOutrage(outrageDto);
   }
 
   @Get('/')
@@ -77,8 +79,8 @@ export class OutrageController {
     const accessDate = date || new Date();
     const outrages =
       queues.length > 0
-        ? await this.outrageStorageService.getOutragesByQueue(accessDate, region, queues)
-        : await this.outrageStorageService.getOutrages(accessDate, region);
+        ? await this.outrageService.findOutrages(accessDate, region, queues)
+        : await this.outrageService.findAll(accessDate, region);
 
     if (final) {
       return {
@@ -96,13 +98,13 @@ export class OutrageController {
   @ApiBody({ type: OutrageMessageDto })
   @ApiResponse({ status: 200, type: OutrageDto })
   @ApiOperation({ summary: 'Test how parsing logic works', deprecated: true })
-  process(@Body() body: OutrageMessageDto): Outrage {
+  process(@Body() body: OutrageMessageDto): OutrageDto {
     return this.outrageParserService.parseMessage(body.message, body.region);
   }
 
-  @Get('/storage')
+  @Get('/all')
   @ApiOperation({ summary: 'Returns the complete storage for debug', deprecated: true })
   getRawStorage() {
-    return this.outrageStorageService.getRawStorage();
+    return this.outrageService.getAll();
   }
 }
