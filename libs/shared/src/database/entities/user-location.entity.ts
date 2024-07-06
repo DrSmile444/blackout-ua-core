@@ -18,6 +18,9 @@ export class UserLocation {
   })
   region: OutrageRegion;
 
+  @Column({ default: true, type: 'boolean' })
+  active: boolean;
+
   @Column()
   queue: string;
 

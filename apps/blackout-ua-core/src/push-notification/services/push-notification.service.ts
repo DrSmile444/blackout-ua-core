@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CronJob } from 'cron';
 
-import type { OutrageRegionAndQueuesDto } from '@app/shared';
+import type { OutrageRegionAndQueuesDto, UserWithFoundRegionDto } from '@app/shared';
 import { OutrageService, removeDuplicates, UserService } from '@app/shared';
 
 @Injectable()
@@ -45,19 +45,25 @@ export class PushNotificationService {
 
   async sendNotification(shift: string) {
     const outrages = await this.outrageService.getShiftAndQueuesForDateAndShiftStart(new Date(), shift);
-    console.log('cron works!!', outrages);
 
     const requestPayload: OutrageRegionAndQueuesDto[] = outrages.map((outrage) => ({
       region: outrage.region,
       queues: outrage.shifts.flatMap((localShift) => localShift.queues.map((queue) => queue.queue)),
     }));
 
-    console.log('cron works!!', requestPayload);
     const users = await this.userService.getUsersByRegionAndQueues(requestPayload);
 
-    console.log('cron works!!', users);
-    // console.log(`Sending notification to user ${userId}`);
-    // Add your notification logic here
+    users.forEach((user) => this.sendNotificationToUser(user));
+  }
+
+  sendNotificationToUser(user: UserWithFoundRegionDto) {
+    const { foundRegion, locations } = user;
+    const foundLocation = locations.find((location) => location.region === foundRegion);
+
+    const title = '⚠️ Відключення Світла';
+    const message = `Увага! В локації '${foundLocation.name}' світла не буде через 15 хвилин. Підготуйтеся!`;
+
+    console.log(user, { title, message });
   }
 
   clearAllJobs() {

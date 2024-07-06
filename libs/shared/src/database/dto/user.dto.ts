@@ -55,16 +55,19 @@ export class UserDto {
       {
         name: 'Мій Дім',
         region: OutrageRegion.CHERKASY,
+        active: true,
         queue: '1',
       },
       {
         name: 'Спортзал',
         region: OutrageRegion.CHERKASY,
+        active: true,
         queue: '6',
       },
       {
         name: 'Офіс Чернівці',
         region: OutrageRegion.CHERNIVTSI,
+        active: true,
         queue: '6',
       },
     ] as BlackoutLocationDto[],
@@ -74,3 +77,8 @@ export class UserDto {
 }
 
 export class UpdateUserDto extends PartialType(UserDto) {}
+
+export class UserWithFoundRegionDto extends UserDto {
+  @ApiProperty({ example: OutrageRegion.CHERKASY, description: 'Found region' })
+  foundRegion: OutrageRegion;
+}
