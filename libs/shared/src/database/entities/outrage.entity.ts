@@ -21,7 +21,7 @@ export class Outrage {
   })
   region: OutrageRegion;
 
-  @Column()
+  @Column({ type: 'timestamptz' })
   date: Date;
 
   @Column({ nullable: true })

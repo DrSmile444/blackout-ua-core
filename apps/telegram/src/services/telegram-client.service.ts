@@ -83,6 +83,18 @@ export class TelegramClientService {
         .filter((message) => message.message)
         .map((message) => {
           const outrage = convert(message.message);
+
+          if (!outrage.date && outrage.shifts.length > 0) {
+            this.client
+              .sendMessage('me', {
+                message: `Cannot parse this message:\n\n${message.message}`,
+              })
+              .then(() => console.info('Message sent!'))
+              .catch(console.error);
+
+            return null;
+          }
+
           return outrage.shifts.length > 0 ? outrage : null;
         })
         .filter(Boolean)

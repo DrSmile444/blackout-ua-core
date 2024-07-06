@@ -37,7 +37,7 @@ export class OutrageParserService {
     return {
       type,
       region,
-      date: date || new Date(),
+      date: date || null,
       shifts,
     };
   }
@@ -66,6 +66,7 @@ export class OutrageParserService {
 
         if (monthIndex) {
           date = new Date(currentYear, monthIndex, +day);
+          // date = new Date(`${currentYear}-${+monthIndex + 1}-${day}`);
           return true;
         }
       }
