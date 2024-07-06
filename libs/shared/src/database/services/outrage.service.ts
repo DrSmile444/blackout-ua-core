@@ -4,7 +4,7 @@ import * as deepEqual from 'fast-deep-equal';
 import { Repository } from 'typeorm';
 
 import type { OutrageDto } from '../dto';
-import type { OutrageRegion } from '../entities';
+import type { OutrageRegion, OutrageShift } from '../entities';
 import { Outrage } from '../entities';
 
 function removeIds<T extends object | any[]>(entity: T): T {
@@ -109,6 +109,27 @@ export class OutrageService {
       .where('outrage.date = :date', { date })
       .andWhere('outrage.region = :region', { region })
       .andWhere('queue.queue IN (:...queues)', { queues })
+      .getMany();
+  }
+
+  getShiftsForDate(date: Date): Promise<OutrageShift[]> {
+    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    return this.outrageRepository
+      .createQueryBuilder('outrage')
+      .leftJoinAndSelect('outrage.shifts', 'shift')
+      .where('outrage.date = :date', { date: clearDate })
+      .getMany()
+      .then((outrages) => outrages.flatMap((outrage) => outrage.shifts));
+  }
+
+  getShiftAndQueuesForDateAndShiftStart(date: Date, shiftStart: string): Promise<Outrage[]> {
+    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    return this.outrageRepository
+      .createQueryBuilder('outrage')
+      .leftJoinAndSelect('outrage.shifts', 'shift')
+      .leftJoinAndSelect('shift.queues', 'queue')
+      .where('outrage.date = :date', { date: clearDate })
+      .andWhere('shift.start = :shiftStart', { shiftStart })
       .getMany();
   }
 }

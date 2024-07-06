@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UpdateModule } from './update/update.module';
 import { UserModule } from './user/user.module';
+import { PushNotificationModule } from './push-notification/push-notification.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
     CityModule,
     UpdateModule,
     UserModule,
+    PushNotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
