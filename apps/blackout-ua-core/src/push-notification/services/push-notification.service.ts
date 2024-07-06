@@ -5,6 +5,7 @@ import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 import type { OutrageRegionAndQueuesDto, UserWithFoundRegionDto } from '@app/shared';
 import { OutrageService, removeDuplicates, UserService } from '@app/shared';
 
+import { OutrageMergerService } from '../../outrage/services';
 import firebaseAdmin from '../firebase-admin';
 
 @Injectable()
@@ -14,18 +15,25 @@ export class PushNotificationService {
   private readonly logger = new Logger(PushNotificationService.name);
 
   constructor(
+    private outrageMergerService: OutrageMergerService,
     private outrageService: OutrageService,
     private userService: UserService,
   ) {
-    // this.createNotificationJobs();
-    // this.scheduleNotification('20:56');
-    this.sendNotification('21:00');
+    this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
+    // this.sendNotification('21:00');
   }
 
   async createNotificationJobs() {
-    const shifts = removeDuplicates((await this.outrageService.getShiftsForDate(new Date())).map((shift) => shift.start));
-    console.log(shifts);
-    shifts.forEach((shift) => this.scheduleNotification(shift));
+    const currentHour = new Date().getHours();
+    const currentMinute = new Date().getMinutes();
+    const currentShift = this.outrageMergerService.parseTime(`${currentHour}:${currentMinute}`);
+
+    const shifts = await this.outrageService.getShiftsForDate(new Date());
+    const shiftStarts = removeDuplicates(shifts.map((shift) => shift.start)).filter(
+      (shift) => this.outrageMergerService.parseTime(shift) > currentShift,
+    );
+
+    shiftStarts.forEach((shift) => this.scheduleNotification(shift));
   }
 
   scheduleNotification(shift: string) {
@@ -36,10 +44,10 @@ export class PushNotificationService {
     const notificationTime = new Date(scheduleDate.getTime() - 15 * 60_000); // 15 minutes before the shift
     const cronTime = `${notificationTime.getMinutes()} ${notificationTime.getHours()} ${notificationTime.getDate()} ${notificationTime.getMonth() + 1} *`;
 
-    this.logger.debug(`Scheduling notification for ${shift} at ${notificationTime}`);
+    this.logger.debug(`Scheduling notification for ${shift} at ${notificationTime.toISOString()}`);
 
     const job = new CronJob(cronTime, () => {
-      this.sendNotification(shift);
+      this.sendNotification(shift).catch((error) => this.logger.error('Error sending notification', error));
     });
 
     job.start();
@@ -56,7 +64,10 @@ export class PushNotificationService {
 
     const users = await this.userService.getUsersByRegionAndQueues(requestPayload);
 
-    users.forEach((user) => this.sendNotificationToUser(user));
+    this.logger.debug(`Sending notification for shift ${shift} to ${users.length} users with payload: ${JSON.stringify(requestPayload)}`);
+
+    const userSendRequests = users.map((user) => this.sendNotificationToUser(user));
+    await Promise.all(userSendRequests);
   }
 
   async sendNotificationToUser(user: UserWithFoundRegionDto): Promise<void> {
@@ -64,7 +75,7 @@ export class PushNotificationService {
     const foundLocation = locations.find((location) => location.region === foundRegion);
 
     if (!foundLocation) {
-      console.warn(`No location found for region: ${foundRegion}`);
+      this.logger.warn(`No location found for region: ${foundRegion}`);
       return;
     }
 
@@ -81,9 +92,9 @@ export class PushNotificationService {
 
     try {
       await firebaseAdmin.messaging().send(payload);
-      console.log(`Notification sent to ${fcmToken}`);
+      this.logger.log(`Notification sent to ${fcmToken}`);
     } catch (error) {
-      console.error(`Error sending notification to ${fcmToken}`, error);
+      this.logger.error(`Error sending notification to ${fcmToken}`, error);
     }
   }
 

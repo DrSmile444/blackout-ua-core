@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import { DatabaseModule } from '@app/shared';
+import { DatabaseModule, SharedModule } from '@app/shared';
+
+import { OutrageMergerService } from '../outrage/services';
 
 import { PushNotificationService } from './services';
 
 @Module({
-  imports: [DatabaseModule],
-  providers: [PushNotificationService],
+  imports: [DatabaseModule, SharedModule],
+  providers: [PushNotificationService, OutrageMergerService],
 })
 export class PushNotificationModule {}
