@@ -112,3 +112,13 @@ export class OutrageResponseDto {
   @IsNotEmpty()
   outrages: OutrageDto[];
 }
+
+export class OutrageRegionAndQueuesDto {
+  @ApiProperty({ enum: OutrageRegion, example: OutrageRegion.CHERKASY })
+  region: OutrageRegion;
+
+  @ApiProperty({ type: [String], example: ['2', '3'] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  queues: string[];
+}

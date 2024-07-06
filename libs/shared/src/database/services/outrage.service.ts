@@ -122,14 +122,29 @@ export class OutrageService {
       .then((outrages) => outrages.flatMap((outrage) => outrage.shifts));
   }
 
-  getShiftAndQueuesForDateAndShiftStart(date: Date, shiftStart: string): Promise<Outrage[]> {
+  async getShiftAndQueuesForDateAndShiftStart(date: Date, shiftStart: string): Promise<Outrage[]> {
     const clearDate = new Date(date.setHours(0, 0, 0, 0));
-    return this.outrageRepository
+    const outrages = await this.outrageRepository
       .createQueryBuilder('outrage')
       .leftJoinAndSelect('outrage.shifts', 'shift')
       .leftJoinAndSelect('shift.queues', 'queue')
       .where('outrage.date = :date', { date: clearDate })
       .andWhere('shift.start = :shiftStart', { shiftStart })
       .getMany();
+
+    return this.getLatestOutrages(outrages);
+  }
+
+  getLatestOutrages(outrages: Outrage[]): Outrage[] {
+    const latestOutragesByRegion: { [region: string]: Outrage } = {};
+
+    outrages.forEach((outrage) => {
+      const { region } = outrage;
+      if (!latestOutragesByRegion[region] || latestOutragesByRegion[region].changeCount < outrage.changeCount) {
+        latestOutragesByRegion[region] = outrage;
+      }
+    });
+
+    return Object.values(latestOutragesByRegion);
   }
 }

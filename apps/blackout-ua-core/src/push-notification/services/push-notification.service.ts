@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CronJob } from 'cron';
 
+import type { OutrageRegionAndQueuesDto } from '@app/shared';
 import { OutrageService, removeDuplicates, UserService } from '@app/shared';
 
 @Injectable()
@@ -45,7 +46,16 @@ export class PushNotificationService {
   async sendNotification(shift: string) {
     const outrages = await this.outrageService.getShiftAndQueuesForDateAndShiftStart(new Date(), shift);
     console.log('cron works!!', outrages);
-    // const users = this.userService.getUsersByRegionAndS;
+
+    const requestPayload: OutrageRegionAndQueuesDto[] = outrages.map((outrage) => ({
+      region: outrage.region,
+      queues: outrage.shifts.flatMap((localShift) => localShift.queues.map((queue) => queue.queue)),
+    }));
+
+    console.log('cron works!!', requestPayload);
+    const users = await this.userService.getUsersByRegionAndQueues(requestPayload);
+
+    console.log('cron works!!', users);
     // console.log(`Sending notification to user ${userId}`);
     // Add your notification logic here
   }
