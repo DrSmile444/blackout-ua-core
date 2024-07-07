@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import type { OutrageRegionAndQueuesDto, UpdateUserDto, UserDto, UserWithFoundRegionDto } from '../dto';
+import type { OutrageRegionAndQueuesDto, UpdateUserDto, UserDto } from '../dto';
 import { User, UserLocation } from '../entities';
 
 @Injectable()
@@ -46,11 +46,12 @@ export class UserService {
       user.locations = locations.map((location) => this.locationRepository.create(location));
     }
     Object.assign(user, userDetails);
+    console.log(user);
     return await this.userRepository.save(user);
   } // Add more methods as needed, e.g., findOne, update, delete
 
-  async getUsersByRegionAndQueues(payload: OutrageRegionAndQueuesDto[]): Promise<UserWithFoundRegionDto[]> {
-    const users: UserWithFoundRegionDto[] = [];
+  async getUsersByRegionAndQueues(payload: OutrageRegionAndQueuesDto[]): Promise<User[]> {
+    const users: User[] = [];
     for (const { region, queues } of payload) {
       const usersByRegionAndQueue = await this.userRepository
         .createQueryBuilder('user')
@@ -59,7 +60,7 @@ export class UserService {
         .andWhere('location.active = true')
         .andWhere('location.queue IN (:...queues)', { queues })
         .getMany();
-      users.push(...usersByRegionAndQueue.map((user) => ({ ...user, foundRegion: region })));
+      users.push(...usersByRegionAndQueue);
     }
     return users;
   }

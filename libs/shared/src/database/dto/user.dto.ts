@@ -77,8 +77,3 @@ export class UserDto {
 }
 
 export class UpdateUserDto extends PartialType(UserDto) {}
-
-export class UserWithFoundRegionDto extends UserDto {
-  @ApiProperty({ example: OutrageRegion.CHERKASY, description: 'Found region' })
-  foundRegion: OutrageRegion;
-}

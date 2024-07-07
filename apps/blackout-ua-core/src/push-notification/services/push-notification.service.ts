@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { CronJob } from 'cron';
 import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
-import type { OutrageRegionAndQueuesDto, UserWithFoundRegionDto } from '@app/shared';
+import type { OutrageRegionAndQueuesDto, User } from '@app/shared';
 import { OutrageService, removeDuplicates, UserService } from '@app/shared';
 
 import { OutrageMergerService } from '../../outrage/services';
@@ -91,23 +91,21 @@ export class PushNotificationService {
 
     this.logger.debug(`Sending notification for shift ${shift} to ${users.length} users with payload: ${JSON.stringify(requestPayload)}`);
 
-    const userSendRequests = users.map((user) => this.sendNotificationToUser(user));
+    const userSendRequests = users.map((user) => this.sendNotificationToUser(user, shift));
     await Promise.all(userSendRequests);
   }
 
-  async sendNotificationToUser(user: UserWithFoundRegionDto): Promise<void> {
-    const { foundRegion, fcmToken, locations } = user;
-    const foundLocation = locations.find((location) => location.region === foundRegion);
+  sendNotificationToUser(user: User, shift: string): Promise<void[]> {
+    const { fcmToken, locations } = user;
 
-    if (!foundLocation) {
-      this.logger.warn(`No location found for region: ${foundRegion}`);
-      return;
-    }
+    return Promise.all(
+      locations.map((location) => {
+        const title = '🔴 Електропостачання вимкнеться за 15 хвилин!';
+        const message = `Локація '${location.name}': електропостачання припиниться через 15 хвилин (о ${shift}).`;
 
-    const title = '🔴 Електропостачання вимкнеться за 15 хвилин!';
-    const message = `Локація '${foundLocation.name}': електропостачання припиниться через 15 хвилин.`;
-
-    await this.sendUser(fcmToken, title, message);
+        return this.sendUser(fcmToken, title, message);
+      }),
+    );
   }
 
   async sendUser(fcmToken: string, title: string, body: string): Promise<void> {
