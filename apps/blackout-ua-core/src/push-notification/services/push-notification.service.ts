@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { CronJob } from 'cron';
 import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
@@ -18,9 +19,16 @@ export class PushNotificationService {
     private outrageMergerService: OutrageMergerService,
     private outrageService: OutrageService,
     private userService: UserService,
+    private configService: ConfigService,
   ) {
     this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
     // this.sendNotification('21:00');
+
+    // this.sendUser(
+    //   this.configService.get('TEST_DEVICE_FCM_TOKEN'),
+    //   '⚠️ Відключення Світла',
+    //   'Увага! В локації "Дім" світла не буде через 15 хвилин. Підготуйтеся!',
+    // );
   }
 
   async createNotificationJobs() {
@@ -82,11 +90,15 @@ export class PushNotificationService {
     const title = '⚠️ Відключення Світла';
     const message = `Увага! В локації '${foundLocation.name}' світла не буде через 15 хвилин. Підготуйтеся!`;
 
+    await this.sendUser(fcmToken, title, message);
+  }
+
+  async sendUser(fcmToken: string, title: string, body: string): Promise<void> {
     const payload: Message = {
       token: fcmToken,
       notification: {
         title,
-        body: message,
+        body,
       },
     };
 

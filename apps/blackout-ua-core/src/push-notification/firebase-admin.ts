@@ -1,19 +1,11 @@
-// import * as firebaseAdmin from 'firebase-admin';
-// import * as serviceAccount from './path/to/serviceAccountKey.json';
-// TODO add these credentials
-// const serviceAccount = {};
-//
-// firebaseAdmin.initializeApp({
-//   credential: firebaseAdmin.credential.cert(serviceAccount as firebaseAdmin.ServiceAccount),
-//   databaseURL: 'https://<your-database-name>.firebaseio.com',
-// });
+import * as process from 'node:process';
+import * as firebaseAdmin from 'firebase-admin';
 
-import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN) as firebaseAdmin.ServiceAccount;
 
-const firebaseAdmin = {
-  messaging: () => ({
-    send: (message: Message) => Promise.resolve('mocked'),
-  }),
-};
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount),
+  // databaseURL: 'https://<your-database-name>.firebaseio.com',
+});
 
 export default firebaseAdmin;
