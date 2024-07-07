@@ -22,13 +22,30 @@ export class PushNotificationService {
     private configService: ConfigService,
   ) {
     this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
-    // this.sendNotification('21:00');
+    // this.sendNotification('17:00');
 
-    // this.sendUser(
-    //   this.configService.get('TEST_DEVICE_FCM_TOKEN'),
-    //   '⚠️ Відключення Світла',
-    //   'Увага! В локації "Дім" світла не буде через 15 хвилин. Підготуйтеся!',
-    // );
+    const foundLocation = {
+      name: 'Мій дім',
+    };
+
+    const message = {
+      title: '🔴 Електропостачання вимкнеться за 15 хвилин!',
+      body: `Локація '${foundLocation.name}': електропостачання з'явиться за 15 хвилин.`,
+    };
+
+    const message2 = {
+      title: '🟢 Електропостачання відновиться за 15 хвилин!',
+      body: `Локація '${foundLocation.name}': електропостачання припиниться через 15 хвилин.`,
+    };
+
+    // this.sendUser(this.configService.get('TEST_FCM_TOKEN_DD'), message.title, message.body);
+
+    // this.sendUser(this.configService.get('TEST_FCM_TOKEN_DH'), message.title, message.body);
+    // this.sendUser(this.configService.get('TEST_FCM_TOKEN_DH'), message2.title, message2.body);
+    // const index = 4;
+
+    // this.sendUser(this.configService.get('TEST_FCM_TOKEN_DV'), message.title, message.body);
+    // this.sendUser(this.configService.get('TEST_FCM_TOKEN_DV'), message2.title, message2.body);
   }
 
   async createNotificationJobs() {
@@ -87,8 +104,8 @@ export class PushNotificationService {
       return;
     }
 
-    const title = '⚠️ Відключення Світла';
-    const message = `Увага! В локації '${foundLocation.name}' світла не буде через 15 хвилин. Підготуйтеся!`;
+    const title = '🔴 Електропостачання вимкнеться за 15 хвилин!';
+    const message = `Локація '${foundLocation.name}': електропостачання припиниться через 15 хвилин.`;
 
     await this.sendUser(fcmToken, title, message);
   }
