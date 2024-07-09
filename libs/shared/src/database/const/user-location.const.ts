@@ -1,4 +1,4 @@
-import { NotificationLeadTime } from '@app/shared';
+import { NotificationLeadTime } from '../entities';
 
 export const userLocationTimes: NotificationLeadTime[] = [
   NotificationLeadTime.MIN_15,
