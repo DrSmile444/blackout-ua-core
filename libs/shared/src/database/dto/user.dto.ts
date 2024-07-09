@@ -1,9 +1,9 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsArray, IsString } from 'class-validator';
 
-import { OutrageRegion } from '../entities';
+import { NotificationLeadTime, OutrageRegion } from '../entities';
 
-export class BlackoutLocationDto {
+export class UserLocationDto {
   @ApiProperty({ example: 'Мій Дім' })
   name: string;
 
@@ -12,6 +12,9 @@ export class BlackoutLocationDto {
 
   @ApiProperty({ example: true, description: 'Is location active to send push notification' })
   active: boolean;
+
+  @ApiProperty({ example: NotificationLeadTime.MIN_15, enum: NotificationLeadTime })
+  notificationLeadTime: NotificationLeadTime;
 
   @ApiProperty({ example: '1' })
   queue: string;
@@ -50,30 +53,33 @@ export class UserDto {
   fcmToken: string;
 
   @ApiProperty({
-    type: [BlackoutLocationDto],
+    type: [UserLocationDto],
     example: [
       {
         name: 'Мій Дім',
         region: OutrageRegion.CHERKASY,
         active: true,
+        notificationLeadTime: NotificationLeadTime.MIN_15,
         queue: '1',
       },
       {
         name: 'Спортзал',
         region: OutrageRegion.CHERKASY,
         active: true,
+        notificationLeadTime: NotificationLeadTime.MIN_30,
         queue: '6',
       },
       {
         name: 'Офіс Чернівці',
         region: OutrageRegion.CHERNIVTSI,
-        active: true,
+        active: false,
+        notificationLeadTime: NotificationLeadTime.MIN_60,
         queue: '6',
       },
-    ] as BlackoutLocationDto[],
+    ] as UserLocationDto[],
   })
   @IsArray()
-  locations: BlackoutLocationDto[];
+  locations: UserLocationDto[];
 }
 
 export class UpdateUserDto extends PartialType(UserDto) {}

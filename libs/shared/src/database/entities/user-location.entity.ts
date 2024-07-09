@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { OutrageRegion } from './outrage.enums';
+import { NotificationLeadTime, OutrageRegion } from './outrage.enums';
 // eslint-disable-next-line import/no-cycle
 import { User } from './user.entity';
 
@@ -23,6 +23,13 @@ export class UserLocation {
 
   @Column()
   queue: string;
+
+  @Column({
+    type: 'int',
+    default: 15,
+    enum: NotificationLeadTime,
+  })
+  notificationLeadTime: number;
 
   @ManyToOne(() => User, (user) => user.locations)
   user: User;

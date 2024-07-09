@@ -1,3 +1,4 @@
+export * from './const';
 export * from './database.module';
 export * from './dto';
 export * from './entities';

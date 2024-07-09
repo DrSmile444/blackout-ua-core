@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import type { OutrageRegionAndQueuesDto, UpdateUserDto, UserDto } from '../dto';
+import type { NotificationLeadTime } from '../entities';
 import { User, UserLocation } from '../entities';
 
 @Injectable()
@@ -50,7 +51,7 @@ export class UserService {
     return await this.userRepository.save(user);
   } // Add more methods as needed, e.g., findOne, update, delete
 
-  async getUsersByRegionAndQueues(payload: OutrageRegionAndQueuesDto[]): Promise<User[]> {
+  async getUsersByRegionAndQueues(payload: OutrageRegionAndQueuesDto[], leadTime: NotificationLeadTime): Promise<User[]> {
     const users: User[] = [];
     for (const { region, queues } of payload) {
       const usersByRegionAndQueue = await this.userRepository
@@ -58,6 +59,7 @@ export class UserService {
         .leftJoinAndSelect('user.locations', 'location')
         .where('location.region = :region', { region })
         .andWhere('location.active = true')
+        .andWhere('location.notificationLeadTime = :leadTime', { leadTime })
         .andWhere('location.queue IN (:...queues)', { queues })
         .getMany();
       users.push(...usersByRegionAndQueue);

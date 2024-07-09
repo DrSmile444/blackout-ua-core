@@ -13,3 +13,9 @@ export enum LightStatus {
   UNAVAILABLE = 1,
   POSSIBLY_UNAVAILABLE = 2,
 }
+
+export enum NotificationLeadTime {
+  MIN_15 = 15,
+  MIN_30 = 30,
+  MIN_60 = 60,
+}
