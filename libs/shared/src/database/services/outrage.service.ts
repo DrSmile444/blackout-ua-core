@@ -135,6 +135,16 @@ export class OutrageService {
     return this.getLatestOutrages(outrages);
   }
 
+  getAllLatestOutrages(date: Date): Promise<Outrage[]> {
+    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    return this.outrageRepository
+      .createQueryBuilder('outrage')
+      .leftJoinAndSelect('outrage.shifts', 'shift')
+      .leftJoinAndSelect('shift.queues', 'queue')
+      .where('outrage.date = :date', { date: clearDate })
+      .getMany();
+  }
+
   getLatestOutrages(outrages: Outrage[]): Outrage[] {
     const latestOutragesByRegion: { [region: string]: Outrage } = {};
 

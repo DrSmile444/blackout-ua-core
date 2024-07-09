@@ -3,8 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { CronJob } from 'cron';
 import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
-import type { NotificationLeadTime, OutrageRegionAndQueuesDto, User } from '@app/shared';
-import { OutrageService, removeDuplicates, userLocationTimes, UserService } from '@app/shared';
+import type { NotificationLeadTime, Outrage, OutrageRegion, OutrageRegionAndQueuesDto, User, UserLocation } from '@app/shared';
+import {
+  isUnavailableOrPossiblyUnavailable,
+  LightStatus,
+  OutrageService,
+  removeDuplicates,
+  typedObjectKeysUtil,
+  userLocationTimes,
+  UserService,
+} from '@app/shared';
 
 import { OutrageMergerService } from '../../outrage/services';
 import firebaseAdmin from '../firebase-admin';
@@ -22,7 +30,7 @@ export class PushNotificationService {
     private configService: ConfigService,
   ) {
     this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
-    // this.sendNotification('17:00');
+    // this.sendNotification('20:00', 15);
 
     // const foundLocation: UserLocation = {
     //   id: '',
@@ -91,12 +99,44 @@ export class PushNotificationService {
 
     const users = await this.userService.getUsersByRegionAndQueues(requestPayload, leadTime);
 
-    this.logger.debug(
-      `Sending notification for shift ${shift} with lead time ${leadTime} to ${users.length} users with payload: ${JSON.stringify(requestPayload)}`,
+    const todayOutrages = await this.outrageService.getAllLatestOutrages(new Date());
+    // eslint-disable-next-line unicorn/no-array-reduce
+    const outragesByRegion = todayOutrages.reduce(
+      (accumulator, outrage) => {
+        accumulator[outrage.region] = [...(accumulator[outrage.region] || []), outrage];
+        return accumulator;
+      },
+      {} as Record<OutrageRegion, Outrage[]>,
     );
 
-    const userSendRequests = users.map((user) => this.sendNotificationToUser(user, shift, leadTime));
+    const clearOutrages = typedObjectKeysUtil(outragesByRegion).map((region) =>
+      this.outrageMergerService.mergeOutrages(outragesByRegion[region]),
+    );
+
+    const clearUsers = users.map(
+      (user): User => ({
+        ...user,
+        locations: user.locations.filter((location) => !this.checkIfLocationWithoutElectricity(location, clearOutrages, shift)),
+      }),
+    );
+
+    this.logger.debug(
+      `Sending notification for shift ${shift} with lead time ${leadTime} to ${users.length} users with ${clearUsers.reduce((accumulator, user) => accumulator + user.locations.length, 0)} with payload: ${JSON.stringify(requestPayload)}`,
+    );
+
+    const userSendRequests = clearUsers.map((user) => this.sendNotificationToUser(user, shift, leadTime));
     await Promise.all(userSendRequests);
+  }
+
+  checkIfLocationWithoutElectricity(location: UserLocation, outrages: Outrage[], shift: string): boolean {
+    const locationOutrage = outrages.find((outrage) => outrage.region === location.region);
+    const previousShift = locationOutrage.shifts.find((localShift) => localShift.end === shift);
+
+    if (!previousShift) {
+      return false;
+    }
+
+    return previousShift.queues.some((queue) => queue.queue === location.queue && isUnavailableOrPossiblyUnavailable(queue.lightStatus));
   }
 
   sendNotificationToUser(user: User, shift: string, leadTime: NotificationLeadTime): Promise<void[]> {
