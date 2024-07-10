@@ -17,6 +17,8 @@ import {
 import { OutrageMergerService } from '../../outrage/services';
 import firebaseAdmin from '../firebase-admin';
 
+export type ShiftType = 'start' | 'end';
+
 @Injectable()
 export class PushNotificationService {
   private jobs: CronJob[] = [];
@@ -30,8 +32,14 @@ export class PushNotificationService {
     private configService: ConfigService,
   ) {
     this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
-    // this.sendNotification('20:00', 15);
+    this.test();
+  }
 
+  async test() {
+    // await this.sendNotification('20:00', 'start', 15);
+    // await this.sendNotification('20:00', 'end', 15);
+    // await this.sendNotification('21:00', 'start', 15);
+    // await this.sendNotification('21:00', 'end', 15);
     // const foundLocation: UserLocation = {
     //   id: '',
     //   name: 'Мій дім',
@@ -41,7 +49,6 @@ export class PushNotificationService {
     //   notificationLeadTime: 60,
     //   user: null,
     // };
-
     // const user: User = {
     //   id: '',
     //   deviceId: '',
@@ -50,6 +57,7 @@ export class PushNotificationService {
     // };
     //
     // this.sendNotificationToUser(user, '17:00', foundLocation.notificationLeadTime);
+    // this.userService.deleteAll();
   }
 
   async createNotificationJobs() {
@@ -61,15 +69,19 @@ export class PushNotificationService {
     const shiftStarts = removeDuplicates(shifts.map((shift) => shift.start)).filter(
       (shift) => this.outrageMergerService.parseTime(shift) > currentShift,
     );
+    const shiftEnds = removeDuplicates(shifts.map((shift) => shift.end)).filter(
+      (shift) => this.outrageMergerService.parseTime(shift) > currentShift,
+    );
 
-    shiftStarts.forEach((shift) => this.scheduleNotification(shift));
+    shiftStarts.forEach((shift) => this.scheduleNotification(shift, 'start'));
+    shiftEnds.forEach((shift) => this.scheduleNotification(shift, 'end'));
 
     if (shiftStarts.length === 0) {
       this.logger.debug('No shifts to schedule notifications for');
     }
   }
 
-  scheduleNotification(shift: string) {
+  scheduleNotification(shift: string, type: ShiftType) {
     const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
     const scheduleDate = new Date();
     scheduleDate.setHours(hours, minutes, 0, 0);
@@ -78,10 +90,10 @@ export class PushNotificationService {
       const notificationTime = new Date(scheduleDate.getTime() - leadTime * 60_000); // 15 minutes before the shift
       const cronTime = `${notificationTime.getMinutes()} ${notificationTime.getHours()} ${notificationTime.getDate()} ${notificationTime.getMonth() + 1} *`;
 
-      this.logger.debug(`Scheduling notification for ${shift} at ${notificationTime.toISOString()}`);
+      this.logger.debug(`Scheduling notification for ${type} ${shift} at ${notificationTime.toISOString()}`);
 
       const job = new CronJob(cronTime, () => {
-        this.sendNotification(shift, leadTime).catch((error) => this.logger.error('Error sending notification', error));
+        this.sendNotification(shift, type, leadTime).catch((error) => this.logger.error('Error sending notification', error));
       });
 
       job.start();
@@ -89,8 +101,13 @@ export class PushNotificationService {
     });
   }
 
-  async sendNotification(shift: string, leadTime: NotificationLeadTime) {
-    const outrages = await this.outrageService.getShiftAndQueuesForDateAndShiftStart(new Date(), shift);
+  async sendNotification(shift: string, type: ShiftType, leadTime: NotificationLeadTime) {
+    const outrages =
+      type === 'start'
+        ? await this.outrageService.getShiftAndQueuesForDateAndShiftStart(new Date(), shift)
+        : type === 'end'
+          ? await this.outrageService.getShiftAndQueuesForDateAndShiftEnd(new Date(), shift)
+          : [];
 
     const requestPayload: OutrageRegionAndQueuesDto[] = outrages.map((outrage) => ({
       region: outrage.region,
@@ -116,20 +133,47 @@ export class PushNotificationService {
     const clearUsers = users.map(
       (user): User => ({
         ...user,
-        locations: user.locations.filter((location) => !this.checkIfLocationWithoutElectricity(location, clearOutrages, shift)),
+        locations: user.locations.filter((location) => !this.checkIfLocationWithoutElectricity(location, clearOutrages, shift, type)),
       }),
     );
 
     this.logger.debug(
-      `Sending notification for shift ${shift} with lead time ${leadTime} to ${users.length} users with ${clearUsers.reduce((accumulator, user) => accumulator + user.locations.length, 0)} with payload: ${JSON.stringify(requestPayload)}`,
+      `Sending notification for shift ${shift} ${type} with lead time ${leadTime} to ${users.length} users with ${clearUsers.reduce((accumulator, user) => accumulator + user.locations.length, 0)} with payload: ${JSON.stringify(requestPayload)}`,
     );
 
-    const userSendRequests = clearUsers.map((user) => this.sendNotificationToUser(user, shift, leadTime));
+    const userSendRequests = clearUsers.map((user) => {
+      switch (type) {
+        case 'start': {
+          return this.sendDisableNotificationToUser(user, shift, leadTime);
+        }
+        case 'end': {
+          return this.sendEnableNotificationToUser(user, shift, leadTime);
+        }
+        default: {
+          return Promise.resolve([]);
+        }
+      }
+    });
     await Promise.all(userSendRequests);
   }
 
-  checkIfLocationWithoutElectricity(location: UserLocation, outrages: Outrage[], shift: string): boolean {
+  checkIfLocationWithoutElectricity(location: UserLocation, outrages: Outrage[], shift: string, type: ShiftType): boolean {
     const locationOutrage = outrages.find((outrage) => outrage.region === location.region);
+
+    switch (type) {
+      case 'start': {
+        return this.checkIfLocationWithoutElectricityStart(location, locationOutrage, shift);
+      }
+      case 'end': {
+        return this.checkIfLocationWithoutElectricityEnd(location, locationOutrage, shift);
+      }
+      default: {
+        return false;
+      }
+    }
+  }
+
+  checkIfLocationWithoutElectricityStart(location: UserLocation, locationOutrage: Outrage, shift: string): boolean {
     const previousShift = locationOutrage.shifts.find((localShift) => localShift.end === shift);
 
     if (!previousShift) {
@@ -139,13 +183,36 @@ export class PushNotificationService {
     return previousShift.queues.some((queue) => queue.queue === location.queue && isUnavailableOrPossiblyUnavailable(queue.lightStatus));
   }
 
-  sendNotificationToUser(user: User, shift: string, leadTime: NotificationLeadTime): Promise<void[]> {
+  checkIfLocationWithoutElectricityEnd(location: UserLocation, locationOutrage: Outrage, shift: string): boolean {
+    const nextShift = locationOutrage.shifts.find((localShift) => localShift.start === shift);
+
+    if (!nextShift) {
+      return false;
+    }
+
+    return nextShift.queues.some((queue) => queue.queue === location.queue && !isUnavailableOrPossiblyUnavailable(queue.lightStatus));
+  }
+
+  sendDisableNotificationToUser(user: User, shift: string, leadTime: NotificationLeadTime): Promise<void[]> {
     const { fcmToken, locations } = user;
 
     return Promise.all(
       locations.map((location) => {
         const title = `🔴 Електропостачання вимкнеться через ${leadTime} хвилин!`;
         const message = `Локація “${location.name}”: електропостачання припиниться через ${leadTime} хвилин (о ${shift}). Будь ласка, перевірте чи всі пристрої заряджені!`;
+
+        return this.sendUser(fcmToken, title, message);
+      }),
+    );
+  }
+
+  sendEnableNotificationToUser(user: User, shift: string, leadTime: NotificationLeadTime): Promise<void[]> {
+    const { fcmToken, locations } = user;
+
+    return Promise.all(
+      locations.map((location) => {
+        const title = `🟢 Електропостачання включиться через ${leadTime} хвилин!`;
+        const message = `Локація “${location.name}”: електропостачання з'явиться через ${leadTime} хвилин (о ${shift}).`;
 
         return this.sendUser(fcmToken, title, message);
       }),

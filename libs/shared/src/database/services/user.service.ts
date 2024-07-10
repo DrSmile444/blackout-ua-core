@@ -66,4 +66,9 @@ export class UserService {
     }
     return users;
   }
+
+  async deleteAll(): Promise<void> {
+    await this.locationRepository.delete({});
+    await this.userRepository.delete({});
+  }
 }

@@ -135,6 +135,19 @@ export class OutrageService {
     return this.getLatestOutrages(outrages);
   }
 
+  async getShiftAndQueuesForDateAndShiftEnd(date: Date, shiftEnd: string): Promise<Outrage[]> {
+    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    const outrages = await this.outrageRepository
+      .createQueryBuilder('outrage')
+      .leftJoinAndSelect('outrage.shifts', 'shift')
+      .leftJoinAndSelect('shift.queues', 'queue')
+      .where('outrage.date = :date', { date: clearDate })
+      .andWhere('shift.end = :shiftEnd', { shiftEnd })
+      .getMany();
+
+    return this.getLatestOutrages(outrages);
+  }
+
   getAllLatestOutrages(date: Date): Promise<Outrage[]> {
     const clearDate = new Date(date.setHours(0, 0, 0, 0));
     return this.outrageRepository
