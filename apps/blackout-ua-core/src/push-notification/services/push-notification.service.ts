@@ -6,7 +6,6 @@ import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 import type { NotificationLeadTime, Outrage, OutrageRegion, OutrageRegionAndQueuesDto, User, UserLocation } from '@app/shared';
 import {
   isUnavailableOrPossiblyUnavailable,
-  LightStatus,
   OutrageService,
   removeDuplicates,
   typedObjectKeysUtil,
@@ -32,14 +31,15 @@ export class PushNotificationService {
     private configService: ConfigService,
   ) {
     this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
-    this.test();
+    // this.test();
   }
 
   async test() {
-    // await this.sendNotification('20:00', 'start', 15);
-    // await this.sendNotification('20:00', 'end', 15);
-    // await this.sendNotification('21:00', 'start', 15);
-    // await this.sendNotification('21:00', 'end', 15);
+    // const times = ['15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
+    // for (const time of times) {
+    //   await this.sendNotification(time, 'start', 15);
+    //   await this.sendNotification(time, 'end', 15);
+    // }
     // const foundLocation: UserLocation = {
     //   id: '',
     //   name: 'Мій дім',
@@ -130,12 +130,14 @@ export class PushNotificationService {
       this.outrageMergerService.mergeOutrages(outragesByRegion[region]),
     );
 
-    const clearUsers = users.map(
-      (user): User => ({
-        ...user,
-        locations: user.locations.filter((location) => !this.checkIfLocationWithoutElectricity(location, clearOutrages, shift, type)),
-      }),
-    );
+    const clearUsers = users
+      .map(
+        (user): User => ({
+          ...user,
+          locations: user.locations.filter((location) => !this.checkIfLocationWithoutElectricity(location, clearOutrages, shift, type)),
+        }),
+      )
+      .filter((user) => user.locations.length > 0);
 
     this.logger.debug(
       `Sending notification for shift ${shift} ${type} with lead time ${leadTime} to ${users.length} users with ${clearUsers.reduce((accumulator, user) => accumulator + user.locations.length, 0)} with payload: ${JSON.stringify(requestPayload)}`,
@@ -165,14 +167,19 @@ export class PushNotificationService {
         return this.checkIfLocationWithoutElectricityStart(location, locationOutrage, shift);
       }
       case 'end': {
-        return this.checkIfLocationWithoutElectricityEnd(location, locationOutrage, shift);
+        return this.checkIfLocationWithElectricityEnd(location, locationOutrage, shift);
       }
+
       default: {
         return false;
       }
     }
   }
 
+  /**
+   * Check if location has no electricity at the start of the shift
+   * @return {boolean} true if location has no electricity, false otherwise
+   * */
   checkIfLocationWithoutElectricityStart(location: UserLocation, locationOutrage: Outrage, shift: string): boolean {
     const previousShift = locationOutrage.shifts.find((localShift) => localShift.end === shift);
 
@@ -180,17 +187,31 @@ export class PushNotificationService {
       return false;
     }
 
-    return previousShift.queues.some((queue) => queue.queue === location.queue && isUnavailableOrPossiblyUnavailable(queue.lightStatus));
+    return previousShift.queues.some((queue) => {
+      const isQueueSame = queue.queue === location.queue;
+      const isLocationHasNoLight = isUnavailableOrPossiblyUnavailable(queue.lightStatus);
+
+      return isQueueSame && isLocationHasNoLight;
+    });
   }
 
-  checkIfLocationWithoutElectricityEnd(location: UserLocation, locationOutrage: Outrage, shift: string): boolean {
+  /**
+   * Check if location has no electricity at the end of the shift
+   * @return {boolean} true if location has no electricity, false otherwise
+   * */
+  checkIfLocationWithElectricityEnd(location: UserLocation, locationOutrage: Outrage, shift: string): boolean {
     const nextShift = locationOutrage.shifts.find((localShift) => localShift.start === shift);
 
     if (!nextShift) {
       return false;
     }
 
-    return nextShift.queues.some((queue) => queue.queue === location.queue && !isUnavailableOrPossiblyUnavailable(queue.lightStatus));
+    return nextShift.queues.some((queue) => {
+      const isQueueSame = queue.queue === location.queue;
+      const isLocationHasNoLight = isUnavailableOrPossiblyUnavailable(queue.lightStatus);
+
+      return isQueueSame && isLocationHasNoLight;
+    });
   }
 
   sendDisableNotificationToUser(user: User, shift: string, leadTime: NotificationLeadTime): Promise<void[]> {
