@@ -16,6 +16,11 @@ export class UserService {
   ) {}
 
   async createUser(userDto: UserDto): Promise<User> {
+    const existingUser = await this.userRepository.findOne({ where: { deviceId: userDto.deviceId } });
+    if (existingUser) {
+      return this.updateUser(existingUser.id, userDto as UpdateUserDto);
+    }
+
     const { locations, ...userDetails } = userDto;
     const user = this.userRepository.create(userDetails);
     if (locations) {
@@ -37,10 +42,10 @@ export class UserService {
       .getMany();
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id }, relations: ['locations'] });
+  async updateUser(deviceId: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { deviceId }, relations: ['locations'] });
     if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`User with deviceId ${deviceId} not found`);
     }
     const { locations, ...userDetails } = updateUserDto;
     if (locations) {

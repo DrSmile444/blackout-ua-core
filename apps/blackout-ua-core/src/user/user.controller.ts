@@ -47,15 +47,15 @@ export class UserController {
     return await this.userService.findAll();
   }
 
-  @Patch(':id')
+  @Patch(':deviceId')
   @ApiBody({ type: UpdateUserDto })
-  @ApiOperation({ summary: 'Update an existing user' })
+  @ApiOperation({ summary: 'Update an existing user by deviceId' })
   @ApiResponse({
     status: 200,
     type: UserDto,
     description: 'Updated user',
   })
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
-    return await this.userService.updateUser(id, updateUserDto);
+  async update(@Param('deviceId') deviceId: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+    return await this.userService.updateUser(deviceId, updateUserDto);
   }
 }
