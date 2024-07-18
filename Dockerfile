@@ -15,10 +15,10 @@ COPY . .
 
 # TODO add start from dist or remove it
 # Build the application (if needed)
-RUN npm run build
+RUN #npm run build
 
 # Expose the ports the apps run on (if needed)
 EXPOSE 3000 3001
 
 # Define the default command to run the application (to be overridden in docker-compose)
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:all"]
