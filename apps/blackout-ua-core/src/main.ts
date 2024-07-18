@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -27,8 +28,11 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
-  console.info('Server is running on port 3000');
+  const configService: ConfigService = app.get(ConfigService);
+  const port = configService.get<string>('PORT') || 3000;
+
+  await app.listen(port);
+  console.info(`Server is running on port ${port}`);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
