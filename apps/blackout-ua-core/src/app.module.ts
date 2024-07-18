@@ -1,19 +1,24 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
 import { CityModule } from './city/city.module';
 import { OutrageModule } from './outrage/outrage.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { PushNotificationModule } from './push-notification/push-notification.module';
 import { UpdateModule } from './update/update.module';
 import { UserModule } from './user/user.module';
-import { PushNotificationModule } from './push-notification/push-notification.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
-    RedisModule.forRoot({
-      type: 'single',
-      url: 'redis://localhost:6379',
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'single',
+        url: configService.get('REDIS_URL'),
+      }),
+      inject: [ConfigService],
     }),
     OutrageModule,
     CityModule,
