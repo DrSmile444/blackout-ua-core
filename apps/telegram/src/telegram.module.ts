@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
 import { DatabaseModule, SharedHealthModule, SharedModule } from '@app/shared';
@@ -12,9 +12,13 @@ import { TelegramService } from './telegram.service';
 
 @Module({
   imports: [
-    RedisModule.forRoot({
-      type: 'single',
-      url: 'redis://localhost:6379',
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'single',
+        url: configService.get('REDIS_URL'),
+      }),
+      inject: [ConfigService],
     }),
     ConfigModule.forRoot({
       isGlobal: true, // Makes the ConfigModule globally available
