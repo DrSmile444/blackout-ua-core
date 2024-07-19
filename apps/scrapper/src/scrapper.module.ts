@@ -2,7 +2,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
-import { DatabaseModule, SharedModule } from '@app/shared';
+import { DatabaseModule, SharedHealthModule, SharedModule } from '@app/shared';
 
 import { UkraineScrapperModule } from '@ukraine/ukraine-base';
 
@@ -19,6 +19,7 @@ import { ScrapperService } from './scrapper.service';
     HttpModule,
     SharedModule,
     UkraineScrapperModule,
+    SharedHealthModule,
   ],
   controllers: [ScrapperController],
   providers: [ScrapperService],

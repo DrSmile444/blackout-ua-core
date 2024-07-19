@@ -9,6 +9,7 @@ import { UpdateModule } from './update/update.module';
 import { UserModule } from './user/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { HealthModule } from './health';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { AppService } from './app.service';
     UpdateModule,
     UserModule,
     PushNotificationModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

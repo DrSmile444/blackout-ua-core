@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
-import { DatabaseModule, SharedModule } from '@app/shared';
+import { DatabaseModule, SharedHealthModule, SharedModule } from '@app/shared';
 
 import { UkraineTelegramModule } from '@ukraine/ukraine-base';
 
@@ -22,6 +22,7 @@ import { TelegramService } from './telegram.service';
     DatabaseModule,
     SharedModule,
     UkraineTelegramModule,
+    SharedHealthModule,
   ],
   controllers: [TelegramController],
   providers: [TelegramService, TelegramClientService],
