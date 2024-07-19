@@ -16,6 +16,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/blackout-ua-core/main",
     "start:all": "pm2-runtime start ecosystem.config.js",
+    "start:utils": "pm2-runtime start ecosystem-utils.config.js",
     "start:monit": "pm2 start && pm2 monit && pm2 stop all",
     "lint": "TIMING=1 eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
