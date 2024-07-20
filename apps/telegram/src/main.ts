@@ -12,7 +12,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Outrage Telegram API')
     .setDescription('Server to parse messages and store outrages from telegram')
-    .setVersion('1.0')
+    .setVersion('1.1')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

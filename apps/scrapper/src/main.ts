@@ -10,7 +10,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Outrage Scrapper API')
     .setDescription('Server to parse sites and store outrages from them')
-    .setVersion('1.0')
+    .setVersion('1.1')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
