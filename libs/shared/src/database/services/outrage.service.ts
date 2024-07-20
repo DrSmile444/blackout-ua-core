@@ -170,4 +170,14 @@ export class OutrageService {
 
     return Object.values(latestOutragesByRegion);
   }
+
+  async deleteAllByDate(date: Date): Promise<void> {
+    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    const outrages = await this.outrageRepository
+      .createQueryBuilder('outrage')
+      .where('outrage.date = :date', { date: clearDate })
+      .getMany();
+
+    await this.outrageRepository.remove(outrages);
+  }
 }

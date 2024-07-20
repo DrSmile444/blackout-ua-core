@@ -27,6 +27,6 @@ export class Outrage {
   @Column({ nullable: true })
   changeCount?: number;
 
-  @OneToMany(() => OutrageShift, (shift) => shift.outrage, { cascade: true })
+  @OneToMany(() => OutrageShift, (shift) => shift.outrage, { cascade: true, onDelete: 'CASCADE' })
   shifts: OutrageShift[];
 }

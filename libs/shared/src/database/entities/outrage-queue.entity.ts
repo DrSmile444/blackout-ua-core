@@ -19,6 +19,6 @@ export class OutrageQueue {
   })
   lightStatus: LightStatus;
 
-  @ManyToOne(() => OutrageShift, (shift) => shift.queues)
+  @ManyToOne(() => OutrageShift, (shift) => shift.queues, { onDelete: 'CASCADE' })
   shift: OutrageShift;
 }

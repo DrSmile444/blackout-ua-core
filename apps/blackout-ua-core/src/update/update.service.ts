@@ -27,8 +27,18 @@ export class UpdateService {
   }
 
   async triggerUpdate(): Promise<Outrage[]> {
-    const telegramResponse = await firstValueFrom(this.httpService.post<Outrage[]>(this.telegramUpdateUrl));
-    const scrapperResponse = await firstValueFrom(this.httpService.post<Outrage[]>(this.scrapperUpdateUrl));
+    const telegramResponse = await firstValueFrom(this.httpService.post<Outrage[]>(this.telegramUpdateUrl)).catch((error) => {
+      this.logger.error('Error updating telegram', error);
+      return {
+        data: [],
+      };
+    });
+    const scrapperResponse = await firstValueFrom(this.httpService.post<Outrage[]>(this.scrapperUpdateUrl)).catch((error) => {
+      this.logger.error('Error updating scrapper', error);
+      return {
+        data: [],
+      };
+    });
 
     const response = [...telegramResponse.data, ...scrapperResponse.data];
     this.lastUpdateTime = new Date();

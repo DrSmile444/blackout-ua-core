@@ -17,9 +17,9 @@ export class OutrageShift {
   @Column()
   end: string;
 
-  @ManyToOne(() => Outrage, (outrage) => outrage.shifts)
+  @ManyToOne(() => Outrage, (outrage) => outrage.shifts, { onDelete: 'CASCADE' })
   outrage: Outrage;
 
-  @OneToMany(() => OutrageQueue, (queue) => queue.shift, { cascade: true })
+  @OneToMany(() => OutrageQueue, (queue) => queue.shift, { cascade: true, onDelete: 'CASCADE' })
   queues: OutrageQueue[];
 }
