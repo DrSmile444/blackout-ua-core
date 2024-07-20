@@ -16,10 +16,13 @@ export class TelegramHealthIndicator extends HealthIndicator {
       const result = await this.telegramClient.client.invoke(new Api.help.GetNearestDc());
       const isHealthy = !!(result && result.nearestDc);
 
-      return this.getStatus(key, isHealthy, { result });
-    } catch (error) {
-      return this.getStatus(key, false, {});
-      throw new HealthCheckError('TelegramHealthIndicator failed', error);
+      if (isHealthy) {
+        return this.getStatus(key, isHealthy, { result });
+      }
+
+      throw new HealthCheckError('TelegramHealthIndicator failed', { result });
+    } catch {
+      throw new HealthCheckError('TelegramHealthIndicator failed', this.getStatus(key, false));
     }
   }
 }
