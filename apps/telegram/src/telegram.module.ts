@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TerminusModule } from '@nestjs/terminus';
 import { RedisModule } from '@nestjs-modules/ioredis';
 
-import { DatabaseModule, SharedHealthModule, SharedModule } from '@app/shared';
+import { DatabaseModule, SharedModule } from '@app/shared';
 
 import { UkraineTelegramModule } from '@ukraine/ukraine-base';
 
+import { TelegramHealthIndicator } from './telegram-health/telegram.health';
+import { TelegramHealthController } from './telegram-health/telegram-health.controller';
 import { TelegramClientService } from './services';
 import { TelegramController } from './telegram.controller';
 import { TelegramService } from './telegram.service';
@@ -26,9 +29,9 @@ import { TelegramService } from './telegram.service';
     DatabaseModule,
     SharedModule,
     UkraineTelegramModule,
-    SharedHealthModule,
+    TerminusModule,
   ],
-  controllers: [TelegramController],
-  providers: [TelegramService, TelegramClientService],
+  controllers: [TelegramController, TelegramHealthController],
+  providers: [TelegramService, TelegramClientService, TelegramHealthIndicator],
 })
 export class TelegramModule {}

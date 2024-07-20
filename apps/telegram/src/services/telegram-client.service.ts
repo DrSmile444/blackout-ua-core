@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { createInterface } from 'node:readline';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
@@ -12,6 +12,8 @@ import { UkraineTelegramService } from '@ukraine/ukraine-base';
 
 @Injectable()
 export class TelegramClientService {
+  private readonly logger = new Logger(TelegramClientService.name);
+
   client: TelegramClient;
 
   constructor(
@@ -28,6 +30,7 @@ export class TelegramClientService {
    * Initialize the Telegram client
    */
   async initClient() {
+    this.logger.debug('Initing client...');
     const stringSession = new StringSession(this.configService.get('PHONE_SESSION') || '');
 
     this.client = new TelegramClient(stringSession, +this.configService.get('API_ID'), this.configService.get('API_HASH'), {
@@ -51,6 +54,13 @@ export class TelegramClientService {
         }),
       onError: (error) => console.error(error),
     });
+
+    if (!this.configService.get('PHONE_SESSION')) {
+      this.logger.warn('Please save this session string inside PHONE_SESSION in env');
+      this.configService.set('PHONE_SESSION', this.client.session.save());
+    }
+
+    this.logger.debug('Client is ready');
   }
 
   /**
