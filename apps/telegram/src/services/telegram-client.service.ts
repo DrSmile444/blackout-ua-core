@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { createInterface } from 'node:readline';
+import type { OnModuleInit } from '@nestjs/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Api, TelegramClient } from 'telegram';
@@ -11,7 +12,7 @@ import { OutrageService } from '@app/shared';
 import { UkraineTelegramService } from '@ukraine/ukraine-base';
 
 @Injectable()
-export class TelegramClientService {
+export class TelegramClientService implements OnModuleInit {
   private readonly logger = new Logger(TelegramClientService.name);
 
   client: TelegramClient;
@@ -20,7 +21,9 @@ export class TelegramClientService {
     private outrageService: OutrageService,
     private configService: ConfigService,
     private ukraineTelegramService: UkraineTelegramService,
-  ) {
+  ) {}
+
+  onModuleInit(): any {
     this.initClient()
       .then(() => this.getHistory())
       .catch(console.error);
