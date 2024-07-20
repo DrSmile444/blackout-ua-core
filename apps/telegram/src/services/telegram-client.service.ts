@@ -62,6 +62,8 @@ export class TelegramClientService implements OnModuleInit, OnModuleDestroy {
       onError: (error) => console.error(error),
     });
 
+    rl.close();
+
     if (!this.configService.get('PHONE_SESSION')) {
       this.logger.warn('Please save this session string inside PHONE_SESSION in env');
       this.configService.set('PHONE_SESSION', this.client.session.save());
