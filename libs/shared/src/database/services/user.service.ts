@@ -56,7 +56,22 @@ export class UserService {
     return await this.userRepository.save(user);
   } // Add more methods as needed, e.g., findOne, update, delete
 
-  async getUsersByRegionAndQueues(payload: OutrageRegionAndQueuesDto[], leadTime: NotificationLeadTime): Promise<User[]> {
+  async getUsersByRegionQueues(payload: OutrageRegionAndQueuesDto[]): Promise<User[]> {
+    const users: User[] = [];
+    for (const { region, queues } of payload) {
+      const usersByRegionAndQueue = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.locations', 'location')
+        .where('location.region = :region', { region })
+        .andWhere('location.active = true')
+        .andWhere('location.queue IN (:...queues)', { queues })
+        .getMany();
+      users.push(...usersByRegionAndQueue);
+    }
+    return users;
+  }
+
+  async getUsersByRegionQueuesLead(payload: OutrageRegionAndQueuesDto[], leadTime: NotificationLeadTime): Promise<User[]> {
     const users: User[] = [];
     for (const { region, queues } of payload) {
       const usersByRegionAndQueue = await this.userRepository

@@ -8,6 +8,7 @@ import type { NotificationLeadTime, Outrage, OutrageRegion, OutrageRegionAndQueu
 import {
   isUnavailableOrPossiblyUnavailable,
   OutrageService,
+  OutrageType,
   removeDuplicates,
   typedObjectKeysUtil,
   userLocationTimes,
@@ -84,6 +85,25 @@ export class PushNotificationService {
     }
   }
 
+  @OnEvent('outrages.new')
+  async notifyAboutChange(newOutrages: Outrage[]) {
+    const updatedOutrages = newOutrages.filter((outrage) => outrage.type === OutrageType.CHANGE);
+    const requestPayload: OutrageRegionAndQueuesDto[] = updatedOutrages.map((outrage) => ({
+      region: outrage.region,
+      queues: outrage.shifts.flatMap((localShift) => localShift.queues.map((queue) => queue.queue)),
+    }));
+
+    const users = await this.userService.getUsersByRegionQueues(requestPayload);
+
+    this.logger.debug(
+      `Sending notification about changing in outrages to ${users.length} users to ${users.reduce((accumulator, user) => accumulator + user.locations.length, 0)} locations with payload: ${JSON.stringify(requestPayload)}`,
+    );
+
+    const userSendRequests = users.map((user) => this.sendChangeTimeNotificationToUser(user));
+
+    await Promise.all(userSendRequests);
+  }
+
   scheduleNotification(shift: string, type: ShiftType) {
     const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
     const scheduleDate = new Date();
@@ -117,7 +137,7 @@ export class PushNotificationService {
       queues: outrage.shifts.flatMap((localShift) => localShift.queues.map((queue) => queue.queue)),
     }));
 
-    const users = await this.userService.getUsersByRegionAndQueues(requestPayload, leadTime);
+    const users = await this.userService.getUsersByRegionQueuesLead(requestPayload, leadTime);
 
     const todayOutrages = await this.outrageService.getAllLatestOutrages(new Date());
     // eslint-disable-next-line unicorn/no-array-reduce
@@ -143,7 +163,7 @@ export class PushNotificationService {
       .filter((user) => user.locations.length > 0);
 
     this.logger.debug(
-      `Sending notification for shift ${shift} ${type} with lead time ${leadTime} to ${users.length} users with ${clearUsers.reduce((accumulator, user) => accumulator + user.locations.length, 0)} with payload: ${JSON.stringify(requestPayload)}`,
+      `Sending notification for shift ${shift} ${type} with lead time ${leadTime} to ${users.length} users to ${clearUsers.reduce((accumulator, user) => accumulator + user.locations.length, 0)} locations with payload: ${JSON.stringify(requestPayload)}`,
     );
 
     const userSendRequests = clearUsers.map((user) => {
@@ -237,6 +257,19 @@ export class PushNotificationService {
       locations.map((location) => {
         const title = `🟢 Електропостачання включиться через ${leadTime} хвилин!`;
         const message = `Локація “${location.name}”: електропостачання з'явиться через ${leadTime} хвилин (о ${shift}).`;
+
+        return this.sendUser(fcmToken, title, message);
+      }),
+    );
+  }
+
+  sendChangeTimeNotificationToUser(user: User): Promise<void[]> {
+    const { fcmToken, locations } = user;
+
+    return Promise.all(
+      locations.map((location) => {
+        const title = `⚠️ Зміни в графіку електропостачань!`;
+        const message = `Локація “${location.name}” змінила графіки електропостання. Відкрийте застосунок, щоб побачити актуальні.`;
 
         return this.sendUser(fcmToken, title, message);
       }),
