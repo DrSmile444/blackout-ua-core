@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Body, Controller, Get, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { OutrageDto, OutrageMessageDto, OutrageParserService, OutrageRegion, OutrageResponseDto, OutrageService } from '@app/shared';
@@ -9,6 +10,7 @@ import { OutrageMergerService } from '../services';
 
 @ApiTags('outrage')
 @Controller('outrage')
+@UseInterceptors(CacheInterceptor)
 export class OutrageController {
   constructor(
     private readonly outrageParserService: OutrageParserService,
