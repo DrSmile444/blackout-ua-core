@@ -7,6 +7,8 @@ import { TelegramModule } from './telegram.module';
 async function bootstrap() {
   const app = await NestFactory.create(TelegramModule);
 
+  app.enableShutdownHooks();
+
   const config = new DocumentBuilder()
     .setTitle('Outrage Telegram API')
     .setDescription('Server to parse messages and store outrages from telegram')
