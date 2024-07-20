@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { OnEvent } from '@nestjs/event-emitter';
 import { CronJob } from 'cron';
 import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
@@ -60,7 +61,9 @@ export class PushNotificationService {
     // this.userService.deleteAll();
   }
 
+  @OnEvent('outrages.new')
   async createNotificationJobs() {
+    this.clearAllJobs();
     const currentHour = new Date().getHours();
     const currentMinute = new Date().getMinutes();
     const currentShift = this.outrageMergerService.parseTime(`${currentHour}:${currentMinute}`);
@@ -260,6 +263,7 @@ export class PushNotificationService {
   clearAllJobs() {
     this.jobs.forEach((job) => job.stop());
     this.jobs = [];
+    this.logger.debug('All jobs cleared');
   }
 
   getAllShiftsForDate(date: Date) {

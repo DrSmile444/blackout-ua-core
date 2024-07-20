@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Cron } from '@nestjs/schedule';
 import { firstValueFrom } from 'rxjs';
 
@@ -19,6 +20,7 @@ export class UpdateService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private eventEmitter: EventEmitter2,
   ) {
     this.telegramUpdateUrl = `${this.configService.get<string>('TELEGRAM_API_URL')}/update`;
     this.scrapperUpdateUrl = `${this.configService.get<string>('SCRAPPER_API_URL')}/update`;
@@ -30,6 +32,11 @@ export class UpdateService {
 
     const response = [...telegramResponse.data, ...scrapperResponse.data];
     this.lastUpdateTime = new Date();
+
+    if (response.length > 0) {
+      this.eventEmitter.emit('outrages.new', response);
+    }
+
     return response;
   }
 
