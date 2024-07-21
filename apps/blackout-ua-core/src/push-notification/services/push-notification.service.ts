@@ -1,3 +1,4 @@
+import type { OnModuleInit } from '@nestjs/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
@@ -18,30 +19,36 @@ import {
 import { OutrageMergerService } from '../../outrage/services';
 import firebaseAdmin from '../firebase-admin';
 
+import { PushNotificationTrackerService } from './push-notification-tracker.service';
+
 export type ShiftType = 'start' | 'end';
 
 @Injectable()
-export class PushNotificationService {
+export class PushNotificationService implements OnModuleInit {
   private jobs: CronJob[] = [];
 
   private readonly logger = new Logger(PushNotificationService.name);
 
   constructor(
+    private pushNotificationTrackerService: PushNotificationTrackerService,
     private outrageMergerService: OutrageMergerService,
     private outrageService: OutrageService,
     private userService: UserService,
     private configService: ConfigService,
-  ) {
+  ) {}
+
+  onModuleInit(): any {
     this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
     // this.test();
   }
 
   async test() {
     // const times = ['15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
-    // for (const time of times) {
-    //   await this.sendNotification(time, 'start', 15);
-    //   await this.sendNotification(time, 'end', 15);
-    // }
+    const times = ['13:00'];
+    for (const time of times) {
+      await this.sendNotification(time, 'start', 15);
+      await this.sendNotification(time, 'end', 15);
+    }
     // const foundLocation: UserLocation = {
     //   id: '',
     //   name: 'Мій дім',
@@ -77,6 +84,14 @@ export class PushNotificationService {
       (shift) => this.outrageMergerService.parseTime(shift) > currentShift,
     );
 
+    // for (const shift of shiftStarts) {
+    //   await this.scheduleNotification(shift, 'start');
+    // }
+    //
+    // for (const shift of shiftEnds) {
+    //   await this.scheduleNotification(shift, 'end');
+    // }
+
     shiftStarts.forEach((shift) => this.scheduleNotification(shift, 'start'));
     shiftEnds.forEach((shift) => this.scheduleNotification(shift, 'end'));
 
@@ -104,16 +119,16 @@ export class PushNotificationService {
     await Promise.all(userSendRequests);
   }
 
-  scheduleNotification(shift: string, type: ShiftType) {
+  async scheduleNotification(shift: string, type: ShiftType) {
     const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
     const scheduleDate = new Date();
     scheduleDate.setHours(hours, minutes, 0, 0);
 
-    userLocationTimes.forEach((leadTime) => {
+    const notificationTimes = userLocationTimes.map((leadTime) => {
       const notificationTime = new Date(scheduleDate.getTime() - leadTime * 60_000); // 15 minutes before the shift
       const cronTime = `${notificationTime.getMinutes()} ${notificationTime.getHours()} ${notificationTime.getDate()} ${notificationTime.getMonth() + 1} *`;
 
-      this.logger.debug(`Scheduling notification for ${type} ${shift} at ${notificationTime.toISOString()}`);
+      // this.logger.debug(`Scheduling notification for ${type} ${shift} at ${notificationTime.toISOString()}`);
 
       const job = new CronJob(cronTime, () => {
         this.sendNotification(shift, type, leadTime).catch((error) => this.logger.error('Error sending notification', error));
@@ -121,7 +136,23 @@ export class PushNotificationService {
 
       job.start();
       this.jobs.push(job);
+
+      return notificationTime;
     });
+
+    // switch (type) {
+    //   case 'start': {
+    //     await this.pushNotificationTrackerService.updateQueuesStart(new Date(), notificationTimes);
+    //     break;
+    //   }
+    //   case 'end': {
+    //     await this.pushNotificationTrackerService.updateQueuesEnd(new Date(), notificationTimes);
+    //     break;
+    //   }
+    //   default: {
+    //     break;
+    //   }
+    // }
   }
 
   async sendNotification(shift: string, type: ShiftType, leadTime: NotificationLeadTime) {
@@ -180,6 +211,24 @@ export class PushNotificationService {
       }
     });
     await Promise.all(userSendRequests);
+
+    const shiftDate = new Date();
+    const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
+    shiftDate.setHours(hours, minutes - leadTime, 0, 0);
+
+    switch (type) {
+      case 'start': {
+        await this.pushNotificationTrackerService.completeQueueStart(new Date(), shiftDate);
+        break;
+      }
+      case 'end': {
+        await this.pushNotificationTrackerService.completeQueueEnd(new Date(), shiftDate);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   }
 
   checkIfLocationWithoutElectricity(location: UserLocation, outrages: Outrage[], shift: string, type: ShiftType): boolean {
