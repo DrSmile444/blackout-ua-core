@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
-import { getClearDateIsoString } from '@app/shared';
+import { getClearDateIsoString, userLocationTimes } from '@app/shared';
 
 export interface QueueStatus {
   queue: Date;
@@ -20,60 +20,53 @@ export class PushNotificationTrackerService {
   /**
    * Queue start
    * */
-  async updateQueuesStart(date: Date, queueStarts: Date[]) {
+  async updateQueuesStart(date: Date, queueStarts: string[]) {
     const key = `shiftStarts:${getClearDateIsoString(date)}`;
-    const previousValue = await this.getQueues(key);
-
-    if (!previousValue) {
-      return this.redis.set(key, JSON.stringify(queueStarts.map((queue) => this.remapQueue(queue))));
-    }
-
-    let newValue = previousValue;
-
-    queueStarts.forEach((queue) => {
-      if (!newValue.some((q) => +q.queue === +queue)) {
-        newValue.push(this.remapQueue(queue));
-      }
-    });
-
-    newValue = newValue.filter((q) => !this.isQueueExpired(date, q.queue));
-
-    return this.redis.set(key, JSON.stringify(newValue));
+    return this.updateQueues(date, queueStarts, key);
   }
 
   async completeQueueStart(date: Date, queue: Date) {
     const key = `shiftStarts:${getClearDateIsoString(date)}`;
-    const previousValue = await this.getQueues(key);
-
-    if (!previousValue) {
-      return;
-    }
-
-    const queueIndex = previousValue.findIndex((q) => +q.queue === +queue);
-
-    if (queueIndex === -1) {
-      return;
-    }
-
-    previousValue[queueIndex].completed = true;
-
-    await this.redis.set(key, JSON.stringify(previousValue));
+    return this.completeQueue(queue, key);
   }
 
   /**
    * Queue end
    * */
-  async updateQueuesEnd(date: Date, queueEnds: Date[]) {
+  async updateQueuesEnd(date: Date, queueEnds: string[]) {
     const key = `shiftEnds:${getClearDateIsoString(date)}`;
+    return this.updateQueues(date, queueEnds, key);
+  }
+
+  async completeQueueEnd(date: Date, queue: Date) {
+    const key = `shiftEnds:${getClearDateIsoString(date)}`;
+    return this.completeQueue(queue, key);
+  }
+
+  /**
+   * Queue utils
+   * */
+  async updateQueues(date: Date, queues: string[], key: string) {
+    const queueDates = queues.flatMap((queue) =>
+      userLocationTimes.map((locationTime) => {
+        const [queueHours, queueMinutes] = queue.split(':');
+
+        const queueDate = new Date(date);
+        queueDate.setHours(+queueHours, +queueMinutes - locationTime, 0, 0);
+
+        return queueDate;
+      }),
+    );
+
     const previousValue = await this.getQueues(key);
 
     if (!previousValue) {
-      return this.redis.set(key, JSON.stringify(queueEnds.map((queue) => this.remapQueue(queue))));
+      return this.redis.set(key, JSON.stringify(queueDates.map((queue) => this.remapQueue(queue))));
     }
 
     const newValue = previousValue;
 
-    queueEnds.forEach((queue) => {
+    queueDates.forEach((queue) => {
       if (!newValue.some((q) => +q.queue === +queue)) {
         newValue.push(this.remapQueue(queue));
       }
@@ -82,8 +75,7 @@ export class PushNotificationTrackerService {
     return this.redis.set(key, JSON.stringify(newValue));
   }
 
-  async completeQueueEnd(date: Date, queue: Date) {
-    const key = `shiftEnds:${getClearDateIsoString(date)}`;
+  async completeQueue(queue: Date, key: string) {
     const previousValue = await this.getQueues(key);
 
     if (!previousValue) {
@@ -101,9 +93,6 @@ export class PushNotificationTrackerService {
     await this.redis.set(key, JSON.stringify(previousValue));
   }
 
-  /**
-   * Queue utils
-   * */
   isQueueExpired(date: Date, queue: Date): boolean {
     const expirationMinutes = 15;
     const queueExpirationDate = new Date(queue);

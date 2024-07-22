@@ -95,6 +95,9 @@ export class PushNotificationService implements OnModuleInit {
     shiftStarts.forEach((shift) => this.scheduleNotification(shift, 'start'));
     shiftEnds.forEach((shift) => this.scheduleNotification(shift, 'end'));
 
+    await this.pushNotificationTrackerService.updateQueuesStart(new Date(), shiftStarts);
+    await this.pushNotificationTrackerService.updateQueuesEnd(new Date(), shiftEnds);
+
     if (shiftStarts.length === 0) {
       this.logger.debug('No shifts to schedule notifications for');
     }
@@ -119,12 +122,12 @@ export class PushNotificationService implements OnModuleInit {
     await Promise.all(userSendRequests);
   }
 
-  async scheduleNotification(shift: string, type: ShiftType) {
+  scheduleNotification(shift: string, type: ShiftType) {
     const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
     const scheduleDate = new Date();
     scheduleDate.setHours(hours, minutes, 0, 0);
 
-    const notificationTimes = userLocationTimes.map((leadTime) => {
+    return userLocationTimes.map((leadTime) => {
       const notificationTime = new Date(scheduleDate.getTime() - leadTime * 60_000); // 15 minutes before the shift
       const cronTime = `${notificationTime.getMinutes()} ${notificationTime.getHours()} ${notificationTime.getDate()} ${notificationTime.getMonth() + 1} *`;
 
@@ -139,20 +142,6 @@ export class PushNotificationService implements OnModuleInit {
 
       return notificationTime;
     });
-
-    // switch (type) {
-    //   case 'start': {
-    //     await this.pushNotificationTrackerService.updateQueuesStart(new Date(), notificationTimes);
-    //     break;
-    //   }
-    //   case 'end': {
-    //     await this.pushNotificationTrackerService.updateQueuesEnd(new Date(), notificationTimes);
-    //     break;
-    //   }
-    //   default: {
-    //     break;
-    //   }
-    // }
   }
 
   async sendNotification(shift: string, type: ShiftType, leadTime: NotificationLeadTime) {
