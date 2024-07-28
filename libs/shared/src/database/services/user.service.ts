@@ -63,8 +63,9 @@ export class UserService {
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.locations', 'location')
         .where('location.region = :region', { region })
-        .andWhere('location.active = true')
+        .andWhere('user.isPushEnabled = true')
         .andWhere('location.queue IN (:...queues)', { queues })
+        .andWhere('array_length(location.notificationLeadTime, 1) > 0')
         .getMany();
       users.push(...usersByRegionAndQueue);
     }
@@ -78,8 +79,8 @@ export class UserService {
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.locations', 'location')
         .where('location.region = :region', { region })
-        .andWhere('location.active = true')
-        .andWhere('location.notificationLeadTime = :leadTime', { leadTime })
+        .andWhere('user.isPushEnabled = true')
+        .andWhere(':leadTime = ANY(location.notificationLeadTime)', { leadTime })
         .andWhere('location.queue IN (:...queues)', { queues })
         .getMany();
       users.push(...usersByRegionAndQueue);
