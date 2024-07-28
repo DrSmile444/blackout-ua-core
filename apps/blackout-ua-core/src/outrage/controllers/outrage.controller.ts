@@ -2,6 +2,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import type { Outrage } from '@app/shared';
 import { OutrageDto, OutrageMessageDto, OutrageParserService, OutrageResponseDto, OutrageService } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
@@ -45,7 +46,7 @@ export class OutrageController {
     const clearDate = date || new Date();
     const accessDate = new Date(clearDate.setHours(0, 0, 0, 0));
 
-    const outrages = [];
+    const outrages: Outrage[] = [];
     for (const { region, queues } of regions) {
       if (queues.length > 0) {
         outrages.push(...(await this.outrageService.findOutrages(accessDate, region, queues)));
@@ -58,7 +59,7 @@ export class OutrageController {
       return {
         lastUpdate: this.updateService.getLastUpdateTime(),
         accessDate,
-        outrages: outrages.length > 0 ? [this.outrageMergerService.mergeOutrages(outrages)] : [],
+        outrages: outrages.length > 0 ? this.outrageMergerService.mergeOutragesByRegion(outrages) : [],
       };
     }
 

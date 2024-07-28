@@ -9,6 +9,19 @@ export class OutrageMergerService {
     return hours * 60 + minutes;
   }
 
+  mergeOutragesByRegion(outrages: Outrage[]): Outrage[] {
+    const mergedOutrages: Outrage[] = [];
+    const regions = [...new Set(outrages.map((outrage) => outrage.region))];
+
+    regions.forEach((region) => {
+      const regionOutrages = outrages.filter((outrage) => outrage.region === region);
+      const mergedOutrage = this.mergeOutrages(regionOutrages);
+      mergedOutrages.push(mergedOutrage);
+    });
+
+    return mergedOutrages;
+  }
+
   mergeOutrages(outrages: Outrage[]): Outrage {
     let currentOutrage = outrages[0];
 
