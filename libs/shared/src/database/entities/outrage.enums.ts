@@ -19,3 +19,5 @@ export enum NotificationLeadTime {
   MIN_30 = 30,
   MIN_60 = 60,
 }
+
+export type Shift = string;
