@@ -3,7 +3,7 @@ import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import type { Outrage } from '@app/shared';
-import { OutrageParserService, OutrageResponseDto, OutrageService } from '@app/shared';
+import { OutrageParserService, OutrageSearchResponseDto, OutrageService } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
 import { SearchOutragesDto } from '../dto';
@@ -25,10 +25,10 @@ export class OutrageController {
   @ApiOperation({ summary: 'Returns a list of outrages' })
   @ApiResponse({
     status: 200,
-    type: OutrageResponseDto,
+    type: OutrageSearchResponseDto,
     description: 'Returns a list of outrages',
   })
-  async searchOutrages(@Body() searchOutragesDto: SearchOutragesDto): Promise<OutrageResponseDto> {
+  async searchOutrages(@Body() searchOutragesDto: SearchOutragesDto): Promise<OutrageSearchResponseDto> {
     const { regions, date, final } = searchOutragesDto;
     const clearDate = date || new Date();
     const accessDate = new Date(clearDate.setHours(0, 0, 0, 0));
@@ -43,14 +43,22 @@ export class OutrageController {
     }
 
     if (final) {
-      return {
-        lastUpdate: this.updateService.getLastUpdateTime(),
-        accessDate,
-        outrages: outrages.length > 0 ? this.outrageMergerService.mergeOutragesByRegion(outrages) : [],
-      };
+      const result = new OutrageSearchResponseDto();
+      result.lastUpdate = this.updateService.getLastUpdateTime();
+      result.accessDate = accessDate;
+      result.outrages =
+        outrages.length > 0
+          ? this.outrageMergerService.mergeOutragesByRegion(outrages).map((outrage) => this.outrageService.convertToResponse(outrage))
+          : [];
+
+      return result;
     }
 
-    return { lastUpdate: this.updateService.getLastUpdateTime(), accessDate, outrages };
+    return {
+      lastUpdate: this.updateService.getLastUpdateTime(),
+      accessDate,
+      outrages: outrages.map((outrage) => this.outrageService.convertToResponse(outrage)),
+    };
   }
 
   @Get('/all')

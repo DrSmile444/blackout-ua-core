@@ -11,6 +11,7 @@ import {
   OutrageService,
   OutrageType,
   removeDuplicates,
+  shiftToDate,
   typedObjectKeysUtil,
   userLocationTimes,
   UserService,
@@ -124,7 +125,7 @@ export class PushNotificationService implements OnModuleInit {
   }
 
   scheduleNotification(shift: Shift, type: ShiftType) {
-    const scheduleDate = this.shiftToDate(new Date(), shift);
+    const scheduleDate = shiftToDate(new Date(), shift);
 
     return userLocationTimes.map((leadTime) => {
       const notificationTime = new Date(scheduleDate.getTime() - leadTime * 60_000); // 15 minutes before the shift
@@ -200,7 +201,7 @@ export class PushNotificationService implements OnModuleInit {
     });
     await Promise.all(userSendRequests);
 
-    const shiftDate = this.shiftToDate(new Date(), shift);
+    const shiftDate = shiftToDate(new Date(), shift);
     shiftDate.setHours(shiftDate.getHours(), shiftDate.getMinutes() - leadTime, 0, 0);
 
     switch (type) {
@@ -339,28 +340,24 @@ export class PushNotificationService implements OnModuleInit {
     return this.outrageService.getShiftsForDate(date);
   }
 
-  shiftToDate(date: Date, shift: Shift): Date {
-    const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
-    const shiftDate = new Date(date);
-    shiftDate.setHours(hours, minutes, 0, 0);
-    return shiftDate;
-  }
-
   async checkMissingNotifications() {
     const today = new Date();
     const { missingStartQueues, missingEndQueues } = await this.pushNotificationTrackerService.initialCheck(today);
-    console.log({ missingStartQueues, missingEndQueues });
+
+    this.logger.debug(
+      `Checking missing notifications for ${missingStartQueues.length} start queues and ${missingEndQueues.length} end queues`,
+    );
 
     const startPromises = missingStartQueues.map(async (queue) => {
       const currentDate = new Date();
-      const shiftDate = this.shiftToDate(currentDate, queue.shift);
+      const shiftDate = shiftToDate(currentDate, queue.shift);
       const flexibleLeadTime = new Date(+shiftDate - +currentDate);
       return this.sendNotification(queue.shift, 'start', flexibleLeadTime.getMinutes());
     });
 
     const endPromises = missingEndQueues.map(async (queue) => {
       const currentDate = new Date();
-      const shiftDate = this.shiftToDate(currentDate, queue.shift);
+      const shiftDate = shiftToDate(currentDate, queue.shift);
       const flexibleLeadTime = new Date(+shiftDate - +currentDate);
       return this.sendNotification(queue.shift, 'end', flexibleLeadTime.getMinutes());
     });

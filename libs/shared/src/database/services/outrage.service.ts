@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as deepEqual from 'fast-deep-equal';
 import { Repository } from 'typeorm';
 
-import type { OutrageDto } from '../dto';
+import { shiftToDate } from '../../utils';
+import type { OutrageDto, OutrageShiftResponseDto } from '../dto';
+import { OutrageResponseDto } from '../dto';
 import type { OutrageRegion, OutrageShift } from '../entities';
 import { Outrage } from '../entities';
 
@@ -179,5 +181,21 @@ export class OutrageService {
       .getMany();
 
     await this.outrageRepository.remove(outrages);
+  }
+
+  convertToResponse(outrage: OutrageDto): OutrageResponseDto {
+    const outrageDto = new OutrageResponseDto();
+    Object.assign(outrageDto, outrage);
+
+    outrageDto.shifts = outrage.shifts.map(
+      (shift) =>
+        ({
+          ...shift,
+          start: shiftToDate(outrageDto.date, shift.start),
+          end: shiftToDate(outrageDto.date, shift.end),
+        }) as OutrageShiftResponseDto,
+    );
+
+    return outrageDto;
   }
 }
