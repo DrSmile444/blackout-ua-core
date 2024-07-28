@@ -115,10 +115,22 @@ export class OutrageResponseDto {
 
 export class OutrageRegionAndQueuesDto {
   @ApiProperty({ enum: OutrageRegion, example: OutrageRegion.CHERKASY })
+  @IsEnum(OutrageRegion)
   region: OutrageRegion;
 
   @ApiProperty({ type: [String], example: ['2', '3'] })
   @IsArray()
-  @ValidateNested({ each: true })
+  @Type(() => String)
   queues: string[];
 }
+
+export const outrageRegionAndQueuesDtoExamples: OutrageRegionAndQueuesDto[] = [
+  {
+    region: OutrageRegion.CHERKASY,
+    queues: ['2', '3'],
+  },
+  {
+    region: OutrageRegion.CHERNIVTSI,
+    queues: ['1'],
+  },
+];

@@ -1,11 +1,11 @@
 import { CacheInterceptor } from '@nestjs/cache-manager';
-import { Body, Controller, Get, Post, Query, UseInterceptors } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { OutrageDto, OutrageMessageDto, OutrageParserService, OutrageRegion, OutrageResponseDto, OutrageService } from '@app/shared';
+import { OutrageDto, OutrageMessageDto, OutrageParserService, OutrageResponseDto, OutrageService } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
-import { ParseBoolPipe, ParseDatePipe, ParseStringArrayPipe, RequiredQueryParamPipe, ValidRegionPipe } from '../pipes';
+import { SearchOutragesDto } from '../dto';
 import { OutrageMergerService } from '../services';
 
 @ApiTags('outrage')
@@ -32,48 +32,27 @@ export class OutrageController {
     return await this.outrageService.saveOutrage(outrageDto);
   }
 
-  @Get('/')
-  @ApiQuery({
-    name: 'region',
-    enum: OutrageRegion,
-    description: 'Region key to filter outrages by',
-    required: true,
-  })
-  @ApiQuery({
-    name: 'date',
-    example: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
-    required: false,
-  })
-  @ApiQuery({
-    name: 'queues',
-    example: ['4'],
-    required: false,
-  })
-  @ApiQuery({
-    name: 'final',
-    description: 'Return a merged final schedule for a selected day if true',
-    type: Boolean,
-    example: true,
-    required: false,
-  })
+  @Post('/search')
+  @ApiBody({ type: SearchOutragesDto })
+  @ApiOperation({ summary: 'Returns a list of outrages' })
   @ApiResponse({
     status: 200,
     type: OutrageResponseDto,
     description: 'Returns a list of outrages',
   })
-  @ApiOperation({ summary: 'Returns a list of outrages' })
-  async getOutrages(
-    @Query('region', RequiredQueryParamPipe, ValidRegionPipe) region: OutrageRegion,
-    @Query('date', ParseDatePipe) date?: Date,
-    @Query('queues', ParseStringArrayPipe) queues?: string[],
-    @Query('final', ParseBoolPipe) final?: boolean,
-  ): Promise<OutrageResponseDto> {
+  async searchOutrages(@Body() searchOutragesDto: SearchOutragesDto): Promise<OutrageResponseDto> {
+    const { regions, date, final } = searchOutragesDto;
     const clearDate = date || new Date();
     const accessDate = new Date(clearDate.setHours(0, 0, 0, 0));
-    const outrages =
-      queues.length > 0
-        ? await this.outrageService.findOutrages(accessDate, region, queues)
-        : await this.outrageService.findOutragesByDateAndRegion(accessDate, region);
+
+    const outrages = [];
+    for (const { region, queues } of regions) {
+      if (queues.length > 0) {
+        outrages.push(...(await this.outrageService.findOutrages(accessDate, region, queues)));
+      } else {
+        outrages.push(...(await this.outrageService.findOutragesByDateAndRegion(accessDate, region)));
+      }
+    }
 
     if (final) {
       return {
