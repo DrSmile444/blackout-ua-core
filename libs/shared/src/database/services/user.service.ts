@@ -72,6 +72,23 @@ export class UserService {
     return users;
   }
 
+  async getUsersByRegionQueuesWithChange(payload: OutrageRegionAndQueuesDto[]): Promise<User[]> {
+    const users: User[] = [];
+    for (const { region, queues } of payload) {
+      const usersByRegionAndQueue = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.locations', 'location')
+        .where('location.region = :region', { region })
+        .andWhere('user.isPushEnabled = true')
+        .andWhere('user.isPushUpdateOutrageEnabled = true')
+        .andWhere('location.queue IN (:...queues)', { queues })
+        .andWhere('array_length(location.notificationLeadTime, 1) > 0')
+        .getMany();
+      users.push(...usersByRegionAndQueue);
+    }
+    return users;
+  }
+
   async getUsersByRegionQueuesLead(payload: OutrageRegionAndQueuesDto[], leadTime: NotificationLeadTime): Promise<User[]> {
     const users: User[] = [];
     for (const { region, queues } of payload) {

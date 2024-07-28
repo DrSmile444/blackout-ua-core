@@ -112,7 +112,7 @@ export class PushNotificationService implements OnModuleInit {
       queues: outrage.shifts.flatMap((localShift) => localShift.queues.map((queue) => queue.queue)),
     }));
 
-    const users = await this.userService.getUsersByRegionQueues(requestPayload);
+    const users = await this.userService.getUsersByRegionQueuesWithChange(requestPayload);
 
     this.logger.debug(
       `Sending notification about changing in outrages to ${users.length} users to ${users.reduce((accumulator, user) => accumulator + user.locations.length, 0)} locations with payload: ${JSON.stringify(requestPayload)}`,
