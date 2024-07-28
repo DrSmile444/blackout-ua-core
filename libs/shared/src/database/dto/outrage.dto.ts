@@ -3,28 +3,21 @@ import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import type { OutrageShift } from '../entities';
-import { LightStatus, OutrageRegion, OutrageType } from '../entities';
-
-const lightStatusAllValues = Object.values(LightStatus);
-const lightStatusKeys = lightStatusAllValues.slice(0, lightStatusAllValues.length / 2);
-const lightStatusValues = lightStatusAllValues.slice(lightStatusAllValues.length / 2);
-
-const lightStatusDescription = `
-export enum LightStatus {
-${lightStatusKeys.map((key, index) => `  ${key} = ${lightStatusValues[index]},`).join('\n')}
-}
-`;
+import {
+  LightStatus,
+  lightStatusApiOptions,
+  OutrageRegion,
+  outrageRegionApiOptions,
+  OutrageType,
+  outrageTypeApiOptions,
+} from '../entities';
 
 export class OutrageQueueDto {
   @ApiProperty({ example: '1' })
   @IsString()
   queue: string;
 
-  @ApiProperty({
-    enum: LightStatus,
-    example: LightStatus.AVAILABLE,
-    description: lightStatusDescription,
-  })
+  @ApiProperty(lightStatusApiOptions)
   @IsEnum(LightStatus)
   lightStatus: LightStatus;
 }
@@ -61,7 +54,7 @@ export class OutrageShiftDto {
 }
 
 export class OutrageDto {
-  @ApiProperty({ enum: OutrageType, example: OutrageType.SCHEDULE })
+  @ApiProperty(outrageTypeApiOptions)
   @IsEnum(OutrageType)
   type: OutrageType;
 
@@ -69,7 +62,7 @@ export class OutrageDto {
   @IsDate()
   date: Date;
 
-  @ApiProperty({ enum: OutrageRegion, example: OutrageRegion.CHERKASY })
+  @ApiProperty(outrageRegionApiOptions)
   @IsEnum(OutrageRegion)
   region: OutrageRegion;
 
@@ -105,7 +98,7 @@ export class OutrageResponseDto {
 }
 
 export class OutrageRegionAndQueuesDto {
-  @ApiProperty({ enum: OutrageRegion, example: OutrageRegion.CHERKASY })
+  @ApiProperty(outrageRegionApiOptions)
   @IsEnum(OutrageRegion)
   region: OutrageRegion;
 

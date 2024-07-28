@@ -3,3 +3,4 @@ export * from './date.util';
 export * from './outrage.util';
 export * from './remove-duplicates.util';
 export * from './typed-object-keys.util';
+export * from './use-enum.helper';

@@ -2,19 +2,19 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsArray } from 'class-validator';
 
 import type { User, UserLocation } from '../entities';
-import { NotificationLeadTime, OutrageRegion } from '../entities';
+import { NotificationLeadTime, notificationLeadTimeApiOptions, OutrageRegion, outrageRegionApiOptions } from '../entities';
 
 export class UserLocationDto implements Omit<UserLocation, 'id' | 'user'> {
   @ApiProperty({ example: 'Мій Дім' })
   name: string;
 
-  @ApiProperty({ example: OutrageRegion.CHERKASY, enum: OutrageRegion })
+  @ApiProperty(outrageRegionApiOptions)
   region: OutrageRegion;
 
   @ApiProperty({ example: true, description: 'Is push notification for outrage update enabled' })
   isPushUpdateOutrageEnabled: boolean;
 
-  @ApiProperty({ example: [NotificationLeadTime.MIN_15], enum: NotificationLeadTime })
+  @ApiProperty({ ...notificationLeadTimeApiOptions, example: [NotificationLeadTime.MIN_15] })
   notificationLeadTime: NotificationLeadTime[];
 
   @ApiProperty({ example: '1' })

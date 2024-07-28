@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import type { User } from '@app/shared';
-import { OutrageRegion, UpdateUserDto, UserDto, UserService } from '@app/shared';
+import { outrageRegionApiOptions, UpdateUserDto, UserDto, UserService } from '@app/shared';
 
 @ApiTags('user')
 @Controller('user')
@@ -24,8 +24,8 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiQuery({
+    ...outrageRegionApiOptions,
     name: 'region',
-    enum: OutrageRegion,
     description: 'Region key to filter outrages by',
     required: true,
   })
