@@ -18,18 +18,18 @@ export class UserLocation {
   })
   region: OutrageRegion;
 
-  @Column({ default: true, type: 'boolean' })
-  active: boolean;
+  @Column({ default: true })
+  isPushUpdateOutrageEnabled: boolean;
 
   @Column()
   queue: string;
 
   @Column({
-    type: 'int',
-    default: 15,
+    type: 'simple-array',
+    default: [15],
     enum: NotificationLeadTime,
   })
-  notificationLeadTime: number;
+  notificationLeadTime: number[];
 
   @ManyToOne(() => User, (user) => user.locations)
   user: User;

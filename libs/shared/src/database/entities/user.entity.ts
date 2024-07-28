@@ -14,6 +14,15 @@ export class User {
   @Column({ nullable: true })
   fcmToken: string;
 
+  @Column({ default: true })
+  isPushEnabled: boolean;
+
+  @Column({ default: true })
+  isPushNextDayEnabled: boolean;
+
+  @Column({ default: true })
+  isPushUpdateOutrageEnabled: boolean;
+
   @OneToMany(() => UserLocation, (location) => location.user, { cascade: true })
   locations: UserLocation[];
 }
