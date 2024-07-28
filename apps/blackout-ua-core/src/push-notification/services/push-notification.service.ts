@@ -5,7 +5,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { CronJob } from 'cron';
 import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
-import type { NotificationLeadTime, Outrage, OutrageRegion, OutrageRegionAndQueuesDto, User, UserLocation } from '@app/shared';
+import type { NotificationLeadTime, Outrage, OutrageRegion, OutrageRegionAndQueuesDto, Shift, User, UserLocation } from '@app/shared';
 import {
   isUnavailableOrPossiblyUnavailable,
   OutrageService,
@@ -37,8 +37,9 @@ export class PushNotificationService implements OnModuleInit {
     private configService: ConfigService,
   ) {}
 
-  onModuleInit(): any {
-    this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
+  async onModuleInit(): Promise<any> {
+    await this.createNotificationJobs().catch((error) => this.logger.error('Error creating notification jobs', error));
+    await this.checkMissingNotifications().catch((error) => this.logger.error('Error checking missing notifications', error));
     // this.test();
   }
 
@@ -77,10 +78,10 @@ export class PushNotificationService implements OnModuleInit {
     const currentShift = this.outrageMergerService.parseTime(`${currentHour}:${currentMinute}`);
 
     const shifts = await this.outrageService.getShiftsForDate(new Date());
-    const shiftStarts = removeDuplicates(shifts.map((shift) => shift.start)).filter(
+    const shiftStarts = removeDuplicates<Shift>(shifts.map((shift) => shift.start)).filter(
       (shift) => this.outrageMergerService.parseTime(shift) > currentShift,
     );
-    const shiftEnds = removeDuplicates(shifts.map((shift) => shift.end)).filter(
+    const shiftEnds = removeDuplicates<Shift>(shifts.map((shift) => shift.end)).filter(
       (shift) => this.outrageMergerService.parseTime(shift) > currentShift,
     );
 
@@ -122,10 +123,8 @@ export class PushNotificationService implements OnModuleInit {
     await Promise.all(userSendRequests);
   }
 
-  scheduleNotification(shift: string, type: ShiftType) {
-    const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
-    const scheduleDate = new Date();
-    scheduleDate.setHours(hours, minutes, 0, 0);
+  scheduleNotification(shift: Shift, type: ShiftType) {
+    const scheduleDate = this.shiftToDate(new Date(), shift);
 
     return userLocationTimes.map((leadTime) => {
       const notificationTime = new Date(scheduleDate.getTime() - leadTime * 60_000); // 15 minutes before the shift
@@ -144,7 +143,7 @@ export class PushNotificationService implements OnModuleInit {
     });
   }
 
-  async sendNotification(shift: string, type: ShiftType, leadTime: NotificationLeadTime) {
+  async sendNotification(shift: Shift, type: ShiftType, leadTime: NotificationLeadTime) {
     const outrages =
       type === 'start'
         ? await this.outrageService.getShiftAndQueuesForDateAndShiftStart(new Date(), shift)
@@ -201,9 +200,8 @@ export class PushNotificationService implements OnModuleInit {
     });
     await Promise.all(userSendRequests);
 
-    const shiftDate = new Date();
-    const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
-    shiftDate.setHours(hours, minutes - leadTime, 0, 0);
+    const shiftDate = this.shiftToDate(new Date(), shift);
+    shiftDate.setHours(shiftDate.getHours(), shiftDate.getMinutes() - leadTime, 0, 0);
 
     switch (type) {
       case 'start': {
@@ -220,7 +218,7 @@ export class PushNotificationService implements OnModuleInit {
     }
   }
 
-  checkIfLocationWithoutElectricity(location: UserLocation, outrages: Outrage[], shift: string, type: ShiftType): boolean {
+  checkIfLocationWithoutElectricity(location: UserLocation, outrages: Outrage[], shift: Shift, type: ShiftType): boolean {
     const locationOutrage = outrages.find((outrage) => outrage.region === location.region);
 
     switch (type) {
@@ -241,7 +239,7 @@ export class PushNotificationService implements OnModuleInit {
    * Check if location has no electricity at the start of the shift
    * @return {boolean} true if location has no electricity, false otherwise
    * */
-  checkIfLocationWithoutElectricityStart(location: UserLocation, locationOutrage: Outrage, shift: string): boolean {
+  checkIfLocationWithoutElectricityStart(location: UserLocation, locationOutrage: Outrage, shift: Shift): boolean {
     const previousShift = locationOutrage.shifts.find((localShift) => localShift.end === shift);
 
     if (!previousShift) {
@@ -260,7 +258,7 @@ export class PushNotificationService implements OnModuleInit {
    * Check if location has no electricity at the end of the shift
    * @return {boolean} true if location has no electricity, false otherwise
    * */
-  checkIfLocationWithElectricityEnd(location: UserLocation, locationOutrage: Outrage, shift: string): boolean {
+  checkIfLocationWithElectricityEnd(location: UserLocation, locationOutrage: Outrage, shift: Shift): boolean {
     const nextShift = locationOutrage.shifts.find((localShift) => localShift.start === shift);
 
     if (!nextShift) {
@@ -275,7 +273,7 @@ export class PushNotificationService implements OnModuleInit {
     });
   }
 
-  sendDisableNotificationToUser(user: User, shift: string, leadTime: NotificationLeadTime): Promise<void[]> {
+  sendDisableNotificationToUser(user: User, shift: Shift, leadTime: NotificationLeadTime | number): Promise<void[]> {
     const { fcmToken, locations } = user;
 
     return Promise.all(
@@ -288,7 +286,7 @@ export class PushNotificationService implements OnModuleInit {
     );
   }
 
-  sendEnableNotificationToUser(user: User, shift: string, leadTime: NotificationLeadTime): Promise<void[]> {
+  sendEnableNotificationToUser(user: User, shift: Shift, leadTime: NotificationLeadTime | number): Promise<void[]> {
     const { fcmToken, locations } = user;
 
     return Promise.all(
@@ -339,5 +337,34 @@ export class PushNotificationService implements OnModuleInit {
 
   getAllShiftsForDate(date: Date) {
     return this.outrageService.getShiftsForDate(date);
+  }
+
+  shiftToDate(date: Date, shift: Shift): Date {
+    const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
+    const shiftDate = new Date(date);
+    shiftDate.setHours(hours, minutes, 0, 0);
+    return shiftDate;
+  }
+
+  async checkMissingNotifications() {
+    const today = new Date();
+    const { missingStartQueues, missingEndQueues } = await this.pushNotificationTrackerService.initialCheck(today);
+    console.log({ missingStartQueues, missingEndQueues });
+
+    const startPromises = missingStartQueues.map(async (queue) => {
+      const currentDate = new Date();
+      const shiftDate = this.shiftToDate(currentDate, queue.shift);
+      const flexibleLeadTime = new Date(+shiftDate - +currentDate);
+      return this.sendNotification(queue.shift, 'start', flexibleLeadTime.getMinutes());
+    });
+
+    const endPromises = missingEndQueues.map(async (queue) => {
+      const currentDate = new Date();
+      const shiftDate = this.shiftToDate(currentDate, queue.shift);
+      const flexibleLeadTime = new Date(+shiftDate - +currentDate);
+      return this.sendNotification(queue.shift, 'end', flexibleLeadTime.getMinutes());
+    });
+
+    return Promise.all([startPromises, endPromises]);
   }
 }
