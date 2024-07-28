@@ -11,6 +11,7 @@ export class UkraineCherkasyService implements UkraineCityService {
     name: 'Черкаси',
     key: OutrageRegion.CHERKASY,
     queues: ['1', '2', '3', '4', '5', '6'],
+    findQueueUrl: 'https://www.cherkasyoblenergo.com/static/perelik-gpv',
   };
 
   constructor(private outrageParserService: OutrageParserService) {}

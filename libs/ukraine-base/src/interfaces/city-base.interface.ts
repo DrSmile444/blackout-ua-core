@@ -7,6 +7,7 @@ export interface CityMetadata {
   name: string;
   key: OutrageRegion;
   queues: string[];
+  findQueueUrl: string;
 }
 
 export interface TelegramConfig {

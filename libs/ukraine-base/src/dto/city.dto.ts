@@ -24,4 +24,9 @@ export class CityMetadataDto implements CityMetadata {
   @IsArray()
   @IsNotEmpty()
   queues: string[];
+
+  @ApiProperty({ example: 'https://www.cherkasyoblenergo.com/static/perelik-gpv' })
+  @IsString()
+  @IsNotEmpty()
+  findQueueUrl: string;
 }
