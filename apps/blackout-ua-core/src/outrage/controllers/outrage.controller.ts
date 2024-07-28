@@ -3,7 +3,7 @@ import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import type { Outrage } from '@app/shared';
-import { OutrageDto, OutrageMessageDto, OutrageParserService, OutrageResponseDto, OutrageService } from '@app/shared';
+import { OutrageParserService, OutrageResponseDto, OutrageService } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
 import { SearchOutragesDto } from '../dto';
@@ -19,19 +19,6 @@ export class OutrageController {
     private readonly outrageService: OutrageService,
     private readonly updateService: UpdateService,
   ) {}
-
-  @Post('/')
-  @ApiBody({ type: OutrageMessageDto })
-  @ApiOperation({ summary: 'Parse a message and create a new outrage', deprecated: true })
-  @ApiResponse({
-    status: 200,
-    type: OutrageDto,
-    description: 'Create a new outrage from a message',
-  })
-  async create(@Body() body: OutrageMessageDto) {
-    const outrageDto = this.outrageParserService.parseMessage(body.message, body.region);
-    return await this.outrageService.saveOutrage(outrageDto);
-  }
 
   @Post('/search')
   @ApiBody({ type: SearchOutragesDto })
@@ -64,15 +51,6 @@ export class OutrageController {
     }
 
     return { lastUpdate: this.updateService.getLastUpdateTime(), accessDate, outrages };
-  }
-
-  // TODO remove this endpoint
-  @Post('/test')
-  @ApiBody({ type: OutrageMessageDto })
-  @ApiResponse({ status: 200, type: OutrageDto })
-  @ApiOperation({ summary: 'Test how parsing logic works', deprecated: true })
-  process(@Body() body: OutrageMessageDto): OutrageDto {
-    return this.outrageParserService.parseMessage(body.message, body.region);
   }
 
   @Get('/all')

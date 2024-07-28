@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-import { outrageMock5Change2 } from '../../mocks';
 import type { OutrageShift } from '../entities';
 import { LightStatus, OutrageRegion, OutrageType } from '../entities';
 
@@ -59,14 +58,6 @@ export class OutrageShiftDto {
   @ValidateNested({ each: true })
   @Type(() => OutrageQueueDto)
   queues: OutrageQueueDto[];
-}
-
-export class OutrageMessageDto {
-  @ApiProperty({ enum: OutrageRegion, example: OutrageRegion.CHERKASY })
-  region: OutrageRegion;
-
-  @ApiProperty({ example: outrageMock5Change2 })
-  message: string;
 }
 
 export class OutrageDto {
