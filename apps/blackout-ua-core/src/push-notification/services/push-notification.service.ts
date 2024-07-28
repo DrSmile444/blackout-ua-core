@@ -130,7 +130,7 @@ export class PushNotificationService implements OnModuleInit {
       const notificationTime = new Date(scheduleDate.getTime() - leadTime * 60_000); // 15 minutes before the shift
       const cronTime = `${notificationTime.getMinutes()} ${notificationTime.getHours()} ${notificationTime.getDate()} ${notificationTime.getMonth() + 1} *`;
 
-      // this.logger.debug(`Scheduling notification for ${type} ${shift} at ${notificationTime.toISOString()}`);
+      this.logger.debug(`Scheduling notification for ${type} ${shift} at ${notificationTime.toISOString()}`);
 
       const job = new CronJob(cronTime, () => {
         this.sendNotification(shift, type, leadTime).catch((error) => this.logger.error('Error sending notification', error));
