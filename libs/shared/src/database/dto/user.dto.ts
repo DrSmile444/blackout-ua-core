@@ -60,7 +60,13 @@ export class CreateUserDto {
   fcmToken: string;
 }
 
-export class UserDto extends CreateUserDto implements Omit<User, 'id' | 'locations'> {
+export class UserDto extends CreateUserDto implements Omit<User, 'locations'> {
+  @ApiProperty({
+    example: '00000000-54b3-e7c7-0000-000046bffd97',
+    description: 'Unique user identifier',
+  })
+  id: string;
+
   @ApiProperty({
     example: true,
     description: 'Is all push notification enabled',
