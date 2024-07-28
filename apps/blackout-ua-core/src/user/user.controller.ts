@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import type { User } from '@app/shared';
-import { outrageRegionApiOptions, UpdateUserDto, UserDto, UserService } from '@app/shared';
+import { CreateUserDto, outrageRegionApiOptions, UpdateUserDto, UserDto, UserService } from '@app/shared';
 
 @ApiTags('user')
 @Controller('user')
@@ -10,14 +10,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @ApiBody({ type: UserDto })
+  @ApiBody({ type: CreateUserDto })
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
     status: 200,
     type: UserDto,
     description: 'Create a new user',
   })
-  async create(@Body() userDto: UserDto): Promise<User> {
+  async create(@Body() userDto: CreateUserDto): Promise<User> {
     return await this.userService.createUser(userDto);
   }
 
@@ -27,7 +27,7 @@ export class UserController {
     ...outrageRegionApiOptions,
     name: 'region',
     description: 'Region key to filter outrages by',
-    required: true,
+    required: false,
   })
   @ApiQuery({
     name: 'queue',

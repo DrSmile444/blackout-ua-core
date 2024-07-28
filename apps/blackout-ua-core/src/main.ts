@@ -10,7 +10,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true, // This line ensures transformation
-      whitelist: true,
+      // whitelist: true,
     }),
   );
 
@@ -29,7 +29,7 @@ async function bootstrap() {
     efficient data storage and retrieval mechanisms.
   `,
     )
-    .setVersion('1.2')
+    .setVersion('1.3')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

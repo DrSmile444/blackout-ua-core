@@ -25,9 +25,10 @@ export class UserLocation {
   queue: string;
 
   @Column({
-    type: 'simple-array',
+    type: 'int',
     default: [15],
     enum: NotificationLeadTime,
+    array: true,
   })
   notificationLeadTime: number[];
 

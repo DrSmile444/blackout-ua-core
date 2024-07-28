@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import type { OutrageRegionAndQueuesDto, UpdateUserDto, UserDto } from '../dto';
+import type { CreateUserDto, OutrageRegionAndQueuesDto, UpdateUserDto, UserDto } from '../dto';
 import type { NotificationLeadTime } from '../entities';
 import { User, UserLocation } from '../entities';
 
@@ -15,17 +15,13 @@ export class UserService {
     private readonly locationRepository: Repository<UserLocation>,
   ) {}
 
-  async createUser(userDto: UserDto): Promise<User> {
+  async createUser(userDto: CreateUserDto): Promise<User> {
     const existingUser = await this.userRepository.findOne({ where: { deviceId: userDto.deviceId } });
     if (existingUser) {
       return this.updateUser(existingUser.id, userDto as UpdateUserDto);
     }
 
-    const { locations, ...userDetails } = userDto;
-    const user = this.userRepository.create(userDetails);
-    if (locations) {
-      user.locations = locations.map((location) => this.locationRepository.create(location));
-    }
+    const user = this.userRepository.create(userDto);
     return await this.userRepository.save(user);
   }
 
@@ -42,10 +38,10 @@ export class UserService {
       .getMany();
   }
 
-  async updateUser(deviceId: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { deviceId }, relations: ['locations'] });
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id }, relations: ['locations'] });
     if (!user) {
-      throw new NotFoundException(`User with deviceId ${deviceId} not found`);
+      throw new NotFoundException(`User with id ${id} not found`);
     }
     const { locations, ...userDetails } = updateUserDto;
     if (locations) {
