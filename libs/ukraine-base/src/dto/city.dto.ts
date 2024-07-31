@@ -20,7 +20,7 @@ export class CityMetadataDto implements CityMetadata {
   @IsNotEmpty()
   id: number;
 
-  @ApiProperty({ example: ['1', '2', '4'] })
+  @ApiProperty({ example: ['1', '2', '4'], isArray: true })
   @IsArray()
   @IsNotEmpty()
   queues: string[];
