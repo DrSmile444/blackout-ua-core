@@ -1,5 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsEnum, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsBoolean, IsEnum, IsString, ValidateNested } from 'class-validator';
 
 import type { User, UserLocation } from '../entities';
 import { NotificationLeadTime, notificationLeadTimeApiOptions, OutrageRegion, outrageRegionApiOptions } from '../entities';
@@ -100,8 +101,11 @@ export class UserDto extends CreateUserDto implements Omit<User, 'locations'> {
   @ApiProperty({
     type: [UserLocationDto],
     example: userLocationDtoExamples,
+    isArray: true,
   })
   @IsArray()
+  @Type(() => UserLocationDto)
+  @ValidateNested({ each: true })
   locations: UserLocationDto[];
 }
 
