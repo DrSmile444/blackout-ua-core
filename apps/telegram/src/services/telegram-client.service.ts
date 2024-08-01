@@ -24,13 +24,15 @@ export class TelegramClientService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit(): any {
-    return this.initClient()
-      .then(() => this.getHistory())
-      .catch(console.error);
+    return (
+      this.initClient()
+        // .then(() => this.getHistory())
+        .catch(console.error)
+    );
   }
 
-  onModuleDestroy(): any {
-    this.closeClient().catch(console.error);
+  onModuleDestroy(): Promise<void> {
+    return this.closeClient().catch(console.error);
   }
 
   /**

@@ -15,9 +15,7 @@ export class ScrapperService {
     private readonly httpService: HttpService,
     private outrageService: OutrageService,
     private ukraineScrapperService: UkraineScrapperService,
-  ) {
-    this.scrapeOutrages().catch(console.error);
-  }
+  ) {}
 
   async scrapeOutrages() {
     let updatedOutrages: Outrage[] = [];
