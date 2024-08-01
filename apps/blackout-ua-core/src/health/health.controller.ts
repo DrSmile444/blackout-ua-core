@@ -1,7 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ApiTags } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, HttpHealthIndicator, MemoryHealthIndicator, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
+@ApiTags('app')
 @Controller('health')
 export class HealthController {
   constructor(
@@ -14,6 +16,7 @@ export class HealthController {
 
   private instanceSize = 512 * 1024 * 1024;
 
+  // eslint-disable-next-line @darraghor/nestjs-typed/api-method-should-specify-api-response
   @Get()
   @HealthCheck()
   check() {

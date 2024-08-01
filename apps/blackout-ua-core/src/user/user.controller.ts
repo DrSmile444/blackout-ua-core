@@ -47,7 +47,7 @@ export class UserController {
     return await this.userService.findAll();
   }
 
-  @Patch(':userId')
+  @Patch(':id')
   @ApiBody({ type: UpdateUserDto })
   @ApiOperation({ summary: 'Update an existing user by id' })
   @ApiResponse({

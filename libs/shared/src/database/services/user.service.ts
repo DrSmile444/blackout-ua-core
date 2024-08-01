@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import type { CreateUserDto, OutrageRegionAndQueuesDto, UpdateUserDto, UserDto } from '../dto';
+import type { CreateUserDto, OutrageRegionAndQueuesDto, UpdateUserDto } from '../dto';
 import type { NotificationLeadTime } from '../entities';
 import { User, UserLocation } from '../entities';
 
@@ -48,13 +48,15 @@ export class UserService {
       user.locations = locations.map((location) => this.locationRepository.create(location));
     }
     Object.assign(user, userDetails);
-    console.log(user);
     return await this.userRepository.save(user);
   } // Add more methods as needed, e.g., findOne, update, delete
 
   async getUsersByRegionQueues(payload: OutrageRegionAndQueuesDto[]): Promise<User[]> {
     const users: User[] = [];
+    // TODO find a way to optimize this
+    // eslint-disable-next-line no-restricted-syntax
     for (const { region, queues } of payload) {
+      // eslint-disable-next-line no-await-in-loop
       const usersByRegionAndQueue = await this.userRepository
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.locations', 'location')
@@ -70,7 +72,10 @@ export class UserService {
 
   async getUsersByRegionQueuesWithChange(payload: OutrageRegionAndQueuesDto[]): Promise<User[]> {
     const users: User[] = [];
+    // TODO find a way to optimize this
+    // eslint-disable-next-line no-restricted-syntax
     for (const { region, queues } of payload) {
+      // eslint-disable-next-line no-await-in-loop
       const usersByRegionAndQueue = await this.userRepository
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.locations', 'location')
@@ -87,7 +92,10 @@ export class UserService {
 
   async getUsersByRegionQueuesLead(payload: OutrageRegionAndQueuesDto[], leadTime: NotificationLeadTime): Promise<User[]> {
     const users: User[] = [];
+    // TODO find a way to optimize this
+    // eslint-disable-next-line no-restricted-syntax
     for (const { region, queues } of payload) {
+      // eslint-disable-next-line no-await-in-loop
       const usersByRegionAndQueue = await this.userRepository
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.locations', 'location')

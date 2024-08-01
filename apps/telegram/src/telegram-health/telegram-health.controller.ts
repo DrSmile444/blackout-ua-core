@@ -1,8 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, MemoryHealthIndicator, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
 import { TelegramHealthIndicator } from './telegram.health';
 
+@ApiTags('app')
 @Controller('health')
 export class TelegramHealthController {
   constructor(
@@ -14,6 +16,7 @@ export class TelegramHealthController {
 
   private instanceSize = 512 * 1024 * 1024;
 
+  // eslint-disable-next-line @darraghor/nestjs-typed/api-method-should-specify-api-response
   @Get()
   @HealthCheck()
   check() {

@@ -2,8 +2,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import type { Outrage } from '@app/shared';
-import { OutrageParserService, OutrageSearchResponseDto, OutrageService } from '@app/shared';
+import { Outrage, OutrageParserService, OutrageSearchResponseDto, OutrageService } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
 import { SearchOutragesDto } from '../dto';
@@ -34,10 +33,14 @@ export class OutrageController {
     const accessDate = new Date(clearDate.setHours(0, 0, 0, 0));
 
     const outrages: Outrage[] = [];
+    // TODO rework it with a single query
+    // eslint-disable-next-line no-restricted-syntax
     for (const { region, queues } of regions) {
       if (queues.length > 0) {
+        // eslint-disable-next-line no-await-in-loop
         outrages.push(...(await this.outrageService.findOutrages(accessDate, region, queues)));
       } else {
+        // eslint-disable-next-line no-await-in-loop
         outrages.push(...(await this.outrageService.findOutragesByDateAndRegion(accessDate, region)));
       }
     }
@@ -63,6 +66,12 @@ export class OutrageController {
 
   @Get('/all')
   @ApiOperation({ summary: 'Returns the complete storage for debug', deprecated: true })
+  @ApiResponse({
+    status: 200,
+    type: Outrage,
+    description: 'Returns the complete storage for debug',
+    isArray: true,
+  })
   getRawStorage() {
     return this.outrageService.getAll();
   }

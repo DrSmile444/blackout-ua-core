@@ -1,9 +1,7 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 
-import { OutrageParserService } from '@app/shared';
-
-import { outrageChernivtsiMock1Origin } from '../mocks';
+import { LightStatus, OutrageParserService } from '@app/shared';
 
 import { UkraineChernivtsiParserService } from './ukraine-chernivtsi-parser.service';
 
@@ -41,18 +39,69 @@ describe('UkraineChernivtsiParserService', () => {
       expect(
         service.mergeQueueTimes(
           [
-            { start: '10:00', end: '12:00', queues: ['1', '2'] },
-            { start: '12:00', end: '14:00', queues: ['3', '4'] },
+            {
+              start: '10:00',
+              end: '12:00',
+              queues: [
+                { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+                { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+              ],
+            },
+            {
+              start: '12:00',
+              end: '14:00',
+              queues: [
+                { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+                { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+              ],
+            },
           ],
           [
-            { start: '12:00', end: '14:00', queues: ['1', '2'] },
-            { start: '18:00', end: '20:00', queues: ['3', '4'] },
+            {
+              start: '12:00',
+              end: '14:00',
+              queues: [
+                { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+                { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+              ],
+            },
+            {
+              start: '18:00',
+              end: '20:00',
+              queues: [
+                { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+                { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+              ],
+            },
           ],
         ),
       ).toEqual([
-        { start: '10:00', end: '12:00', queues: ['1', '2'] },
-        { start: '12:00', end: '14:00', queues: ['3', '4', '1', '2'] },
-        { start: '18:00', end: '20:00', queues: ['3', '4'] },
+        {
+          start: '10:00',
+          end: '12:00',
+          queues: [
+            { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+            { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+          ],
+        },
+        {
+          start: '12:00',
+          end: '14:00',
+          queues: [
+            { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+            { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+            { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+            { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+          ],
+        },
+        {
+          start: '18:00',
+          end: '20:00',
+          queues: [
+            { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+            { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+          ],
+        },
       ]);
     });
   });

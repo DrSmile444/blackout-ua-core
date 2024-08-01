@@ -53,6 +53,8 @@ module.exports = {
         "js": "never",
         "ts": "never"
       }
-    ]
+    ],
+    // Temporary disabled rules
+    "no-return-await": "off",
   },
 };

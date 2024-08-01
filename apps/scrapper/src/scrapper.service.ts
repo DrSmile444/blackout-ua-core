@@ -32,6 +32,7 @@ export class ScrapperService {
 
       const result = scrapperConfig.parser(cheerioAPI);
 
+      // eslint-disable-next-line no-await-in-loop
       const newUpdatedOutrages = await this.outrageService.bulkSaveOutrages(coerceArray(result));
 
       updatedOutrages = [...updatedOutrages, ...newUpdatedOutrages];

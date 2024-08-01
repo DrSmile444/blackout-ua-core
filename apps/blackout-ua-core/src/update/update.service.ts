@@ -30,13 +30,13 @@ export class UpdateService {
     const telegramResponse = await firstValueFrom(this.httpService.post<Outrage[]>(this.telegramUpdateUrl)).catch((error) => {
       this.logger.error('Error updating telegram', error);
       return {
-        data: [],
+        data: [] as Outrage[],
       };
     });
     const scrapperResponse = await firstValueFrom(this.httpService.post<Outrage[]>(this.scrapperUpdateUrl)).catch((error) => {
       this.logger.error('Error updating scrapper', error);
       return {
-        data: [],
+        data: [] as Outrage[],
       };
     });
 

@@ -47,8 +47,11 @@ export class PushNotificationService implements OnModuleInit {
   async test() {
     // const times = ['15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
     const times = ['13:00'];
+    // eslint-disable-next-line no-restricted-syntax
     for (const time of times) {
+      // eslint-disable-next-line no-await-in-loop
       await this.sendNotification(time, 'start', 15);
+      // eslint-disable-next-line no-await-in-loop
       await this.sendNotification(time, 'end', 15);
     }
     // const foundLocation: UserLocation = {

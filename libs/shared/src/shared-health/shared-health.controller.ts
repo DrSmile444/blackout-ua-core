@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, MemoryHealthIndicator, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
+@ApiTags('app')
 @Controller('health')
 export class SharedHealthController {
   constructor(
@@ -11,6 +13,7 @@ export class SharedHealthController {
 
   private instanceSize = 512 * 1024 * 1024;
 
+  // eslint-disable-next-line @darraghor/nestjs-typed/api-method-should-specify-api-response
   @Get()
   @HealthCheck()
   check() {

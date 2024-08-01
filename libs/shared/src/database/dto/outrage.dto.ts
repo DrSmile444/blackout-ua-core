@@ -1,9 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 import { dateTransform } from '../../transformers';
-import type { OutrageShift } from '../entities';
 import {
   LightStatus,
   lightStatusApiOptions,
@@ -47,25 +46,33 @@ export class OutrageShiftDto {
   @IsString()
   end: string;
 
-  @ApiProperty({ type: [OutrageQueueDto], example: queueExample })
+  @ApiProperty({ type: OutrageQueueDto, example: queueExample, isArray: true })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OutrageQueueDto)
   queues: OutrageQueueDto[];
 }
 
+export const outrageShiftDtoExample: OutrageShiftDto = {
+  start: '10:00',
+  end: '11:00',
+  queues: queueExample,
+};
+
 export class OutrageShiftResponseDto {
   @ApiProperty({ type: Date, example: new Date(new Date().setHours(10, 0, 0, 0)) })
   @Transform(dateTransform)
+  @Type(() => Date)
   @IsDate()
   start: Date;
 
   @ApiProperty({ type: Date, example: new Date(new Date().setHours(11, 0, 0, 0)) })
   @Transform(dateTransform)
+  @Type(() => Date)
   @IsDate()
   end: Date;
 
-  @ApiProperty({ type: [OutrageQueueDto], example: queueExample })
+  @ApiProperty({ type: OutrageQueueDto, example: queueExample, isArray: true })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OutrageQueueDto)
@@ -84,6 +91,7 @@ export class OutrageDto {
   type: OutrageType;
 
   @ApiProperty({ type: Date, example: new Date(2024, 5, 25) })
+  @Type(() => Date)
   @IsDate()
   date: Date;
 
@@ -91,14 +99,15 @@ export class OutrageDto {
   @IsEnum(OutrageRegion)
   region: OutrageRegion;
 
-  @ApiProperty({ example: 0 })
+  @ApiPropertyOptional({ example: 0 })
   @IsOptional()
   @IsNumber()
   changeCount?: number;
 
   @ApiProperty({
-    type: [OutrageShiftDto],
-    example: [{ start: '10:00', end: '11:00', queues: queueExample } as OutrageShift],
+    type: OutrageShiftDto,
+    example: outrageShiftDtoExample,
+    isArray: true,
   })
   @IsArray()
   @ValidateNested({ each: true })
@@ -112,6 +121,7 @@ export class OutrageResponseDto {
   type: OutrageType;
 
   @ApiProperty({ type: Date, example: new Date(2024, 5, 25) })
+  @Type(() => Date)
   @IsDate()
   date: Date;
 
@@ -119,14 +129,15 @@ export class OutrageResponseDto {
   @IsEnum(OutrageRegion)
   region: OutrageRegion;
 
-  @ApiProperty({ example: 0 })
+  @ApiPropertyOptional({ example: 0 })
   @IsOptional()
   @IsNumber()
   changeCount?: number;
 
   @ApiProperty({
-    type: [OutrageShiftDto],
+    type: OutrageShiftDto,
     example: [outrageShiftResponseDtoExample],
+    isArray: true,
   })
   @IsArray()
   @ValidateNested({ each: true })
@@ -136,16 +147,20 @@ export class OutrageResponseDto {
 
 export class OutrageSearchResponseDto {
   @ApiProperty({ example: new Date() })
+  @Type(() => Date)
   @IsDateString()
   @IsNotEmpty()
   lastUpdate: Date;
 
   @ApiProperty({ example: new Date() })
+  @Type(() => Date)
   @IsDateString()
   @IsNotEmpty()
   accessDate: Date;
 
-  @ApiProperty({ type: [OutrageResponseDto] })
+  @ApiProperty({ type: OutrageResponseDto, isArray: true })
+  @Type(() => OutrageResponseDto)
+  @ValidateNested({ each: true })
   @IsNotEmpty()
   outrages: OutrageResponseDto[];
 }
@@ -155,7 +170,7 @@ export class OutrageRegionAndQueuesDto {
   @IsEnum(OutrageRegion)
   region: OutrageRegion;
 
-  @ApiProperty({ type: [String], example: ['2', '3'] })
+  @ApiProperty({ type: String, example: ['2', '3'], isArray: true })
   @IsArray()
   @Type(() => String)
   queues: string[];
