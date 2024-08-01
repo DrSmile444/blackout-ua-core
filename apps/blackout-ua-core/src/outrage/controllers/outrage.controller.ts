@@ -2,7 +2,8 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { Outrage, OutrageParserService, OutrageSearchResponseDto, OutrageService } from '@app/shared';
+import type { Outrage } from '@app/shared';
+import { OutrageDto, OutrageParserService, OutrageSearchResponseDto, OutrageService } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
 import { SearchOutragesDto } from '../dto';
@@ -65,7 +66,7 @@ export class OutrageController {
   @ApiOperation({ summary: 'Returns the complete storage for debug', deprecated: true })
   @ApiResponse({
     status: 200,
-    type: Outrage,
+    type: OutrageDto,
     description: 'Returns the complete storage for debug',
     isArray: true,
   })

@@ -27,12 +27,12 @@ export class UserController {
   @ApiQuery({
     ...outrageRegionApiOptions,
     name: 'region',
+    example: null,
     description: 'Region key to filter outrages by',
     required: false,
   })
   @ApiQuery({
     name: 'queue',
-    example: '4',
     required: false,
   })
   @ApiResponse({

@@ -88,7 +88,7 @@ export class OutrageService {
   }
 
   async getAll(): Promise<Outrage[]> {
-    return await this.outrageRepository.find();
+    return await this.outrageRepository.find({ relations: ['shifts', 'shifts.queues'] });
   }
 
   async findOutragesByDateAndRegion(date: Date, region: OutrageRegion): Promise<Outrage[]> {
