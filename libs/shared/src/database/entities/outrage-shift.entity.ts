@@ -11,10 +11,10 @@ export class OutrageShift {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   start: Date;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   end: Date;
 
   @ManyToOne(() => Outrage, (outrage) => outrage.shifts, { onDelete: 'CASCADE' })

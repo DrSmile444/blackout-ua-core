@@ -5,7 +5,16 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { CronJob } from 'cron';
 import type { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
-import type { NotificationLeadTime, Outrage, OutrageRegion, OutrageRegionAndQueuesDto, Shift, User, UserLocation } from '@app/shared';
+import type {
+  NotificationLeadTime,
+  Outrage,
+  OutrageDto,
+  OutrageRegion,
+  OutrageRegionAndQueuesDto,
+  Shift,
+  User,
+  UserLocation,
+} from '@app/shared';
 import {
   isUnavailableOrPossiblyUnavailable,
   OutrageService,
@@ -215,7 +224,7 @@ export class PushNotificationService implements OnModuleInit {
     }
   }
 
-  checkIfLocationWithoutElectricity(location: UserLocation, outrages: Outrage[], shift: Shift, type: ShiftType): boolean {
+  checkIfLocationWithoutElectricity(location: UserLocation, outrages: OutrageDto[], shift: Shift, type: ShiftType): boolean {
     const locationOutrage = outrages.find((outrage) => outrage.region === location.region);
 
     switch (type) {
@@ -236,7 +245,7 @@ export class PushNotificationService implements OnModuleInit {
    * Check if location has no electricity at the start of the shift
    * @return {boolean} true if location has no electricity, false otherwise
    * */
-  checkIfLocationWithoutElectricityStart(location: UserLocation, locationOutrage: Outrage, shift: Shift): boolean {
+  checkIfLocationWithoutElectricityStart(location: UserLocation, locationOutrage: OutrageDto, shift: Shift): boolean {
     const previousShift = locationOutrage.shifts.find((localShift) => localShift.end === shift);
 
     if (!previousShift) {
@@ -255,7 +264,7 @@ export class PushNotificationService implements OnModuleInit {
    * Check if location has no electricity at the end of the shift
    * @return {boolean} true if location has no electricity, false otherwise
    * */
-  checkIfLocationWithElectricityEnd(location: UserLocation, locationOutrage: Outrage, shift: Shift): boolean {
+  checkIfLocationWithElectricityEnd(location: UserLocation, locationOutrage: OutrageDto, shift: Shift): boolean {
     const nextShift = locationOutrage.shifts.find((localShift) => localShift.start === shift);
 
     if (!nextShift) {
