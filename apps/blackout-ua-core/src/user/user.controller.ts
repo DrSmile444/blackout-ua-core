@@ -48,6 +48,17 @@ export class UserController {
     return await this.userService.findAll();
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: 'Get user by id' })
+  @ApiResponse({
+    status: 200,
+    type: UserDto,
+    description: 'Get user by id',
+  })
+  async findOne(@Param('id') id: string): Promise<User> {
+    return await this.userService.findOne(id);
+  }
+
   @Patch(':id')
   @ApiBody({ type: UpdateUserDto })
   @ApiOperation({ summary: 'Update an existing user by id' })

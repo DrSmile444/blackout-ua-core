@@ -30,6 +30,14 @@ export class UserService {
     return await this.userRepository.find({ relations: ['locations'] });
   }
 
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id }, relations: ['locations'] });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
+  }
+
   async findByLocation(region: string, queue: string): Promise<User[]> {
     return await this.userRepository
       .createQueryBuilder('user')
