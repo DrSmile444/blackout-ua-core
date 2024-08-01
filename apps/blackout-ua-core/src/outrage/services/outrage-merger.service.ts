@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import type { Outrage } from '@app/shared';
+import type { OutrageDto } from '@app/shared';
 
 @Injectable()
 export class OutrageMergerService {
@@ -9,8 +9,8 @@ export class OutrageMergerService {
     return hours * 60 + minutes;
   }
 
-  mergeOutragesByRegion(outrages: Outrage[]): Outrage[] {
-    const mergedOutrages: Outrage[] = [];
+  mergeOutragesByRegion(outrages: OutrageDto[]): OutrageDto[] {
+    const mergedOutrages: OutrageDto[] = [];
     const regions = [...new Set(outrages.map((outrage) => outrage.region))];
 
     regions.forEach((region) => {
@@ -22,21 +22,17 @@ export class OutrageMergerService {
     return mergedOutrages;
   }
 
-  mergeOutrages(outrages: Outrage[]): Outrage {
+  mergeOutrages(outrages: OutrageDto[]): OutrageDto {
     let currentOutrage = outrages[0];
 
     outrages.slice(1).forEach((newOutrage) => {
       const newFirstShift = newOutrage.shifts[0];
-      const newFirstShiftTime = this.parseTime(newFirstShift.start);
 
-      currentOutrage.shifts = currentOutrage.shifts.filter((oldShift) => {
-        const oldShiftTime = this.parseTime(oldShift.start);
-        return oldShiftTime < newFirstShiftTime;
-      });
+      currentOutrage.shifts = currentOutrage.shifts.filter((oldShift) => oldShift.start < newFirstShift.start);
 
       const lastCurrentShift = currentOutrage.shifts.at(-1);
 
-      if (lastCurrentShift && this.parseTime(lastCurrentShift.end) > this.parseTime(newFirstShift.start)) {
+      if (lastCurrentShift && lastCurrentShift.end > newFirstShift.start) {
         lastCurrentShift.end = newFirstShift.start;
       }
 

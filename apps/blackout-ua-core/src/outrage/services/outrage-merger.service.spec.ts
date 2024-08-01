@@ -1,10 +1,21 @@
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 
-import type { Outrage } from '@app/shared';
-import { outrageMock3Origin, outrageMock4Change, outrageMock5Change2, OutrageParserService, OutrageRegion, OutrageType } from '@app/shared';
+import type { OutrageDto } from '@app/shared';
+import {
+  LightStatus,
+  outrageMock3Origin,
+  outrageMock4Change,
+  outrageMock5Change2,
+  OutrageParserService,
+  OutrageRegion,
+  OutrageType,
+  stringToShift,
+} from '@app/shared';
 
 import { OutrageMergerService } from './outrage-merger.service';
+
+const mockDate = new Date('2024-06-25');
 
 describe('OutrageMergerService', () => {
   let outrageMergerService: OutrageMergerService;
@@ -28,36 +39,85 @@ describe('OutrageMergerService', () => {
 
   describe('mergeOutrages', () => {
     it('should merge 2 outrages', () => {
-      const outrage1: Outrage = {
-        date: new Date('2024-06-25'),
+      const outrage1: OutrageDto = {
+        date: mockDate,
         type: OutrageType.SCHEDULE,
         region: OutrageRegion.CHERKASY,
         shifts: [
-          { start: '10:00', end: '12:00', queues: ['1', '2'] },
-          { start: '12:00', end: '14:00', queues: ['3', '4'] },
+          {
+            start: stringToShift(new Date(), '10:00'),
+            end: stringToShift(new Date(), '12:00'),
+            queues: [
+              { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '12:00'),
+            end: stringToShift(new Date(), '14:00'),
+            queues: [
+              { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
         ],
       };
 
-      const outrage2: Outrage = {
-        date: new Date('2024-06-25'),
+      const outrage2: OutrageDto = {
+        date: mockDate,
         type: OutrageType.CHANGE,
         region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
-          { start: '12:00', end: '14:00', queues: ['1', '2'] },
-          { start: '18:00', end: '20:00', queues: ['3', '4'] },
+          {
+            start: stringToShift(new Date(), '12:00'),
+            end: stringToShift(new Date(), '14:00'),
+            queues: [
+              { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '18:00'),
+            end: stringToShift(new Date(), '20:00'),
+            queues: [
+              { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
         ],
       };
 
-      const expected: Outrage = {
-        date: new Date('2024-06-25'),
+      const expected: OutrageDto = {
+        date: mockDate,
         type: OutrageType.CHANGE,
         region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
-          { start: '10:00', end: '12:00', queues: ['1', '2'] },
-          { start: '12:00', end: '14:00', queues: ['1', '2'] },
-          { start: '18:00', end: '20:00', queues: ['3', '4'] },
+          {
+            start: stringToShift(new Date(), '10:00'),
+            end: stringToShift(new Date(), '12:00'),
+            queues: [
+              { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '12:00'),
+            end: stringToShift(new Date(), '14:00'),
+            queues: [
+              { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '18:00'),
+            end: stringToShift(new Date(), '20:00'),
+            queues: [
+              { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
         ],
       };
 
@@ -66,37 +126,93 @@ describe('OutrageMergerService', () => {
     });
 
     it('should merge 2 outrages with overlapping periods', () => {
-      const outrage1: Outrage = {
-        date: new Date('2024-06-25'),
+      const outrage1: OutrageDto = {
+        date: mockDate,
         type: OutrageType.SCHEDULE,
         region: OutrageRegion.CHERKASY,
         shifts: [
-          { start: '10:00', end: '12:00', queues: ['1', '2'] },
-          { start: '12:00', end: '14:00', queues: ['3', '4'] },
+          {
+            start: stringToShift(new Date(), '10:00'),
+            end: stringToShift(new Date(), '12:00'),
+            queues: [
+              { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '12:00'),
+            end: stringToShift(new Date(), '14:00'),
+            queues: [
+              { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
         ],
       };
 
-      const outrage2: Outrage = {
-        date: new Date('2024-06-25'),
+      const outrage2: OutrageDto = {
+        date: mockDate,
         type: OutrageType.CHANGE,
         region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
-          { start: '13:00', end: '14:00', queues: ['1', '2'] },
-          { start: '18:00', end: '20:00', queues: ['3', '4'] },
+          {
+            start: stringToShift(new Date(), '13:00'),
+            end: stringToShift(new Date(), '14:00'),
+            queues: [
+              { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '18:00'),
+            end: stringToShift(new Date(), '20:00'),
+            queues: [
+              { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
         ],
       };
 
-      const expected: Outrage = {
-        date: new Date('2024-06-25'),
+      const expected: OutrageDto = {
+        date: mockDate,
         type: OutrageType.CHANGE,
         region: OutrageRegion.CHERKASY,
         changeCount: 1,
         shifts: [
-          { start: '10:00', end: '12:00', queues: ['1', '2'] },
-          { start: '12:00', end: '13:00', queues: ['3', '4'] },
-          { start: '13:00', end: '14:00', queues: ['1', '2'] },
-          { start: '18:00', end: '20:00', queues: ['3', '4'] },
+          {
+            start: stringToShift(new Date(), '10:00'),
+            end: stringToShift(new Date(), '12:00'),
+            queues: [
+              { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '12:00'),
+            end: stringToShift(new Date(), '13:00'),
+            queues: [
+              { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '13:00'),
+            end: stringToShift(new Date(), '14:00'),
+            queues: [
+              { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
+          {
+            start: stringToShift(new Date(), '18:00'),
+            end: stringToShift(new Date(), '20:00'),
+            queues: [
+              { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
+              { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
+            ],
+          },
         ],
       };
 
@@ -105,9 +221,9 @@ describe('OutrageMergerService', () => {
     });
 
     it('should should merge real outrages', () => {
-      const outrage = outrageParserService.parseMessage(outrageMock3Origin, OutrageRegion.CHERKASY);
-      const outrageChange = outrageParserService.parseMessage(outrageMock4Change, OutrageRegion.CHERKASY);
-      const outrageChange2 = outrageParserService.parseMessage(outrageMock5Change2, OutrageRegion.CHERKASY);
+      const outrage = outrageParserService.parseMessage(mockDate, outrageMock3Origin, OutrageRegion.CHERKASY);
+      const outrageChange = outrageParserService.parseMessage(mockDate, outrageMock4Change, OutrageRegion.CHERKASY);
+      const outrageChange2 = outrageParserService.parseMessage(mockDate, outrageMock5Change2, OutrageRegion.CHERKASY);
 
       const mergedOutrage = outrageMergerService.mergeOutrages([outrage, outrageChange, outrageChange2]);
 
