@@ -13,4 +13,15 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  // Create an endpoint that returns the current time on server and timezone
+  @Get('time')
+  @ApiOkResponse({ description: 'Current time on server and timezone' })
+  getTime() {
+    return {
+      time: new Date().toString(),
+      timeIso: new Date().toISOString(),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    };
+  }
 }
