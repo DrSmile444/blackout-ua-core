@@ -3,7 +3,7 @@ import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import type { Outrage } from '@app/shared';
-import { OutrageDto, OutrageParserService, OutrageSearchResponseDto, OutrageService } from '@app/shared';
+import { getClearDate, OutrageDto, OutrageParserService, OutrageSearchResponseDto, OutrageService } from '@app/shared';
 
 import { UpdateService } from '../../update/update.service';
 import { SearchOutragesDto } from '../dto';
@@ -31,7 +31,7 @@ export class OutrageController {
   async searchOutrages(@Body() searchOutragesDto: SearchOutragesDto): Promise<OutrageSearchResponseDto> {
     const { regions, date, final } = searchOutragesDto;
     const clearDate = date || new Date();
-    const accessDate = new Date(clearDate.setHours(0, 0, 0, 0));
+    const accessDate = getClearDate(clearDate);
 
     const outrages: Outrage[] = [];
     // TODO rework it with a single query

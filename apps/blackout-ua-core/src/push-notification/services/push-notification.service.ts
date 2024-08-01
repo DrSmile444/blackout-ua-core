@@ -87,11 +87,13 @@ export class PushNotificationService implements OnModuleInit {
   @OnEvent('outrages.new')
   async createNotificationJobs() {
     this.clearAllJobs();
-    const currentTime = new Date();
+    const currentDay = new Date();
+    const nextDay = new Date(currentDay);
+    nextDay.setDate(nextDay.getDate() + 1);
 
-    const shifts = await this.outrageService.getShiftsForDate(new Date());
-    const shiftStarts = removeDuplicates<Shift>(shifts.map((shift) => shift.start)).filter((shift) => +shift > +currentTime);
-    const shiftEnds = removeDuplicates<Shift>(shifts.map((shift) => shift.end)).filter((shift) => +shift > +currentTime);
+    const shifts = await this.outrageService.getShiftsForDates([currentDay, nextDay]);
+    const shiftStarts = removeDuplicates<Shift>(shifts.map((shift) => shift.start)).filter((shift) => +shift > +currentDay);
+    const shiftEnds = removeDuplicates<Shift>(shifts.map((shift) => shift.end)).filter((shift) => +shift > +currentDay);
 
     // for (const shift of shiftStarts) {
     //   await this.scheduleNotification(shift, 'start');
@@ -341,10 +343,6 @@ export class PushNotificationService implements OnModuleInit {
     this.jobs.forEach((job) => job.stop());
     this.jobs = [];
     this.logger.debug('All jobs cleared');
-  }
-
-  getAllShiftsForDate(date: Date) {
-    return this.outrageService.getShiftsForDate(date);
   }
 
   async checkMissingNotifications() {

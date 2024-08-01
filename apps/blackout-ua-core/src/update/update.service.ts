@@ -1,4 +1,5 @@
 import { HttpService } from '@nestjs/axios';
+import type { OnModuleInit } from '@nestjs/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -8,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import type { Outrage } from '@app/shared';
 
 @Injectable()
-export class UpdateService {
+export class UpdateService implements OnModuleInit {
   private readonly telegramUpdateUrl: string;
 
   private readonly scrapperUpdateUrl: string;
@@ -24,6 +25,10 @@ export class UpdateService {
   ) {
     this.telegramUpdateUrl = `${this.configService.get<string>('TELEGRAM_API_URL')}/update`;
     this.scrapperUpdateUrl = `${this.configService.get<string>('SCRAPPER_API_URL')}/update`;
+  }
+
+  onModuleInit() {
+    return this.autoUpdate('start');
   }
 
   async triggerUpdate(): Promise<Outrage[]> {
@@ -55,8 +60,13 @@ export class UpdateService {
   }
 
   @Cron('0 */10 * * * *') // Every 10 minutes
-  private async autoUpdate() {
-    this.logger.debug('Called every 10 minutes to trigger update');
+  private async autoUpdate(reason?: 'start') {
+    if (reason === 'start') {
+      this.logger.debug('Starting initial start auto update');
+    } else {
+      this.logger.debug('Called every 10 minutes to trigger update');
+    }
+
     try {
       await this.triggerUpdate().then((outrages) => {
         this.logger.log(`Successfully updated ${outrages.length} outrages`);

@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as deepEqual from 'fast-deep-equal';
 import { Repository } from 'typeorm';
 
+import { getClearDate } from '@app/shared/utils';
+
 import type { OutrageDto } from '../dto';
 import type { OutrageRegion, OutrageShift, Shift } from '../entities';
 import { Outrage } from '../entities';
@@ -112,18 +114,18 @@ export class OutrageService {
       .getMany();
   }
 
-  getShiftsForDate(date: Date): Promise<OutrageShift[]> {
-    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+  getShiftsForDates(dates: Date[]): Promise<OutrageShift[]> {
+    const clearDates = dates.map((date) => getClearDate(date));
     return this.outrageRepository
       .createQueryBuilder('outrage')
       .leftJoinAndSelect('outrage.shifts', 'shift')
-      .where('outrage.date = :date', { date: clearDate })
+      .where('outrage.date IN (:...dates)', { dates: clearDates })
       .getMany()
       .then((outrages) => outrages.flatMap((outrage) => outrage.shifts));
   }
 
   async getShiftAndQueuesForDateAndShiftStart(date: Date, shiftStart: Shift): Promise<Outrage[]> {
-    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    const clearDate = getClearDate(date);
     const outrages = await this.outrageRepository
       .createQueryBuilder('outrage')
       .leftJoinAndSelect('outrage.shifts', 'shift')
@@ -136,7 +138,7 @@ export class OutrageService {
   }
 
   async getShiftAndQueuesForDateAndShiftEnd(date: Date, shiftEnd: Shift): Promise<Outrage[]> {
-    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    const clearDate = getClearDate(date);
     const outrages = await this.outrageRepository
       .createQueryBuilder('outrage')
       .leftJoinAndSelect('outrage.shifts', 'shift')
@@ -149,7 +151,7 @@ export class OutrageService {
   }
 
   getAllLatestOutrages(date: Date): Promise<Outrage[]> {
-    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    const clearDate = getClearDate(date);
     return this.outrageRepository
       .createQueryBuilder('outrage')
       .leftJoinAndSelect('outrage.shifts', 'shift')
@@ -172,7 +174,7 @@ export class OutrageService {
   }
 
   async deleteAllByDate(date: Date): Promise<void> {
-    const clearDate = new Date(date.setHours(0, 0, 0, 0));
+    const clearDate = getClearDate(date);
     const outrages = await this.outrageRepository
       .createQueryBuilder('outrage')
       .where('outrage.date = :date', { date: clearDate })
