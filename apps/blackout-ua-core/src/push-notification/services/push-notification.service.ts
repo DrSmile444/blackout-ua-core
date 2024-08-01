@@ -11,7 +11,8 @@ import {
   OutrageService,
   OutrageType,
   removeDuplicates,
-  shiftToDate,
+  shiftToString,
+  stringToShift,
   typedObjectKeysUtil,
   userLocationTimes,
   UserService,
@@ -46,7 +47,7 @@ export class PushNotificationService implements OnModuleInit {
 
   async test() {
     // const times = ['15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
-    const times = ['13:00'];
+    const times = ['13:00'].map((time) => stringToShift(new Date(), time));
     // eslint-disable-next-line no-restricted-syntax
     for (const time of times) {
       // eslint-disable-next-line no-await-in-loop
@@ -77,17 +78,11 @@ export class PushNotificationService implements OnModuleInit {
   @OnEvent('outrages.new')
   async createNotificationJobs() {
     this.clearAllJobs();
-    const currentHour = new Date().getHours();
-    const currentMinute = new Date().getMinutes();
-    const currentShift = this.outrageMergerService.parseTime(`${currentHour}:${currentMinute}`);
+    const currentTime = new Date();
 
     const shifts = await this.outrageService.getShiftsForDate(new Date());
-    const shiftStarts = removeDuplicates<Shift>(shifts.map((shift) => shift.start)).filter(
-      (shift) => this.outrageMergerService.parseTime(shift) > currentShift,
-    );
-    const shiftEnds = removeDuplicates<Shift>(shifts.map((shift) => shift.end)).filter(
-      (shift) => this.outrageMergerService.parseTime(shift) > currentShift,
-    );
+    const shiftStarts = removeDuplicates<Shift>(shifts.map((shift) => shift.start)).filter((shift) => +shift > +currentTime);
+    const shiftEnds = removeDuplicates<Shift>(shifts.map((shift) => shift.end)).filter((shift) => +shift > +currentTime);
 
     // for (const shift of shiftStarts) {
     //   await this.scheduleNotification(shift, 'start');
@@ -128,13 +123,13 @@ export class PushNotificationService implements OnModuleInit {
   }
 
   scheduleNotification(shift: Shift, type: ShiftType) {
-    const scheduleDate = shiftToDate(new Date(), shift);
+    const shiftString = shiftToString(shift);
 
     return userLocationTimes.map((leadTime) => {
-      const notificationTime = new Date(scheduleDate.getTime() - leadTime * 60_000); // 15 minutes before the shift
+      const notificationTime = new Date(shift.getTime() - leadTime * 60_000); // 15 minutes before the shift
       const cronTime = `${notificationTime.getMinutes()} ${notificationTime.getHours()} ${notificationTime.getDate()} ${notificationTime.getMonth() + 1} *`;
 
-      this.logger.debug(`Scheduling notification for ${type} ${shift} at ${notificationTime.toISOString()}`);
+      this.logger.debug(`Scheduling notification for ${type} ${shiftString} at ${notificationTime.toISOString()}`);
 
       const job = new CronJob(cronTime, () => {
         this.sendNotification(shift, type, leadTime).catch((error) => this.logger.error('Error sending notification', error));
@@ -185,8 +180,9 @@ export class PushNotificationService implements OnModuleInit {
       )
       .filter((user) => user.locations.length > 0);
 
+    const shiftString = shiftToString(shift);
     this.logger.debug(
-      `Sending notification for shift ${shift} ${type} with lead time ${leadTime} to ${users.length} users to ${clearUsers.reduce((accumulator, user) => accumulator + user.locations.length, 0)} locations with payload: ${JSON.stringify(requestPayload)}`,
+      `Sending notification for shift ${shiftString} ${type} with lead time ${leadTime} to ${users.length} users to ${clearUsers.reduce((accumulator, user) => accumulator + user.locations.length, 0)} locations with payload: ${JSON.stringify(requestPayload)}`,
     );
 
     const userSendRequests = clearUsers.map((user) => {
@@ -204,16 +200,13 @@ export class PushNotificationService implements OnModuleInit {
     });
     await Promise.all(userSendRequests);
 
-    const shiftDate = shiftToDate(new Date(), shift);
-    shiftDate.setHours(shiftDate.getHours(), shiftDate.getMinutes() - leadTime, 0, 0);
-
     switch (type) {
       case 'start': {
-        await this.pushNotificationTrackerService.completeQueueStart(new Date(), shiftDate);
+        await this.pushNotificationTrackerService.completeQueueStart(new Date(), shift);
         break;
       }
       case 'end': {
-        await this.pushNotificationTrackerService.completeQueueEnd(new Date(), shiftDate);
+        await this.pushNotificationTrackerService.completeQueueEnd(new Date(), shift);
         break;
       }
       default: {
@@ -279,11 +272,12 @@ export class PushNotificationService implements OnModuleInit {
 
   sendDisableNotificationToUser(user: User, shift: Shift, leadTime: NotificationLeadTime | number): Promise<void[]> {
     const { fcmToken, locations } = user;
+    const shiftString = shiftToString(shift);
 
     return Promise.all(
       locations.map((location) => {
         const title = `🔴 Електропостачання вимкнеться через ${leadTime} хвилин!`;
-        const message = `Локація “${location.name}”: електропостачання припиниться через ${leadTime} хвилин (о ${shift}). Будь ласка, перевірте чи всі пристрої заряджені!`;
+        const message = `Локація “${location.name}”: електропостачання припиниться через ${leadTime} хвилин (о ${shiftString}). Будь ласка, перевірте чи всі пристрої заряджені!`;
 
         return this.sendUser(fcmToken, title, message);
       }),
@@ -292,11 +286,12 @@ export class PushNotificationService implements OnModuleInit {
 
   sendEnableNotificationToUser(user: User, shift: Shift, leadTime: NotificationLeadTime | number): Promise<void[]> {
     const { fcmToken, locations } = user;
+    const shiftString = shiftToString(shift);
 
     return Promise.all(
       locations.map((location) => {
         const title = `🟢 Електропостачання включиться через ${leadTime} хвилин!`;
-        const message = `Локація “${location.name}”: електропостачання з'явиться через ${leadTime} хвилин (о ${shift}).`;
+        const message = `Локація “${location.name}”: електропостачання з'явиться через ${leadTime} хвилин (о ${shiftString}).`;
 
         return this.sendUser(fcmToken, title, message);
       }),
@@ -353,15 +348,13 @@ export class PushNotificationService implements OnModuleInit {
 
     const startPromises = missingStartQueues.map(async (queue) => {
       const currentDate = new Date();
-      const shiftDate = shiftToDate(currentDate, queue.shift);
-      const flexibleLeadTime = new Date(+shiftDate - +currentDate);
+      const flexibleLeadTime = new Date(+queue.shift - +currentDate);
       return this.sendNotification(queue.shift, 'start', flexibleLeadTime.getMinutes());
     });
 
     const endPromises = missingEndQueues.map(async (queue) => {
       const currentDate = new Date();
-      const shiftDate = shiftToDate(currentDate, queue.shift);
-      const flexibleLeadTime = new Date(+shiftDate - +currentDate);
+      const flexibleLeadTime = new Date(+queue.shift - +currentDate);
       return this.sendNotification(queue.shift, 'end', flexibleLeadTime.getMinutes());
     });
 

@@ -3,10 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as deepEqual from 'fast-deep-equal';
 import { Repository } from 'typeorm';
 
-import { shiftToDate } from '../../utils';
-import type { OutrageDto, OutrageShiftResponseDto } from '../dto';
-import { OutrageResponseDto } from '../dto';
-import type { OutrageRegion, OutrageShift } from '../entities';
+import type { OutrageDto } from '../dto';
+import type { OutrageRegion, OutrageShift, Shift } from '../entities';
 import { Outrage } from '../entities';
 
 function removeIds<T extends object | any[]>(entity: T): T {
@@ -124,7 +122,7 @@ export class OutrageService {
       .then((outrages) => outrages.flatMap((outrage) => outrage.shifts));
   }
 
-  async getShiftAndQueuesForDateAndShiftStart(date: Date, shiftStart: string): Promise<Outrage[]> {
+  async getShiftAndQueuesForDateAndShiftStart(date: Date, shiftStart: Shift): Promise<Outrage[]> {
     const clearDate = new Date(date.setHours(0, 0, 0, 0));
     const outrages = await this.outrageRepository
       .createQueryBuilder('outrage')
@@ -137,7 +135,7 @@ export class OutrageService {
     return this.getLatestOutrages(outrages);
   }
 
-  async getShiftAndQueuesForDateAndShiftEnd(date: Date, shiftEnd: string): Promise<Outrage[]> {
+  async getShiftAndQueuesForDateAndShiftEnd(date: Date, shiftEnd: Shift): Promise<Outrage[]> {
     const clearDate = new Date(date.setHours(0, 0, 0, 0));
     const outrages = await this.outrageRepository
       .createQueryBuilder('outrage')
@@ -181,21 +179,5 @@ export class OutrageService {
       .getMany();
 
     await this.outrageRepository.remove(outrages);
-  }
-
-  convertToResponse(outrage: OutrageDto): OutrageResponseDto {
-    const outrageDto = new OutrageResponseDto();
-    Object.assign(outrageDto, outrage);
-
-    outrageDto.shifts = outrage.shifts.map(
-      (shift) =>
-        ({
-          ...shift,
-          start: shiftToDate(outrageDto.date, shift.start),
-          end: shiftToDate(outrageDto.date, shift.end),
-        }) as OutrageShiftResponseDto,
-    );
-
-    return outrageDto;
   }
 }

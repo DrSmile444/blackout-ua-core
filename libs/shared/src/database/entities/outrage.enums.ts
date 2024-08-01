@@ -48,4 +48,4 @@ export const notificationLeadTimeApiOptions = useEnum()({
   example: NotificationLeadTime.MIN_15,
 });
 
-export type Shift = string;
+export type Shift = Date;

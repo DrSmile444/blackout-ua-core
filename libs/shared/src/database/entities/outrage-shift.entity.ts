@@ -12,10 +12,10 @@ export class OutrageShift {
   id: string;
 
   @Column()
-  start: string;
+  start: Date;
 
   @Column()
-  end: string;
+  end: Date;
 
   @ManyToOne(() => Outrage, (outrage) => outrage.shifts, { onDelete: 'CASCADE' })
   outrage: Outrage;

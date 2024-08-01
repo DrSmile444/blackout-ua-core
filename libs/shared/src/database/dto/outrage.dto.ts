@@ -38,28 +38,6 @@ const queueExample: OutrageQueueDto[] = [
 ];
 
 export class OutrageShiftDto {
-  @ApiProperty({ example: '10:00' })
-  @IsString()
-  start: string;
-
-  @ApiProperty({ example: '11:00' })
-  @IsString()
-  end: string;
-
-  @ApiProperty({ type: OutrageQueueDto, example: queueExample, isArray: true })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => OutrageQueueDto)
-  queues: OutrageQueueDto[];
-}
-
-export const outrageShiftDtoExample: OutrageShiftDto = {
-  start: '10:00',
-  end: '11:00',
-  queues: queueExample,
-};
-
-export class OutrageShiftResponseDto {
   @ApiProperty({ type: Date, example: new Date(new Date().setHours(10, 0, 0, 0)) })
   @Transform(dateTransform)
   @Type(() => Date)
@@ -79,7 +57,7 @@ export class OutrageShiftResponseDto {
   queues: OutrageQueueDto[];
 }
 
-export const outrageShiftResponseDtoExample: OutrageShiftResponseDto = {
+export const outrageShiftDtoExample: OutrageShiftDto = {
   start: new Date(new Date().setHours(10, 0, 0, 0)),
   end: new Date(new Date().setHours(11, 0, 0, 0)),
   queues: queueExample,
@@ -115,36 +93,6 @@ export class OutrageDto {
   shifts: OutrageShiftDto[];
 }
 
-export class OutrageResponseDto {
-  @ApiProperty(outrageTypeApiOptions)
-  @IsEnum(OutrageType)
-  type: OutrageType;
-
-  @ApiProperty({ type: Date, example: new Date(2024, 5, 25) })
-  @Type(() => Date)
-  @IsDate()
-  date: Date;
-
-  @ApiProperty(outrageRegionApiOptions)
-  @IsEnum(OutrageRegion)
-  region: OutrageRegion;
-
-  @ApiPropertyOptional({ example: 0 })
-  @IsOptional()
-  @IsNumber()
-  changeCount?: number;
-
-  @ApiProperty({
-    type: OutrageShiftDto,
-    example: [outrageShiftResponseDtoExample],
-    isArray: true,
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => OutrageShiftResponseDto)
-  shifts: OutrageShiftResponseDto[];
-}
-
 export class OutrageSearchResponseDto {
   @ApiProperty({ example: new Date() })
   @Type(() => Date)
@@ -158,11 +106,11 @@ export class OutrageSearchResponseDto {
   @IsNotEmpty()
   accessDate: Date;
 
-  @ApiProperty({ type: OutrageResponseDto, isArray: true })
-  @Type(() => OutrageResponseDto)
+  @ApiProperty({ type: OutrageDto, isArray: true })
+  @Type(() => OutrageDto)
   @ValidateNested({ each: true })
   @IsNotEmpty()
-  outrages: OutrageResponseDto[];
+  outrages: OutrageDto[];
 }
 
 export class OutrageRegionAndQueuesDto {

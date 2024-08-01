@@ -5,9 +5,10 @@ import Redis from 'ioredis';
 import type { Shift } from '@app/shared';
 import { getClearDateIsoString, userLocationTimes } from '@app/shared';
 
+// TODO add QueueStatusDTO
 export interface QueueStatus {
   queue: Date;
-  shift: string;
+  shift: Shift;
   completed: boolean;
 }
 
@@ -15,7 +16,7 @@ export interface QueueStatus {
 export class PushNotificationTrackerService {
   constructor(@InjectRedis() private readonly redis: Redis) {}
 
-  private remapQueue(queue: Date, shift: string): QueueStatus {
+  private remapQueue(queue: Date, shift: Shift): QueueStatus {
     return { queue, shift, completed: false };
   }
 
@@ -59,7 +60,8 @@ export class PushNotificationTrackerService {
   async updateQueues(date: Date, queuesShifts: Shift[], key: string) {
     const queueDates = queuesShifts.flatMap((shift) =>
       userLocationTimes.map((locationTime) => {
-        const [queueHours, queueMinutes] = shift.split(':');
+        const queueHours = shift.getHours();
+        const queueMinutes = shift.getMinutes();
 
         const queueDate = new Date(date);
         queueDate.setHours(+queueHours, +queueMinutes - locationTime, 0, 0);
@@ -135,6 +137,8 @@ export class PushNotificationTrackerService {
   }
 
   private async getQueues(key: string): Promise<QueueStatus[]> {
-    return ((JSON.parse(await this.redis.get(key)) || []) as QueueStatus[]).map((q): QueueStatus => ({ ...q, queue: new Date(q.queue) }));
+    return ((JSON.parse(await this.redis.get(key)) || []) as QueueStatus[]).map(
+      (q): QueueStatus => ({ ...q, queue: new Date(q.queue), shift: new Date(q.shift) }),
+    );
   }
 }

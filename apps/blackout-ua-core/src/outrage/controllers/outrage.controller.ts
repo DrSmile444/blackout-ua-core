@@ -49,10 +49,7 @@ export class OutrageController {
       const result = new OutrageSearchResponseDto();
       result.lastUpdate = this.updateService.getLastUpdateTime();
       result.accessDate = accessDate;
-      result.outrages =
-        outrages.length > 0
-          ? this.outrageMergerService.mergeOutragesByRegion(outrages).map((outrage) => this.outrageService.convertToResponse(outrage))
-          : [];
+      result.outrages = outrages.length > 0 ? this.outrageMergerService.mergeOutragesByRegion(outrages) : [];
 
       return result;
     }
@@ -60,7 +57,7 @@ export class OutrageController {
     return {
       lastUpdate: this.updateService.getLastUpdateTime(),
       accessDate,
-      outrages: outrages.map((outrage) => this.outrageService.convertToResponse(outrage)),
+      outrages,
     };
   }
 

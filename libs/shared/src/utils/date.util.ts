@@ -8,9 +8,13 @@ export function getClearDateIsoString(date: Date): string {
   return clearDate.toISOString();
 }
 
-export function shiftToDate(date: Date, shift: Shift): Date {
-  const [hours, minutes] = shift.split(':').map((time) => Number.parseInt(time, 10));
+export function stringToShift(date: Date, shiftString: string): Shift {
+  const [hours, minutes] = shiftString.split(':').map((time) => Number.parseInt(time, 10));
   const shiftDate = new Date(date);
   shiftDate.setHours(hours, minutes, 0, 0);
   return shiftDate;
+}
+
+export function shiftToString(date: Shift): string {
+  return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 }
