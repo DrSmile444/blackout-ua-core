@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DeleteResult } from 'typeorm';
 
 import type { User } from '@app/shared';
 import { CreateUserDto, outrageRegionApiOptions, UpdateUserDto, UserDto, UserService } from '@app/shared';
@@ -57,5 +58,16 @@ export class UserController {
   })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return await this.userService.updateUser(id, updateUserDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete an existing user by id' })
+  @ApiResponse({
+    status: 200,
+    type: DeleteResult,
+    description: 'Delete result',
+  })
+  async delete(@Param('id') id: string): Promise<DeleteResult> {
+    return await this.userService.deleteUser(id);
   }
 }

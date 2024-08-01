@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import type { DeleteResult } from 'typeorm';
 import { Repository } from 'typeorm';
 
 import type { CreateUserDto, OutrageRegionAndQueuesDto, UpdateUserDto } from '../dto';
@@ -49,7 +50,11 @@ export class UserService {
     }
     Object.assign(user, userDetails);
     return await this.userRepository.save(user);
-  } // Add more methods as needed, e.g., findOne, update, delete
+  }
+
+  async deleteUser(id: string): Promise<DeleteResult> {
+    return await this.userRepository.delete(id);
+  }
 
   async getUsersByRegionQueues(payload: OutrageRegionAndQueuesDto[]): Promise<User[]> {
     const users: User[] = [];

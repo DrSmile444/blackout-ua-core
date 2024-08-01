@@ -32,6 +32,6 @@ export class UserLocation {
   })
   notificationLeadTime: number[];
 
-  @ManyToOne(() => User, (user) => user.locations)
+  @ManyToOne(() => User, (user) => user.locations, { onDelete: 'CASCADE' })
   user: User;
 }

@@ -23,6 +23,6 @@ export class User {
   @Column({ default: true })
   isPushUpdateOutrageEnabled: boolean;
 
-  @OneToMany(() => UserLocation, (location) => location.user, { cascade: true })
+  @OneToMany(() => UserLocation, (location) => location.user, { cascade: ['insert', 'update', 'remove'], onDelete: 'CASCADE' })
   locations: UserLocation[];
 }
