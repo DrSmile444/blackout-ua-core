@@ -30,7 +30,7 @@ async function bootstrap() {
     efficient data storage and retrieval mechanisms.
   `,
     )
-    .setVersion('1.3')
+    .setVersion('1.4.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
