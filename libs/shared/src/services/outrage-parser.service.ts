@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import type { OutrageDto, OutrageShiftDto } from '@app/shared/database';
+import { getClearDate, stringToShift } from '@app/shared/utils';
 
 import type { OutrageRegion } from '../database/entities';
 import { LightStatus, OutrageType } from '../database/entities';
@@ -32,15 +33,20 @@ export class OutrageParserService {
 
   OUTRAGE_CHANGE_TRIGGERS = ['оновлені', 'зміни'];
 
-  parseMessage(message: string, region: OutrageRegion): OutrageDto {
+  // TODO include message date
+  parseMessage(date: Date, message: string, region: OutrageRegion): OutrageDto {
+    const clearDate = getClearDate(date);
+    const parsedDate = this.parseDate(message);
+
+    const useDate = parsedDate || clearDate;
+
     const type = this.parseType(message);
-    const date = this.parseDate(message);
-    const shifts = this.parseShifts(message);
+    const shifts = this.parseShifts(useDate, message);
 
     return {
       type,
       region,
-      date: date || null,
+      date: useDate || null,
       shifts,
     };
   }
@@ -83,16 +89,16 @@ export class OutrageParserService {
     return date;
   }
 
-  parseShifts(message: string): OutrageShiftDto[] {
+  parseShifts(date: Date, message: string): OutrageShiftDto[] {
     const rows = message
       .split('\n')
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
 
-    return rows.map((row) => this.parseRow(row)).filter((shift) => shift !== null);
+    return rows.map((row) => this.parseRow(date, row)).filter((shift) => shift !== null);
   }
 
-  parseRow(row: string): OutrageShiftDto | null {
+  parseRow(date: Date, row: string): OutrageShiftDto | null {
     const time = this.parseTime(row);
     const queues = this.parseQueue(row).map((queue) => ({ queue, lightStatus: LightStatus.UNAVAILABLE }));
 
@@ -101,8 +107,8 @@ export class OutrageParserService {
     }
 
     return {
-      start: time[0],
-      end: time[1],
+      start: stringToShift(date, time[0]),
+      end: stringToShift(date, time[1]),
       queues,
     };
   }

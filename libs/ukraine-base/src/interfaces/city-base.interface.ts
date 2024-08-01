@@ -12,7 +12,7 @@ export interface CityMetadata {
 
 export interface TelegramConfig {
   chatName: string;
-  convert: (message: string) => OutrageDto;
+  convert: (date: Date, message: string) => OutrageDto;
 }
 
 export interface ScrapperConfig {

@@ -23,7 +23,7 @@ export class UkraineCherkasyService implements UkraineCityService {
   getTelegramConfig(): TelegramConfig {
     return {
       chatName: 'ПАТ "Черкасиобленерго"',
-      convert: (message) => this.outrageParserService.parseMessage(message, this.metadata.key),
+      convert: (date, message) => this.outrageParserService.parseMessage(date, message, this.metadata.key),
     };
   }
 }

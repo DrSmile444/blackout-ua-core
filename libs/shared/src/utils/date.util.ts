@@ -1,5 +1,13 @@
 import type { Shift } from '../database';
 
+export function getClearDate(date: Date): Date {
+  const clearDate = new Date(date);
+  clearDate.setHours(0, 0, 0, 0);
+  clearDate.setMinutes(clearDate.getMinutes() - clearDate.getTimezoneOffset());
+
+  return clearDate;
+}
+
 export function getClearDateIsoString(date: Date): string {
   const clearDate = new Date(date);
   clearDate.setHours(0, 0, 0, 0);

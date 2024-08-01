@@ -104,90 +104,156 @@ describe('OutrageParserService', () => {
 
   describe('parseRow', () => {
     it('should return null if time period is not found', () => {
-      const result = outrageParserService.parseRow('Some random string');
+      const result = outrageParserService.parseRow(new Date(), 'Some random string');
       expect(result).toBeNull();
     });
 
     it('should return null if time period is found but no queues', () => {
-      const result = outrageParserService.parseRow('Some random string 10:00–12:00');
+      const result = outrageParserService.parseRow(new Date(), 'Some random string 10:00–12:00');
       expect(result).toBeNull();
     });
 
     it('should return shift if time period and queues are found', () => {
-      const result = outrageParserService.parseRow('Some random string 10:00–12:00 1, 2, 3');
+      const result = outrageParserService.parseRow(new Date(), 'Some random string 10:00–12:00 1, 2, 3');
       expect(result).toEqual({
-        start: '10:00',
-        end: '12:00',
-        queues: ['1', '2', '3'],
+        start: new Date(new Date().setHours(10, 0, 0, 0)),
+        end: new Date(new Date().setHours(12, 0, 0, 0)),
+        queues: [
+          {
+            lightStatus: 1,
+            queue: '1',
+          },
+          {
+            lightStatus: 1,
+            queue: '2',
+          },
+          {
+            lightStatus: 1,
+            queue: '3',
+          },
+        ],
       });
     });
 
     it('should return shift if time period and two digit queues are found', () => {
-      const result = outrageParserService.parseRow('Some random string 10:00–12:00 1, 2, 13');
+      const result = outrageParserService.parseRow(new Date(), 'Some random string 10:00–12:00 1, 2, 13');
       expect(result).toEqual({
-        start: '10:00',
-        end: '12:00',
-        queues: ['1', '2', '13'],
+        start: new Date(new Date().setHours(10, 0, 0, 0)),
+        end: new Date(new Date().setHours(12, 0, 0, 0)),
+        queues: [
+          {
+            lightStatus: 1,
+            queue: '1',
+          },
+          {
+            lightStatus: 1,
+            queue: '2',
+          },
+          {
+            lightStatus: 1,
+            queue: '13',
+          },
+        ],
       });
     });
 
     it('should return shift from real new mock', () => {
-      const result = outrageParserService.parseRow('01:00-02:00 1 та 2 черги');
+      const result = outrageParserService.parseRow(new Date(), '01:00-02:00 1 та 2 черги');
       expect(result).toEqual({
-        start: '01:00',
-        end: '02:00',
-        queues: ['1', '2'],
+        start: new Date(new Date().setHours(1, 0, 0, 0)),
+        end: new Date(new Date().setHours(2, 0, 0, 0)),
+        queues: [
+          {
+            lightStatus: 1,
+            queue: '1',
+          },
+          {
+            lightStatus: 1,
+            queue: '2',
+          },
+        ],
       });
     });
 
     it('should return shift from real new mock with multiple queues', () => {
-      const result = outrageParserService.parseRow('22:00-23:00  2, 3 та 4 черги');
+      const result = outrageParserService.parseRow(new Date(), '22:00-23:00  2, 3 та 4 черги');
       expect(result).toEqual({
-        start: '22:00',
-        end: '23:00',
-        queues: ['2', '3', '4'],
+        start: new Date(new Date().setHours(22, 0, 0, 0)),
+        end: new Date(new Date().setHours(23, 0, 0, 0)),
+        queues: [
+          {
+            lightStatus: 1,
+            queue: '2',
+          },
+          {
+            lightStatus: 1,
+            queue: '3',
+          },
+          {
+            lightStatus: 1,
+            queue: '4',
+          },
+        ],
       });
     });
 
     it('should return shift from real old mock', () => {
-      const result = outrageParserService.parseRow('➡️ 17:00 – 18:00 – 3');
+      const result = outrageParserService.parseRow(new Date(), '➡️ 17:00 – 18:00 – 3');
       expect(result).toEqual({
-        start: '17:00',
-        end: '18:00',
-        queues: ['3'],
+        start: new Date(new Date().setHours(17, 0, 0, 0)),
+        end: new Date(new Date().setHours(18, 0, 0, 0)),
+        queues: [
+          {
+            lightStatus: 1,
+            queue: '3',
+          },
+        ],
       });
     });
   });
 
   describe('parseShifts', () => {
     it('should return empty array if message is empty', () => {
-      const result = outrageParserService.parseShifts('');
+      const result = outrageParserService.parseShifts(new Date(), '');
       expect(result).toEqual([]);
     });
 
     it('should return empty array if message is not empty but no shifts', () => {
-      const result = outrageParserService.parseShifts('Some random string');
+      const result = outrageParserService.parseShifts(new Date(), 'Some random string');
       expect(result).toEqual([]);
     });
 
     it('should return shifts', () => {
-      const result = outrageParserService.parseShifts('Some random string\n10:00–12:00 1, 2, 3\nSome random string');
+      const result = outrageParserService.parseShifts(new Date(), 'Some random string\n10:00–12:00 1, 2, 3\nSome random string');
       expect(result).toEqual([
         {
-          start: '10:00',
-          end: '12:00',
-          queues: ['1', '2', '3'],
+          start: new Date(new Date().setHours(10, 0, 0, 0)),
+          end: new Date(new Date().setHours(12, 0, 0, 0)),
+          queues: [
+            {
+              lightStatus: 1,
+              queue: '1',
+            },
+            {
+              lightStatus: 1,
+              queue: '2',
+            },
+            {
+              lightStatus: 1,
+              queue: '3',
+            },
+          ],
         },
       ]);
     });
 
     it('should return shifts from real new mock', () => {
-      const result = outrageParserService.parseShifts(outrageMock6Origin);
+      const result = outrageParserService.parseShifts(new Date(), outrageMock6Origin);
       expect(result).toMatchSnapshot();
     });
 
     it('should return shifts from real old mock', () => {
-      const result = outrageParserService.parseShifts(outrageMock7ChangeOld);
+      const result = outrageParserService.parseShifts(new Date(), outrageMock7ChangeOld);
       expect(result).toMatchSnapshot();
     });
   });
@@ -233,12 +299,12 @@ describe('OutrageParserService', () => {
 
   describe('parseMessage', () => {
     it('should return parsed message', () => {
-      const result = outrageParserService.parseMessage(outrageMock6Origin, OutrageRegion.CHERKASY);
+      const result = outrageParserService.parseMessage(new Date(), outrageMock6Origin, OutrageRegion.CHERKASY);
       expect(result).toMatchSnapshot();
     });
 
     it('should return parsed message from real old mock', () => {
-      const result = outrageParserService.parseMessage(outrageMock7ChangeOld, OutrageRegion.CHERKASY);
+      const result = outrageParserService.parseMessage(new Date(), outrageMock7ChangeOld, OutrageRegion.CHERKASY);
       expect(result).toMatchSnapshot();
     });
   });

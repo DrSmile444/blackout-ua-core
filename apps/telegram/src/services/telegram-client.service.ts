@@ -112,7 +112,7 @@ export class TelegramClientService implements OnModuleInit, OnModuleDestroy {
       const newOutrages = messages
         .filter((message) => message.message)
         .map((message) => {
-          const outrage = convert(message.message);
+          const outrage = convert(new Date(message.editDate || message.date), message.message);
 
           if (!outrage.date && outrage.shifts.length > 0) {
             this.client

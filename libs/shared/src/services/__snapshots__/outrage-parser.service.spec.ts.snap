@@ -6,210 +6,396 @@ exports[`OutrageParserService parseMessage should return parsed message 1`] = `
   "region": "cherkasy",
   "shifts": [
     {
-      "end": "01:00",
+      "end": 2024-06-24T22:00:00.000Z,
       "queues": [
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "00:00",
+      "start": 2024-06-24T21:00:00.000Z,
     },
     {
-      "end": "02:00",
+      "end": 2024-06-24T23:00:00.000Z,
       "queues": [
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "01:00",
+      "start": 2024-06-24T22:00:00.000Z,
     },
     {
-      "end": "03:00",
+      "end": 2024-06-25T00:00:00.000Z,
       "queues": [
-        "5",
-        "6",
-        "1",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
       ],
-      "start": "02:00",
+      "start": 2024-06-24T23:00:00.000Z,
     },
     {
-      "end": "04:00",
+      "end": 2024-06-25T01:00:00.000Z,
       "queues": [
-        "5",
-        "6",
-        "1",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
       ],
-      "start": "03:00",
+      "start": 2024-06-25T00:00:00.000Z,
     },
     {
-      "end": "05:00",
+      "end": 2024-06-25T02:00:00.000Z,
       "queues": [
-        "2",
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "04:00",
+      "start": 2024-06-25T01:00:00.000Z,
     },
     {
-      "end": "06:00",
+      "end": 2024-06-25T03:00:00.000Z,
       "queues": [
-        "2",
-        "3",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
       ],
-      "start": "05:00",
+      "start": 2024-06-25T02:00:00.000Z,
     },
     {
-      "end": "07:00",
+      "end": 2024-06-25T04:00:00.000Z,
       "queues": [
-        "5",
-        "6",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
       ],
-      "start": "06:00",
+      "start": 2024-06-25T03:00:00.000Z,
     },
     {
-      "end": "08:00",
+      "end": 2024-06-25T05:00:00.000Z,
       "queues": [
-        "5",
-        "6",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
       ],
-      "start": "07:00",
+      "start": 2024-06-25T04:00:00.000Z,
     },
     {
-      "end": "09:00",
+      "end": 2024-06-25T06:00:00.000Z,
       "queues": [
-        "1",
-        "2",
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
       ],
-      "start": "08:00",
+      "start": 2024-06-25T05:00:00.000Z,
     },
     {
-      "end": "10:00",
+      "end": 2024-06-25T07:00:00.000Z,
       "queues": [
-        "1",
-        "2",
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
       ],
-      "start": "09:00",
+      "start": 2024-06-25T06:00:00.000Z,
     },
     {
-      "end": "11:00",
+      "end": 2024-06-25T08:00:00.000Z,
       "queues": [
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "10:00",
+      "start": 2024-06-25T07:00:00.000Z,
     },
     {
-      "end": "12:00",
+      "end": 2024-06-25T09:00:00.000Z,
       "queues": [
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "11:00",
+      "start": 2024-06-25T08:00:00.000Z,
     },
     {
-      "end": "13:00",
+      "end": 2024-06-25T10:00:00.000Z,
       "queues": [
-        "5",
-        "6",
-        "1",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
       ],
-      "start": "12:00",
+      "start": 2024-06-25T09:00:00.000Z,
     },
     {
-      "end": "14:00",
+      "end": 2024-06-25T11:00:00.000Z,
       "queues": [
-        "5",
-        "6",
-        "1",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
       ],
-      "start": "13:00",
+      "start": 2024-06-25T10:00:00.000Z,
     },
     {
-      "end": "15:00",
+      "end": 2024-06-25T12:00:00.000Z,
       "queues": [
-        "2",
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "14:00",
+      "start": 2024-06-25T11:00:00.000Z,
     },
     {
-      "end": "16:00",
+      "end": 2024-06-25T13:00:00.000Z,
       "queues": [
-        "2",
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "15:00",
+      "start": 2024-06-25T12:00:00.000Z,
     },
     {
-      "end": "17:00",
+      "end": 2024-06-25T14:00:00.000Z,
       "queues": [
-        "5",
-        "6",
-        "1",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
       ],
-      "start": "16:00",
+      "start": 2024-06-25T13:00:00.000Z,
     },
     {
-      "end": "18:00",
+      "end": 2024-06-25T15:00:00.000Z,
       "queues": [
-        "5",
-        "6",
-        "1",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
       ],
-      "start": "17:00",
+      "start": 2024-06-25T14:00:00.000Z,
     },
     {
-      "end": "19:00",
+      "end": 2024-06-25T16:00:00.000Z,
       "queues": [
-        "2",
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "18:00",
+      "start": 2024-06-25T15:00:00.000Z,
     },
     {
-      "end": "20:00",
+      "end": 2024-06-25T17:00:00.000Z,
       "queues": [
-        "2",
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "19:00",
+      "start": 2024-06-25T16:00:00.000Z,
     },
     {
-      "end": "21:00",
+      "end": 2024-06-25T18:00:00.000Z,
       "queues": [
-        "5",
-        "6",
-        "1",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
       ],
-      "start": "20:00",
+      "start": 2024-06-25T17:00:00.000Z,
     },
     {
-      "end": "22:00",
+      "end": 2024-06-25T19:00:00.000Z,
       "queues": [
-        "5",
-        "6",
-        "1",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "1",
+        },
       ],
-      "start": "21:00",
+      "start": 2024-06-25T18:00:00.000Z,
     },
     {
-      "end": "23:00",
+      "end": 2024-06-25T20:00:00.000Z,
       "queues": [
-        "2",
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "22:00",
+      "start": 2024-06-25T19:00:00.000Z,
     },
     {
-      "end": "24:00",
+      "end": 2024-06-25T21:00:00.000Z,
       "queues": [
-        "3",
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "23:00",
+      "start": 2024-06-25T20:00:00.000Z,
     },
   ],
   "type": "schedule",
@@ -222,67 +408,94 @@ exports[`OutrageParserService parseMessage should return parsed message from rea
   "region": "cherkasy",
   "shifts": [
     {
-      "end": "15:00",
+      "end": 2024-06-11T12:00:00.000Z,
       "queues": [
-        "2",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
       ],
-      "start": "14:00",
+      "start": 2024-06-11T11:00:00.000Z,
     },
     {
-      "end": "16:00",
+      "end": 2024-06-11T13:00:00.000Z,
       "queues": [
-        "2",
+        {
+          "lightStatus": 1,
+          "queue": "2",
+        },
       ],
-      "start": "15:00",
+      "start": 2024-06-11T12:00:00.000Z,
     },
     {
-      "end": "17:00",
+      "end": 2024-06-11T14:00:00.000Z,
       "queues": [
-        "3",
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
       ],
-      "start": "16:00",
+      "start": 2024-06-11T13:00:00.000Z,
     },
     {
-      "end": "18:00",
+      "end": 2024-06-11T15:00:00.000Z,
       "queues": [
-        "3",
+        {
+          "lightStatus": 1,
+          "queue": "3",
+        },
       ],
-      "start": "17:00",
+      "start": 2024-06-11T14:00:00.000Z,
     },
     {
-      "end": "19:00",
+      "end": 2024-06-11T16:00:00.000Z,
       "queues": [
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "18:00",
+      "start": 2024-06-11T15:00:00.000Z,
     },
     {
-      "end": "20:00",
+      "end": 2024-06-11T17:00:00.000Z,
       "queues": [
-        "4",
+        {
+          "lightStatus": 1,
+          "queue": "4",
+        },
       ],
-      "start": "19:00",
+      "start": 2024-06-11T16:00:00.000Z,
     },
     {
-      "end": "21:00",
+      "end": 2024-06-11T18:00:00.000Z,
       "queues": [
-        "5",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
       ],
-      "start": "20:00",
+      "start": 2024-06-11T17:00:00.000Z,
     },
     {
-      "end": "22:00",
+      "end": 2024-06-11T19:00:00.000Z,
       "queues": [
-        "5",
+        {
+          "lightStatus": 1,
+          "queue": "5",
+        },
       ],
-      "start": "21:00",
+      "start": 2024-06-11T18:00:00.000Z,
     },
     {
-      "end": "23:00",
+      "end": 2024-06-11T20:00:00.000Z,
       "queues": [
-        "6",
+        {
+          "lightStatus": 1,
+          "queue": "6",
+        },
       ],
-      "start": "22:00",
+      "start": 2024-06-11T19:00:00.000Z,
     },
   ],
   "type": "change",
@@ -292,210 +505,396 @@ exports[`OutrageParserService parseMessage should return parsed message from rea
 exports[`OutrageParserService parseShifts should return shifts from real new mock 1`] = `
 [
   {
-    "end": "01:00",
+    "end": 2024-07-31T22:00:00.000Z,
     "queues": [
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "00:00",
+    "start": 2024-07-31T21:00:00.000Z,
   },
   {
-    "end": "02:00",
+    "end": 2024-07-31T23:00:00.000Z,
     "queues": [
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "01:00",
+    "start": 2024-07-31T22:00:00.000Z,
   },
   {
-    "end": "03:00",
+    "end": 2024-08-01T00:00:00.000Z,
     "queues": [
-      "5",
-      "6",
-      "1",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
     ],
-    "start": "02:00",
+    "start": 2024-07-31T23:00:00.000Z,
   },
   {
-    "end": "04:00",
+    "end": 2024-08-01T01:00:00.000Z,
     "queues": [
-      "5",
-      "6",
-      "1",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
     ],
-    "start": "03:00",
+    "start": 2024-08-01T00:00:00.000Z,
   },
   {
-    "end": "05:00",
+    "end": 2024-08-01T02:00:00.000Z,
     "queues": [
-      "2",
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "04:00",
+    "start": 2024-08-01T01:00:00.000Z,
   },
   {
-    "end": "06:00",
+    "end": 2024-08-01T03:00:00.000Z,
     "queues": [
-      "2",
-      "3",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
     ],
-    "start": "05:00",
+    "start": 2024-08-01T02:00:00.000Z,
   },
   {
-    "end": "07:00",
+    "end": 2024-08-01T04:00:00.000Z,
     "queues": [
-      "5",
-      "6",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
     ],
-    "start": "06:00",
+    "start": 2024-08-01T03:00:00.000Z,
   },
   {
-    "end": "08:00",
+    "end": 2024-08-01T05:00:00.000Z,
     "queues": [
-      "5",
-      "6",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
     ],
-    "start": "07:00",
+    "start": 2024-08-01T04:00:00.000Z,
   },
   {
-    "end": "09:00",
+    "end": 2024-08-01T06:00:00.000Z,
     "queues": [
-      "1",
-      "2",
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
     ],
-    "start": "08:00",
+    "start": 2024-08-01T05:00:00.000Z,
   },
   {
-    "end": "10:00",
+    "end": 2024-08-01T07:00:00.000Z,
     "queues": [
-      "1",
-      "2",
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
     ],
-    "start": "09:00",
+    "start": 2024-08-01T06:00:00.000Z,
   },
   {
-    "end": "11:00",
+    "end": 2024-08-01T08:00:00.000Z,
     "queues": [
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "10:00",
+    "start": 2024-08-01T07:00:00.000Z,
   },
   {
-    "end": "12:00",
+    "end": 2024-08-01T09:00:00.000Z,
     "queues": [
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "11:00",
+    "start": 2024-08-01T08:00:00.000Z,
   },
   {
-    "end": "13:00",
+    "end": 2024-08-01T10:00:00.000Z,
     "queues": [
-      "5",
-      "6",
-      "1",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
     ],
-    "start": "12:00",
+    "start": 2024-08-01T09:00:00.000Z,
   },
   {
-    "end": "14:00",
+    "end": 2024-08-01T11:00:00.000Z,
     "queues": [
-      "5",
-      "6",
-      "1",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
     ],
-    "start": "13:00",
+    "start": 2024-08-01T10:00:00.000Z,
   },
   {
-    "end": "15:00",
+    "end": 2024-08-01T12:00:00.000Z,
     "queues": [
-      "2",
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "14:00",
+    "start": 2024-08-01T11:00:00.000Z,
   },
   {
-    "end": "16:00",
+    "end": 2024-08-01T13:00:00.000Z,
     "queues": [
-      "2",
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "15:00",
+    "start": 2024-08-01T12:00:00.000Z,
   },
   {
-    "end": "17:00",
+    "end": 2024-08-01T14:00:00.000Z,
     "queues": [
-      "5",
-      "6",
-      "1",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
     ],
-    "start": "16:00",
+    "start": 2024-08-01T13:00:00.000Z,
   },
   {
-    "end": "18:00",
+    "end": 2024-08-01T15:00:00.000Z,
     "queues": [
-      "5",
-      "6",
-      "1",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
     ],
-    "start": "17:00",
+    "start": 2024-08-01T14:00:00.000Z,
   },
   {
-    "end": "19:00",
+    "end": 2024-08-01T16:00:00.000Z,
     "queues": [
-      "2",
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "18:00",
+    "start": 2024-08-01T15:00:00.000Z,
   },
   {
-    "end": "20:00",
+    "end": 2024-08-01T17:00:00.000Z,
     "queues": [
-      "2",
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "19:00",
+    "start": 2024-08-01T16:00:00.000Z,
   },
   {
-    "end": "21:00",
+    "end": 2024-08-01T18:00:00.000Z,
     "queues": [
-      "5",
-      "6",
-      "1",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
     ],
-    "start": "20:00",
+    "start": 2024-08-01T17:00:00.000Z,
   },
   {
-    "end": "22:00",
+    "end": 2024-08-01T19:00:00.000Z,
     "queues": [
-      "5",
-      "6",
-      "1",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "1",
+      },
     ],
-    "start": "21:00",
+    "start": 2024-08-01T18:00:00.000Z,
   },
   {
-    "end": "23:00",
+    "end": 2024-08-01T20:00:00.000Z,
     "queues": [
-      "2",
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "22:00",
+    "start": 2024-08-01T19:00:00.000Z,
   },
   {
-    "end": "24:00",
+    "end": 2024-08-01T21:00:00.000Z,
     "queues": [
-      "3",
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "23:00",
+    "start": 2024-08-01T20:00:00.000Z,
   },
 ]
 `;
@@ -503,67 +902,94 @@ exports[`OutrageParserService parseShifts should return shifts from real new moc
 exports[`OutrageParserService parseShifts should return shifts from real old mock 1`] = `
 [
   {
-    "end": "15:00",
+    "end": 2024-08-01T12:00:00.000Z,
     "queues": [
-      "2",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
     ],
-    "start": "14:00",
+    "start": 2024-08-01T11:00:00.000Z,
   },
   {
-    "end": "16:00",
+    "end": 2024-08-01T13:00:00.000Z,
     "queues": [
-      "2",
+      {
+        "lightStatus": 1,
+        "queue": "2",
+      },
     ],
-    "start": "15:00",
+    "start": 2024-08-01T12:00:00.000Z,
   },
   {
-    "end": "17:00",
+    "end": 2024-08-01T14:00:00.000Z,
     "queues": [
-      "3",
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
     ],
-    "start": "16:00",
+    "start": 2024-08-01T13:00:00.000Z,
   },
   {
-    "end": "18:00",
+    "end": 2024-08-01T15:00:00.000Z,
     "queues": [
-      "3",
+      {
+        "lightStatus": 1,
+        "queue": "3",
+      },
     ],
-    "start": "17:00",
+    "start": 2024-08-01T14:00:00.000Z,
   },
   {
-    "end": "19:00",
+    "end": 2024-08-01T16:00:00.000Z,
     "queues": [
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "18:00",
+    "start": 2024-08-01T15:00:00.000Z,
   },
   {
-    "end": "20:00",
+    "end": 2024-08-01T17:00:00.000Z,
     "queues": [
-      "4",
+      {
+        "lightStatus": 1,
+        "queue": "4",
+      },
     ],
-    "start": "19:00",
+    "start": 2024-08-01T16:00:00.000Z,
   },
   {
-    "end": "21:00",
+    "end": 2024-08-01T18:00:00.000Z,
     "queues": [
-      "5",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
     ],
-    "start": "20:00",
+    "start": 2024-08-01T17:00:00.000Z,
   },
   {
-    "end": "22:00",
+    "end": 2024-08-01T19:00:00.000Z,
     "queues": [
-      "5",
+      {
+        "lightStatus": 1,
+        "queue": "5",
+      },
     ],
-    "start": "21:00",
+    "start": 2024-08-01T18:00:00.000Z,
   },
   {
-    "end": "23:00",
+    "end": 2024-08-01T20:00:00.000Z,
     "queues": [
-      "6",
+      {
+        "lightStatus": 1,
+        "queue": "6",
+      },
     ],
-    "start": "22:00",
+    "start": 2024-08-01T19:00:00.000Z,
   },
 ]
 `;
