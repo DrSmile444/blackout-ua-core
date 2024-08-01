@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { HealthCheck, HealthCheckService, HttpHealthIndicator, MemoryHealthIndicator, TypeOrmHealthIndicator } from '@nestjs/terminus';
+import { RedisHealthIndicator } from '@nestjs-modules/ioredis';
 
 @ApiTags('app')
 @Controller('health')
@@ -12,6 +13,7 @@ export class HealthController {
     private memory: MemoryHealthIndicator,
     private http: HttpHealthIndicator,
     private configService: ConfigService,
+    private redis: RedisHealthIndicator,
   ) {}
 
   private instanceSize = 512 * 1024 * 1024;
@@ -27,6 +29,7 @@ export class HealthController {
         this.http.responseCheck('telegram', `${this.configService.get('TELEGRAM_API_URL')}/health`, (response) => response.status === 200),
       () =>
         this.http.responseCheck('scrapper', `${this.configService.get('SCRAPPER_API_URL')}/health`, (response) => response.status === 200),
+      () => this.redis.isHealthy('redis'),
     ]);
   }
 }
