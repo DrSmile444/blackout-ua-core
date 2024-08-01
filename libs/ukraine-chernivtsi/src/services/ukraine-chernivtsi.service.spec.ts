@@ -1,4 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
+
 import { UkraineChernivtsiService } from './ukraine-chernivtsi.service';
 
 describe('UkraineChernivtsiService', () => {
