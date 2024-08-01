@@ -40,16 +40,16 @@ describe('UkraineChernivtsiParserService', () => {
         service.mergeQueueTimes(
           [
             {
-              start: '10:00',
-              end: '12:00',
+              start: new Date(new Date().setHours(10, 0, 0, 0)),
+              end: new Date(new Date().setHours(12, 0, 0, 0)),
               queues: [
                 { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
                 { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
               ],
             },
             {
-              start: '12:00',
-              end: '14:00',
+              start: new Date(new Date().setHours(12, 0, 0, 0)),
+              end: new Date(new Date().setHours(14, 0, 0, 0)),
               queues: [
                 { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
                 { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
@@ -58,16 +58,16 @@ describe('UkraineChernivtsiParserService', () => {
           ],
           [
             {
-              start: '12:00',
-              end: '14:00',
+              start: new Date(new Date().setHours(12, 0, 0, 0)),
+              end: new Date(new Date().setHours(14, 0, 0, 0)),
               queues: [
                 { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
                 { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
               ],
             },
             {
-              start: '18:00',
-              end: '20:00',
+              start: new Date(new Date().setHours(18, 0, 0, 0)),
+              end: new Date(new Date().setHours(20, 0, 0, 0)),
               queues: [
                 { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
                 { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
@@ -77,16 +77,16 @@ describe('UkraineChernivtsiParserService', () => {
         ),
       ).toEqual([
         {
-          start: '10:00',
-          end: '12:00',
+          start: new Date(new Date().setHours(10, 0, 0, 0)),
+          end: new Date(new Date().setHours(12, 0, 0, 0)),
           queues: [
             { queue: '1', lightStatus: LightStatus.UNAVAILABLE },
             { queue: '2', lightStatus: LightStatus.UNAVAILABLE },
           ],
         },
         {
-          start: '12:00',
-          end: '14:00',
+          start: new Date(new Date().setHours(12, 0, 0, 0)),
+          end: new Date(new Date().setHours(14, 0, 0, 0)),
           queues: [
             { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
             { queue: '4', lightStatus: LightStatus.UNAVAILABLE },
@@ -95,8 +95,8 @@ describe('UkraineChernivtsiParserService', () => {
           ],
         },
         {
-          start: '18:00',
-          end: '20:00',
+          start: new Date(new Date().setHours(18, 0, 0, 0)),
+          end: new Date(new Date().setHours(20, 0, 0, 0)),
           queues: [
             { queue: '3', lightStatus: LightStatus.UNAVAILABLE },
             { queue: '4', lightStatus: LightStatus.UNAVAILABLE },

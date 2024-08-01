@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { CheerioAPI } from 'cheerio/lib/load';
 
 import type { OutrageDto, OutrageShiftDto } from '@app/shared';
-import { isUnavailableOrPossiblyUnavailable, LightStatus, OutrageRegion, OutrageType } from '@app/shared';
+import { isUnavailableOrPossiblyUnavailable, LightStatus, OutrageRegion, OutrageType, shiftToString, stringToShift } from '@app/shared';
 
 export enum ChernivtsiLightStatus {
   AVAILABLE = 'з',
@@ -31,7 +31,7 @@ export class UkraineChernivtsiParserService {
       .map((_, element) => $(element).text().trim())
       .get()
       // Combine periods with start and end
-      .map((period, index, array) => ({ start: period, end: array[index + 1] }))
+      .map((period, index, array) => ({ start: stringToShift(date, period), end: stringToShift(date, array[index + 1]) }))
       // Remove last period because it doesn't have end
       .slice(0, -1);
 
@@ -63,12 +63,15 @@ export class UkraineChernivtsiParserService {
     return rowValues as ChernivtsiLightStatus[];
   }
 
+  /**
+   * Merges outrage shifts with the same start and end time.
+   * */
   mergeQueueTimes(...arrays: OutrageShiftDto[][]): OutrageShiftDto[] {
     const combinedArray = arrays.flat();
     const timeMap: Map<string, OutrageShiftDto> = new Map();
 
     combinedArray.forEach((item) => {
-      const key = `${item.start}-${item.end}`;
+      const key = `${shiftToString(item.start)}-${shiftToString(item.end)}`;
       if (timeMap.has(key)) {
         const existingItem = timeMap.get(key);
         existingItem.queues = [...new Set([...existingItem.queues, ...item.queues])];
@@ -78,11 +81,7 @@ export class UkraineChernivtsiParserService {
     });
 
     const mergedArray = [...timeMap.values()];
-    mergedArray.sort((a, b) => {
-      const timeA = a.start.split(':').map(Number);
-      const timeB = b.start.split(':').map(Number);
-      return timeA[0] - timeB[0] || timeA[1] - timeB[1];
-    });
+    mergedArray.sort((a, b) => +a.start - +b.start);
 
     return mergedArray;
   }
